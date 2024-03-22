@@ -2,20 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Paper extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
-    protected $fillable = [
-        'title',
-        'author',
-        'abstract',
-        'file',
-        'date',
+    use HasFactory;
+
+    protected $guarded =[];
+
+    protected $casts = [
+        'author' => 'array',
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
