@@ -19,7 +19,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'admin')->group(function () {
     Route::get('/papers',[PaperController::class, 'index'])->name('papers.index');
     Route::get('/papers/{paper}',[PaperController::class, 'edit'])->name('papers.edit');
     Route::get('/add', [PaperController::class, 'add'])->name('papers.add');
