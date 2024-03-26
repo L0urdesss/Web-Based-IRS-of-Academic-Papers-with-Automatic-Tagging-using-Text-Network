@@ -25,9 +25,12 @@ export default function Table({ items, columns, primary, actionUpdate , handleDe
                             <td className="px-6 py-4">
                                 <a href={route(actionUpdate, item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</a>
                             </td>
+                            {handleDelete === null && (
+
                             <td className="px-6 py-4">
                                 <button onClick={() => handleDelete(item.id,item.title)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete Item</button>
                             </td>
+                            )}
                         </tr>
                     )}
                 </tbody>

@@ -15,22 +15,27 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+ Route::get('/dashboard', function () {
+     return Inertia::render('Dashboard');
+ })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth', 'admin')->group(function () {
-    Route::get('/papers',[PaperController::class, 'index'])->name('papers.index');
-    Route::get('/papers/{paper}',[PaperController::class, 'edit'])->name('papers.edit');
-    Route::get('/add', [PaperController::class, 'add'])->name('papers.add');
-    Route::patch('/papers/{paper}',[PaperController::class, 'update'])->name('papers.update');
-    Route::post('/add',[PaperController::class, 'store'])->name('papers.store');
-    Route::delete('/papers/{paper}',[PaperController::class, 'destroy'])->name('papers.destroy');
-   // Route::get('/papers/search', [PaperController::class, 'search'])->name('papers.search');
+Route::middleware('auth',)->group(function () {
+    Route::get('/papers',[PaperController::class, 'view'])->name('userpapers.view');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware('auth', 'admin')->group(function () {
+    Route::get('/papers-admin',[PaperController::class, 'index'])->name('papers.index');
+    Route::get('/papers-admin/{paper}',[PaperController::class, 'edit'])->name('papers.edit');
+    Route::get('/add-admin', [PaperController::class, 'add'])->name('papers.add');
+    Route::patch('/papers-admin/{paper}',[PaperController::class, 'update'])->name('papers.update');
+    Route::post('/add-admin',[PaperController::class, 'store'])->name('papers.store');
+    Route::delete('/papers-admin/{paper}',[PaperController::class, 'destroy'])->name('papers.destroy');
+   // Route::get('/papers/search', [PaperController::class, 'search'])->name('papers.search');
+
 });
 
 require __DIR__.'/auth.php';

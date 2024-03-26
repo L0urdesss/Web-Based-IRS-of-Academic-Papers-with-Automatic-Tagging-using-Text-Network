@@ -24,9 +24,15 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
                                     Dashboard
                                 </NavLink>
-                                <NavLink href={route('papers.index')} active={route().current('papers.*')}>
-                                    Papers
+
+                                <NavLink href={route('userpapers.view')} active={route().current('userpapers*')}>
+                                    View Papers
                                 </NavLink>
+                                {user.role === 'admin' && (
+                                    <NavLink href={route('papers.index')} active={route().current('papers*')}>
+                                        Admin Panel
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
