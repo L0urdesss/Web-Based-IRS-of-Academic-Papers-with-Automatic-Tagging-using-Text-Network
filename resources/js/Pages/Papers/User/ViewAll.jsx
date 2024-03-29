@@ -16,7 +16,7 @@ useEffect(() => {
 const handleSearch = () => {
     setIsLoading(true); // Start loading state
     // Redirect to the current route with the search query as a parameter
-    window.location = route('papers.index', { searchQuery: inputValue });
+    window.location = route('userpapers.view', { searchQuery: inputValue });
 };
     return (
         
