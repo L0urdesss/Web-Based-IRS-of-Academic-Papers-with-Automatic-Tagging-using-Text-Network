@@ -16,3 +16,4 @@ You will need PHP8.2, composer and Node.js.
 10. Run `php artisan migrate`
 11. Run `php artisan db:seed`
 12. Open new terminal and Run `npm run dev` to start vite server for React
+fdfd
