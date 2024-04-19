@@ -51,7 +51,7 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col"> {/* Wrap search bar and table in a flex column container */}
                         <div className="mb-4"> {/* Add margin bottom to create space */}
-                            <SearchBar onSearch={handleSearch} />
+                            <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
 
                         </div>
                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import searchImage from './search.png';
 
-const SearchBar = ({ onSearch }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+const SearchBar = ({ onSearch, searchQuery }) => {
+  const [searchTerm, setSearchTerm] = useState(searchQuery || '');
   const [showFilter, setShowFilter] = useState(false); // To toggle filter visibility
   const [filters, setFilters] = useState({
     title: false,
