@@ -3,20 +3,81 @@ import searchImage from './search.png';
 
 const SearchBar = ({ onSearch }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showFilter, setShowFilter] = useState(false); // To toggle filter visibility
+  const [filters, setFilters] = useState({
+    title: false,
+    author: false,
+    date_published: false
+  });
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleFilterClick = () => {
+    setShowFilter(!showFilter);
+  };
+
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+    setFilters({
+      ...filters,
+      [name]: checked
+    });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSearch(window.location = route('userpapers.view', { searchQuery: searchTerm }));
+    onSearch(window.location = route('userpapers.view', { 
+      searchQuery: searchTerm ,
+      filters: filters})
+    );
   };
 
   return (
     <div className="relative flex justify-center items-center">
       <form onSubmit={handleSubmit} className="w-full sm:w-3/4 md:w-1/2 lg:w-3/4 xl:w-3/4 relative">
         <div className="flex">
+          <button
+            type="button"
+            onClick={handleFilterClick}
+            className="bg-none text-red-600 border-none rounded-md p-2 ml-2"
+          >
+            Filter
+
+
+          </button>
+          {showFilter && (
+            <div className="absolute mt-8 bg-white border border-gray-300 rounded-md p-2 flex flex-col">
+              <label>
+                <input
+                  type="checkbox"
+                  name="title"
+                  checked={filters.title}
+                  onChange={handleCheckboxChange}
+                />
+                Title
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="author"
+                  checked={filters.author}
+                  onChange={handleCheckboxChange}
+                />
+                Author
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="date_published"
+                  checked={filters.date_published}
+                  onChange={handleCheckboxChange}
+                />
+                Date Published
+              </label>
+            </div>
+          )}
           <input
             type="text"
             placeholder="Search for author, title, topic..."

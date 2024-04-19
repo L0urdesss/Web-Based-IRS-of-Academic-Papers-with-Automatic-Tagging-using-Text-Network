@@ -30,18 +30,42 @@ class PaperController extends Controller
     public function view(Request $request)
     {
         $query = Paper::query();
-    
+        
+        // Apply search query if provided
         if ($request->has('searchQuery')) {
-            $query->where('title', 'like', '%' . $request->input('searchQuery') . '%');
+            $searchTerm = $request->input('searchQuery');
+            $query->where(function($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('author', 'like', '%' . $searchTerm . '%')
+                      ->orWhere('date_published', 'like', '%' . $searchTerm . '%');
+            });
         }
     
+        // Apply additional filters if selected
+        if ($request->has('filters')) {
+            $filters = $request->input('filters');
+            $query->where(function($query) use ($filters, $searchTerm) {
+                if ($filters['title']) {
+                    $query->orWhere('title', 'like', '%' . $searchTerm . '%');
+                }
+                if ($filters['author']) {
+                    $query->orWhere('author', 'like', '%' . $searchTerm . '%');
+                }
+                if ($filters['date_published']) {
+                    $query->orWhere('date_published', 'like', '%' . $searchTerm . '%');
+                }
+            });
+        }
+        
         $papers = $query->paginate(3);
-    
+        
         return Inertia::render('Papers/User/ViewAll', [
             'papers' => $papers,
             'searchQuery' => $request->input('searchQuery'), 
         ]);
     }
+    
+
     
     public function edit(Paper $paper)
     {
