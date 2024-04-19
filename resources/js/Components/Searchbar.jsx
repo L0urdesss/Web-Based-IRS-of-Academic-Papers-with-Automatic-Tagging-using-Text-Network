@@ -28,14 +28,11 @@ const SearchBar = ({ onSearch }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSearch(window.location = route('userpapers.view', { 
-      searchQuery: searchTerm ,
-      filters: filters})
-    );
+    // Call the onSearch function with searchTerm and filters
+    onSearch(searchTerm, filters);
   };
 
   return (
-    <div className="relative flex justify-center items-center">
       <form onSubmit={handleSubmit} className="w-full sm:w-3/4 md:w-1/2 lg:w-3/4 xl:w-3/4 relative">
         <div className="flex">
           <button
@@ -102,7 +99,6 @@ const SearchBar = ({ onSearch }) => {
           </button>
         </div>
       </form>
-    </div>
   );
 };
 

@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import Table from '@/Components/Table';
+import SearchBar from '@/Components/Searchbar';
 
 const columns = ['title', 'author', 'date_published', 'status']; // Add 'status' to columns array
 
@@ -13,10 +14,14 @@ export default function ViewAll({ auth, papers, searchQuery }) {
         setIsLoading(false);
     }, [papers]);
 
-    const handleSearch = () => {
+
+    const handleSearch = (searchTerm, filters) => {
         setIsLoading(true);
-        window.location = route('userpapers.view', { searchQuery: inputValue });
-    };
+        window.location = route('userpapers.view', {
+            searchQuery: searchTerm ,
+            filters: filters
+        });
+      };
 
     // Function to generate random status
     const getRandomStatus = () => {
@@ -46,14 +51,8 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex flex-col"> {/* Wrap search bar and table in a flex column container */}
                         <div className="mb-4"> {/* Add margin bottom to create space */}
-                            <input
-                                type="text"
-                                placeholder="Search.."
-                                className="border px-2 rounded-lg w-1/2" // Adjusted width to 'w-1/4' (approximately a quarter)
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                            />
-                            <button onClick={handleSearch} className="bg-red-600 text-white px-4 py-2 ml-2 rounded-lg">Search</button>
+                            <SearchBar onSearch={handleSearch} />
+
                         </div>
                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             {isLoading ? "Loading..." : (

@@ -7,6 +7,13 @@ import Searchbar from '../../../resources/js/Components/Searchbar'; // Import th
 import './Scrollbar.css';
 
 export default function Dashboard({ auth }) {
+    const handleSearch = (searchTerm, filters) => {
+        window.location = route('userpapers.view', {
+            searchQuery: searchTerm ,
+            filters: filters
+        });
+      };
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />
@@ -25,7 +32,9 @@ export default function Dashboard({ auth }) {
                     </div>
                 </div>
                 <div className="mt-8">
-                    <Searchbar />
+                    <div className="relative flex justify-center items-center">
+                        <Searchbar onSearch={handleSearch} />
+                    </div>
                 </div>
                 <div className="mt-9" style={{ marginLeft: '20px', marginRight: '20px' }}> {/* Added marginLeft and marginRight style */}
                     <h2 className="text-xl font-semibold" style={{ color: '#831b1c', textAlign: 'center' }}>Recently Viewed Research Paper</h2>
