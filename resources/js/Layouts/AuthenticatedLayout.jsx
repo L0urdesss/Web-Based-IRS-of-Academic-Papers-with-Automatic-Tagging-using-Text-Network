@@ -1,35 +1,38 @@
 import { useState } from 'react';
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
+
+// Import the logo image
+import logo from '@/Components/logo2.png';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <nav className="bg-white border-b border-gray-100">
+            <nav className="bg-white border-b border-gray-100" style={{ backgroundColor: '#af2429' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                {/* Make the logo clickable */}
+                                <Link href="/dashboard">
+                                    <img src={logo} alt="Logo" className="block h-9 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
+                                    Home
                                 </NavLink>
 
-                                <NavLink href={route('userpapers.view')} active={route().current('userpapers*')}>
+                                <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
                                     View Papers
                                 </NavLink>
                                 {user.role === 'admin' && (
-                                    <NavLink href={route('papers.index')} active={route().current('papers*')}>
+                                    <NavLink href={route('papers.index')} active={route().current('papers*')} style={{ color: '#ffffff' }}>
                                         Admin Panel
                                     </NavLink>
                                 )}
@@ -44,9 +47,9 @@ export default function Authenticated({ user, header, children }) {
                                             <button
                                                 type="button"
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                                style={{ color: '#ffffff', backgroundColor: '#af2429' }}
                                             >
-                                                {user.name}
-
+                                                {user.name} {/* Displaying user's name */}
                                                 <svg
                                                     className="ms-2 -me-0.5 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -106,15 +109,15 @@ export default function Authenticated({ user, header, children }) {
                         </ResponsiveNavLink>
                     </div>
 
-                    <div className="pt-4 pb-1 border-t border-gray-200">
+                    <div className="pt-4 pb-1 border-t border-gray-200" style={{ color: '#ffffff', backgroundColor: '#af2429' }}>
                         <div className="px-4">
-                            <div className="font-medium text-base text-gray-800">{user.name}</div>
-                            <div className="font-medium text-sm text-gray-500">{user.email}</div>
+                            <div className="font-medium text-base">{user.name}</div>
+                            <div className="font-medium text-sm">{user.email}</div>
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink method="post" href={route('logout')} as="button">
+                            <ResponsiveNavLink href={route('profile.edit')} style={{ color: '#af2429' }}>Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink method="post" href={route('logout')} as="button" style={{ color: '#af2429' }}>
                                 Log Out
                             </ResponsiveNavLink>
                         </div>
