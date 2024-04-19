@@ -57,7 +57,7 @@ class PaperController extends Controller
             });
         }
         
-        $papers = $query->paginate(3);
+        $papers = $query->paginate(5);
         
         return Inertia::render('Papers/User/ViewAll', [
             'papers' => $papers,

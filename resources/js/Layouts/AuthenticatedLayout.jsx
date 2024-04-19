@@ -29,7 +29,7 @@ export default function Authenticated({ user, header, children }) {
                                 </NavLink>
 
                                 <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
-                                    View Papers
+                                    Research Papers
                                 </NavLink>
                                 {user.role === 'admin' && (
                                     <NavLink href={route('papers.index')} active={route().current('papers*')} style={{ color: '#ffffff' }}>

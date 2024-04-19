@@ -1,49 +1,45 @@
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import Table from '@/Components/Table';
 import SearchBar from '@/Components/Searchbar';
+import '@/Pages/animation.css'; // Import CSS file for animations
 
-const columns = ['title', 'author', 'date_published', 'status']; // Add 'status' to columns array
+const columns = ['title', 'author', 'date_published']; // Remove 'status' from columns array
 
 export default function ViewAll({ auth, papers, searchQuery }) {
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(searchQuery || '');
+    const [showFilters, setShowFilters] = useState(true); // State to manage the visibility of the filter drawer
+
 
     useEffect(() => {
         setIsLoading(false);
     }, [papers]);
 
+    // Effect to run when showFilters state changes
+    useEffect(() => {
+        if (showFilters) {
+            // Add any code you want to execute when the drawer is shown
+            console.log("Drawer is shown");
+        } else {
+            // Add any code you want to execute when the drawer is hidden
+            console.log("Drawer is hidden");
+        }
+    }, [showFilters]);
 
     const handleSearch = (searchTerm, filters) => {
         setIsLoading(true);
         window.location = route('userpapers.view', {
-            searchQuery: searchTerm ,
+            searchQuery: searchTerm,
             filters: filters
         });
-      };
-
-    // Function to generate random status
-    const getRandomStatus = () => {
-        const statuses = ['pending', 'approved', 'rejected'];
-        return statuses[Math.floor(Math.random() * statuses.length)];
-    };
-
-    // Render papers with randomly assigned status and appropriate class names
-    const papersWithStatus = papers.data.map(paper => ({
-        ...paper,
-        status: getRandomStatus(),
-    }));
-
-    // Function to get class name based on status
-    const getStatusClassName = (status) => {
-        return 'bg-gray-500 text-white'; // Default color
     };
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Request Research Papers</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Research Papers</h2>}
         >
             <Head title="All Papers" />
 
@@ -52,11 +48,41 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                     <div className="flex flex-col"> {/* Wrap search bar and table in a flex column container */}
                         <div className="mb-4"> {/* Add margin bottom to create space */}
                             <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
-
+                        </div>
+                        {/* Render filter button below the search bar */}
+                        <div className="mb-4">
+                            <button
+                                onClick={() => setShowFilters(!showFilters)} // Toggle visibility of the filter drawer
+                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                            >
+                                {showFilters ? 'Show Filters' : 'Hide Filters'}
+                            </button>
                         </div>
                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                             {isLoading ? "Loading..." : (
-                                <Table items={papersWithStatus} columns={columns} primary="Paper Number" actionUpdate="papers.edit" />
+                                <div>
+                                    {papers.data.map((paper, index) => (
+                                        <div key={index} className="p-4 border-b border-gray-200">
+                                            <div className="mb-2">
+                                                <Link
+                                                    href={route('papers.edit', { paper: paper.id })}
+                                                    className="font-bold text-blue-500 hover:underline"
+                                                >
+                                                    {paper.title}
+                                                </Link>
+                                            </div>
+                                            <div className="mb-2">
+                                                <span className="font-bold">AUTHOR:</span> {paper.author}
+                                            </div>
+                                            <div className="mb-2">
+                                                <span className="font-bold">DATE PUBLISHED:</span> {paper.date_published}
+                                            </div>
+                                            <div className="mb-2">
+                                                <span className="font-bold">ABSTRACT:</span> {paper.abstract}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -78,6 +104,11 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                         )}
                     </div>
                 </div>
+            </div>
+            {/* Render filter drawer with sliding animation */}
+            <div className={`fixed right-0 top-0 h-full w-64 bg-white shadow-lg ${showFilters ? 'filter-drawer-enter' : 'filter-drawer-exit'}`}>
+                {/* Add filter components here */}
+                <p>Filters</p>
             </div>
         </AuthenticatedLayout>
     );
