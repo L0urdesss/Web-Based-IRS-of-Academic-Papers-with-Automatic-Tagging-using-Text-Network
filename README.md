@@ -13,5 +13,6 @@ You will need PHP8.2, composer and Node.js.
 7. Set the encryption key by executing `php artisan key:generate --ansi`
 8. Start local server by executing `php artisan serve`
 9. Open new terminal and Run `npm install`
-10. Run `php artisan db:seed`
-11. Open new terminal and Run `npm run dev` to start vite server for React
+10. Run `php artisan migrate`
+11. Run `php artisan db:seed`
+12. Open new terminal and Run `npm run dev` to start vite server for React
