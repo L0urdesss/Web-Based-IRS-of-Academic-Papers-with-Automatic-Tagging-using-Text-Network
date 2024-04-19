@@ -10,7 +10,7 @@ const SearchBar = ({ onSearch }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSearch(searchTerm);
+    onSearch(window.location = route('userpapers.view', { searchQuery: searchTerm }));
   };
 
   return (
