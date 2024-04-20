@@ -23,6 +23,7 @@ Route::middleware('auth',)->group(function () {
     Route::get('/papers',[PaperController::class, 'view'])->name('userpapers.view');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/papers/{paper}',[PaperController::class, 'preview'])->name('userpapers.preview');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

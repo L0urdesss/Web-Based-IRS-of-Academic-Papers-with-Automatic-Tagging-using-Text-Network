@@ -65,7 +65,7 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                                         <div key={index} className="p-4 border-b border-gray-200">
                                             <div className="mb-2">
                                                 <Link
-                                                    href={route('papers.edit', { paper: paper.id })}
+                                                    href={route('userpapers.preview', { paper: paper.id })}
                                                     className="font-bold text-blue-500 hover:underline"
                                                 >
                                                     {paper.title}

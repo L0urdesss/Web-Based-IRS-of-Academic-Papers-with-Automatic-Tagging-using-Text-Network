@@ -74,6 +74,13 @@ class PaperController extends Controller
         ]);
     }
 
+    public function preview(Paper $paper)
+    {
+        return Inertia::render('Papers/User/Preview',[
+            'paper' => $paper
+        ]);
+    }
+
     public function update(Paper $paper, Request $request):void
     {
         $paper->update([
