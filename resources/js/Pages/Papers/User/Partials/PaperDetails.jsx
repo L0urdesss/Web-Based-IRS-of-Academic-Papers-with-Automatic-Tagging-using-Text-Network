@@ -31,7 +31,7 @@ export default function PaperDetails({ paper, className = '' }) {
         <section className={className}>
             <div className="bg-white p-4 rounded-md">
                 <TextInput
-                    className="mt-1 block w-full border border-white shadow-none"
+                    className="mt-1 block w-full border border-white shadow-white"
                     value={data.title}
                     onChange={(e) => setData('title', e.target.value)}
                     disabled
@@ -39,7 +39,7 @@ export default function PaperDetails({ paper, className = '' }) {
                 />
 
 <TextInput
-    className="mt-1 flex items-center border border-white shadow-none"
+    className="mt-1 flex items-center border border-white shadow-white"
     value={data.date_published + ' • College of Science'}
     onChange={(e) => setData('author', e.target.value)} // Assuming you want to update the author field
     disabled
@@ -48,7 +48,7 @@ export default function PaperDetails({ paper, className = '' }) {
 <div>
     <p className="ml-3 mt-3" style={{ fontSize: '12px', color: '#352D2D' }}>Author/s</p>
     <TextInput
-        className="mt-1 block w-full border border-white shadow-none"
+        className="mt-1 block w-full border border-white shadow-white"
         value={data.author}
         onChange={(e) => setData('author', e.target.value)}
         disabled
