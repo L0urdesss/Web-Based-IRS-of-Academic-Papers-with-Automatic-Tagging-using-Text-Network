@@ -1,4 +1,4 @@
-export default function Table({ items, columns, primary, actionUpdate, handleDelete }) {
+export default function Admin({ items, columns, primary, actionUpdate , handleDelete }) {
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -17,18 +17,18 @@ export default function Table({ items, columns, primary, actionUpdate, handleDel
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 #{item.id}
                             </th>
-                            <td className="px-6 py-4">{item.paper_id}</td>
-                            <td className="px-6 py-4">{item.paper.title}</td> {/* Display paper title */}
-                            <td className="px-6 py-4">{item.purpose}</td>
-                            <td className="px-6 py-4">{item.status}</td>
-                            <td className="px-6 py-4">
-                                <a href={route(actionUpdate, item.paper_id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Paper</a>
-                            </td>
-                            {handleDelete === null && (
-                                <td className="px-6 py-4">
-                                    <button onClick={() => handleDelete(item.id, item.paper.title)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete Item</button>
+                            {columns.map((column) =>
+                                <td key={column} className="px-6 py-4">
+                                    {Array.isArray(item[column]) ? item[column].join(', ') : item[column]}
                                 </td>
                             )}
+                            <td className="px-6 py-4">
+                                <a href={route(actionUpdate, item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</a>
+                            </td>
+
+                            <td className="px-6 py-4">
+                                <button onClick={() => handleDelete(item.id,item.title)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete Item</button>
+                            </td>
                         </tr>
                     )}
                 </tbody>

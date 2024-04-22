@@ -18,19 +18,28 @@ class PaperFactory extends Factory
     {
         $autarray = [];
 
-        for ($i = 1; $i <= rand(1,4); $i++){
+        for ($i = 1; $i <= rand(1, 4); $i++) {
             $autarray[] = $this->faker->name();
         }
 
         $autarray = array_unique($autarray);
 
+        $abstractSentencesCount = rand(4, 10);
+        $abstractSentences = [];
+
+        for ($i = 0; $i < $abstractSentencesCount; $i++) {
+            $abstractSentences[] = $this->faker->realText();
+        }
+
+        $abstract = implode(' ', $abstractSentences);
+
         return [
-            'id' => rand(111,999),
+            'id' => rand(111, 999),
             'user_id' => rand(1, 10),
             'title' => $this->faker->sentence,
             'author' => $autarray,
-            'abstract' => $this->faker->paragraph,
-            'file' => 'file.pdf',
+            'abstract' => $abstract,
+            'file' => null,
             'date_published' => $this->faker->dateTimeBetween('-9 years', 'now')->format('Y'),
         ];
     }

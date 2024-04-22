@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Paper extends Model
 {
@@ -15,7 +16,14 @@ class Paper extends Model
 
     protected $casts = [
         'author' => 'array',
+        'file' => 'string', // Assuming 'file' attribute is a string
     ];
+
+    // Define an accessor to manipulate the value when accessed
+    public function getFileAttribute($value)
+    {
+        return $value ? Storage::url($value) : '';
+    }
 
     public function user(): BelongsTo
     {

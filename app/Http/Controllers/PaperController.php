@@ -20,6 +20,7 @@ class PaperController extends Controller
         }
     
         $papers = $query->paginate(3);
+
     
         return Inertia::render('Papers/Admin/All', [
             'papers' => $papers,
@@ -77,7 +78,8 @@ class PaperController extends Controller
     public function preview(Paper $paper)
     {
         return Inertia::render('Papers/User/Preview',[
-            'paper' => $paper
+            'paper' => $paper,
+            'success' => session('success')
         ]);
     }
 
@@ -89,7 +91,6 @@ class PaperController extends Controller
             'author' => $request->author,
             'date_published' => $request->date_published,
             'file' => $request->file,
-
         ]);
     }
 
@@ -99,10 +100,14 @@ class PaperController extends Controller
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
             'author' => 'required|string', 
+            'file' => 'nullable|extensions:pdf',
             'date_published' => 'required|string',
         ]);
-    
-        $validatedData['file'] = 'file.pdf';
+        
+        $filepath = $validatedData['file'] ?? null;
+        if ($filepath){
+            $validatedData['file'] = $filepath->store('project/' . $validatedData['title'], 'public');
+        }
     
         $validatedData['user_id'] = Auth::id(); 
     

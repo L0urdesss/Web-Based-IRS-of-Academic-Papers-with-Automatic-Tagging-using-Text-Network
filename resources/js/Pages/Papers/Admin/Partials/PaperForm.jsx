@@ -12,7 +12,7 @@ export default function PaperForm({ paper, className = '' }) {
         abstract: paper ? paper.abstract : "",
         author: paper ? paper.author : "", 
         date_published: paper ? paper.date_published : "",
-        file: paper ? paper.file : "",
+        file: paper ? paper.file : null,
     });
 
     const submit = (e) => {
@@ -87,19 +87,21 @@ export default function PaperForm({ paper, className = '' }) {
 
                     />
 
-                    <InputError className="mt-2" message={errors.date_published} />
+                    <InputError className="mt-2" message={errors.file} />
                 </div>
 
                 <div>
                     <InputLabel htmlFor="file" value="File" />
-
-                    <TextInput
-                        id="file"
-                        className="mt-1 block w-full"
-                        value={data.file}
-                        //onChange={(e) => setData('file', e.target.value)}
-                        disabled
-                    />
+                    {data.file ? (
+                        <a href={data.file} target="_blank" rel="noopener noreferrer">View File</a>
+                    ) : (
+                        <TextInput
+                            id="file"
+                            className="mt-1 block w-full"
+                            type="file"
+                            onChange={(e) => setData('file', e.target.files[0])}
+                        />
+                    )}
                 </div>
 
                 <div className="flex items-center gap-4">
