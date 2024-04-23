@@ -46,7 +46,7 @@ export default function ViewAll({ auth, papers, searchQuery }) {
             <div className="py-12">
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8" style={{ marginBottom: '20px' }}>
                     <div>
-                        <div className="mb-4">
+                        <div className="mb-10">
                             <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
                         </div>
                         {isLoading ? "Loading..." : (
