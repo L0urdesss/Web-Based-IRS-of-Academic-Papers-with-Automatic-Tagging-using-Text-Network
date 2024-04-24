@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import requestButtonImg from '@/Components/request_button.png';
 import pdfIconImg from '@/Components/pdf_icon.png';
 import exitButtonImg from '@/Components/x_button.png';
+import logoImg from '@/Components/logo2.png'; // Import the logo image
 
 export default function PaperDetails({ user, paper, className = '', success }) {
     const { data, setData, post } = useForm({
@@ -120,38 +121,48 @@ export default function PaperDetails({ user, paper, className = '', success }) {
                 </div>
             </div>
             {showForm && (
-                <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
-                <div className="bg-white p-4 rounded-md relative" style={{ width: '400px', minHeight: '400px', maxHeight: '80vh', overflowY: 'auto', border: '1px solid #c46064' }}>
-                <button className="absolute right-0 top-0 p-2" onClick={handleCloseForm}>
-    {/* Replace the SVG with the image */}
-    <img src={exitButtonImg} alt="Exit Button" className="h-3 w-3" />
-</button>
-                        <h2 className="text-center text-lg font-semibold mb-4 mt-2" style={{ backgroundColor: '#AF2429', color: 'white', padding: '8px', borderRadius: '5px' }}>Request Form</h2>
+              <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(3px)' }}>
+                   <div className="bg-white rounded-md relative" style={{ width: '350px', minHeight: '300px', maxHeight: '80vh', overflowY: 'auto', borderRadius: '10px' }}>
+                        <button className="absolute right-0 top-0 p-2" onClick={handleCloseForm}>
+                            {/* Replace the SVG with the image */}
+                            <img src={exitButtonImg} alt="Exit Button" className="h-3 w-3" />
+                        </button>
+                        {/* Background color with logo */}
+                        <div style={{ backgroundColor: '#831B1C', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '35px' }}>
+                            <img src={logoImg} alt="Logo" className="block" style={{ width: 'auto', height: '200%' }} />
+                        </div>
                         {/* Your form components here */}
                         <form onSubmit={submit}>
-                            <div>
-<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
-    <label htmlFor="name" style={{ marginRight: '10px' }}>Name:</label>
-    <input type="text" id="name" value={name} disabled className="rounded-md border border-gray-300 p-1" style={{ width: '100%', fontSize: '10px' }} />
-</div>
-<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
-    <label htmlFor="email" style={{ marginRight: '10px' }}>Email:</label>
-    <input type="email" id="email" value={email} disabled className="rounded-md border border-gray-300 p-1" style={{ width: '100%', fontSize: '10px' }} />
-</div>
-<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
-    <label htmlFor="title" style={{ marginRight: '10px' }}>Title:</label>
-    <input type="text" id="title" value={title} disabled className="rounded-md border border-gray-300 p-1" style={{ width: '100%', fontSize: '10px' }} />
-</div>
-
-
+                            <div className="p-5"> {/* Add padding to the container */}
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontSize: '16px', color: '#831B1C', fontWeight: 'bold' }}>
+                                    Submit Your Request Here!
+                                </div>
+                                <div style={{ fontSize: '10px', lineHeight: '1.4', color: '#831B1C', marginBottom: '15px' }}>
+                                    Fill out this form to send us your request. It's the fastest and easiest way to get in touch!
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
+                                    <label htmlFor="name" style={{ marginRight: '5px', width: '50px', textAlign: 'left',fontWeight: 'bold' }}>Name:</label>
+                                    <input type="text" id="name" value={name} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px', }} />
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
+                                    <label htmlFor="email" style={{ marginRight: '5px', width: '50px', textAlign: 'left' ,fontWeight: 'bold'}}>Email:</label>
+                                    <input type="email" id="email" value={email} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
+                                    <label htmlFor="title" style={{ marginRight: '5px', width: '50px', textAlign: 'left' ,fontWeight: 'bold'}}>Title:</label>
+                                    <input type="text" id="title" value={title} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                                </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
-                                    <label htmlFor="purpose" style={{ fontSize: '14px' }}>Purpose:<br /></label>
+                                    <label htmlFor="purpose" style={{ fontSize: '14px' }}></label>
                                     <textarea
                                         id="purpose"
                                         value={data.purpose}
                                         onChange={(e) => setData('purpose', e.target.value)}
-                                        className="rounded-md border border-gray-300 p-1 mt-1"
-                                        style={{ height: '150px', width: '100%', resize: 'none', fontSize: '12px' }}
+                                        className="rounded-md border-none bg-gray-200 p-1 mt-1"
+                                        style={{ height: '100px', width: '100%', resize: 'none', fontSize: '10px', borderRadius: '3px' }}
+                                        placeholder="Describe Your Purpose here.."
+                                        onFocus={(e) => e.target.placeholder = ''}
+                                        onBlur={(e) => e.target.placeholder = 'Describe Your Purpose here..'}
                                     />
                                 </div>
                                 {/* Other form fields */}
@@ -159,18 +170,23 @@ export default function PaperDetails({ user, paper, className = '', success }) {
                             <button
                                 type="submit"
                                 style={{
-                                    backgroundColor: '#af2429',
+                                    backgroundColor: '#831B1C',
                                     color: 'white',
-                                    borderRadius: '10px',
+                                    borderRadius: '5px',
                                     padding: '5px 5px',
                                     fontSize: '12px',
-                                    marginTop: '10px', // Adjust as needed
-                                    width: '15%', // Adjust as needed
-                                    float: 'right' // Move the button to the right
+                                    marginTop: '5px', // Adjust as needed
+                                    width: '80%', // Adjust as needed
+                                    position: 'relative',
+                                    bottom:'20px', // Move the button up by 10px
+                                    marginLeft: 'auto',
+                                    marginRight: 'auto',
+                                    display: 'block',
+                                    fontWeight:'bold',
                                 }}
                                 onClick={submit}
                             >
-                                Submit
+                                Submit Form
                             </button>
                         </form>
                     </div>
