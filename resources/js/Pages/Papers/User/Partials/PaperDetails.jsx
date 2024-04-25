@@ -121,7 +121,7 @@ export default function PaperDetails({ user, paper, className = '', success }) {
                 </div>
             </div>
             {showForm && (
-              <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(3px)' }}>
+              <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(2px)' }}>
                    <div className="bg-white rounded-md relative" style={{ width: '350px', minHeight: '300px', maxHeight: '80vh', overflowY: 'auto', borderRadius: '10px' }}>
                         <button className="absolute right-0 top-0 p-2" onClick={handleCloseForm}>
                             {/* Replace the SVG with the image */}
