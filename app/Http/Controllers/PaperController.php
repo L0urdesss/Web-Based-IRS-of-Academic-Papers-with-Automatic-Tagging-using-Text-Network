@@ -84,11 +84,14 @@ class PaperController extends Controller
     }
 
     public function update(Paper $paper, Request $request):void
-    {
+    {    
+        dd($request); // or var_dump($paper);
+
         $paper->update([
             'title' => $request->title,
             'abstract' => $request->abstract,
             'author' => $request->author,
+            'course' => $request->course,
             'date_published' => $request->date_published,
             'file' => $request->file,
         ]);
@@ -100,6 +103,7 @@ class PaperController extends Controller
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
             'author' => 'required|string', 
+            'course' => 'required|string',
             'file' => 'nullable|extensions:pdf',
             'date_published' => 'required|string',
         ]);

@@ -23,6 +23,7 @@ class PaperFactory extends Factory
         }
 
         $autarray = array_unique($autarray);
+        $authorsString = implode(', ', $autarray);
 
         $abstractSentencesCount = rand(4, 10);
         $abstractSentences = [];
@@ -37,8 +38,9 @@ class PaperFactory extends Factory
             'id' => rand(111, 999),
             'user_id' => rand(1, 10),
             'title' => $this->faker->sentence,
-            'author' => $autarray,
+            'author' => $authorsString,
             'abstract' => $abstract,
+            'course'=> fake()->randomElement(['BASLT','BSCS','BSES','BSIS','BSIT']),
             'file' => null,
             'date_published' => $this->faker->dateTimeBetween('-9 years', 'now')->format('Y'),
         ];

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -9,21 +9,66 @@ import { Transition } from '@headlessui/react';
 // Import the images using @/ alias
 import uploadBoxImage from '@/Components/uploadbox.png'; // Import the upload box image
 import browseButtonImage from '@/Components/browse_button.png'; // Import the browse button image
+import CourseDropdown from '@/Components/CourseDropdown';
 
 export default function PaperForm({ paper, className = '' }) {
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm({
         title: paper ? paper.title : "",
         abstract: paper ? paper.abstract : "",
         author: paper ? paper.author : "", 
+        course: paper ? paper.course : "",
         date_published: paper ? paper.date_published : "",
         file: paper ? paper.file : null,
     });
+    
+    const initialAuthors = paper && paper.author ? paper.author.split(',').map(author => author.trim()) : [''];
+    const [authors, setAuthors] = useState(initialAuthors);
+
+    // Initialize authorInputs array based on the number of authors
+    const [authorInputs, setAuthorInputs] = useState(initialAuthors.map(() => ''));
+
+    const handleCourseChange = (e) => {
+        setSelectedCourse(e.target.value);
+      };
+
+    const handleAuthorChange = (index, value) => {
+        const updatedAuthors = [...authors];
+        updatedAuthors[index] = value;
+        setAuthors(updatedAuthors);
+    };
+
+    const addAuthorInput = () => {
+        setAuthorInputs([...authorInputs, '']);
+    };
+
+    const removeAuthorInput = (index) => {
+        const updatedAuthorInputs = [...authorInputs];
+        updatedAuthorInputs.splice(index, 1);
+        setAuthorInputs(updatedAuthorInputs);
+
+        const updatedAuthors = [...authors];
+        updatedAuthors.splice(index, 1);
+        setAuthors(updatedAuthors);
+    };
+
+    useEffect(()=>{
+        const combinedAuthors = authors.filter(author => author.trim() !== '').join(', '); // Combine authors into a single string separated by commas
+        setData('author', combinedAuthors);
+    },[authors]);
+
+
+    const [selectedCourse, setSelectedCourse] = useState(paper ? paper.course : 'BASLT'); // Set initial value to paper.course
+    useEffect(() => {   
+        // Update paper.course when selectedCourse changes
+        setData('course', selectedCourse);
+    }, [selectedCourse]);
 
     const [isDragging, setIsDragging] = useState(false); // State to track dragging status
 
-    const submit = (e) => {
+
+    const submit = async (e) => {
         e.preventDefault();
-    
+        
         if (paper) {
             patch(route('papers.update', paper.id), {
                 preserveScroll: true
@@ -34,7 +79,7 @@ export default function PaperForm({ paper, className = '' }) {
             });
         }
     };
-
+    
     return (
         <div className="flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
             <section className={`bg-white p-4 md:p-10 ${className}`} style={{ width: "100%" }}>
@@ -54,15 +99,46 @@ export default function PaperForm({ paper, className = '' }) {
                         />
                     </div>
                     <div>
-                        <InputLabel htmlFor="author" value="Author" style={{ fontSize: '12px' }} />
-                        <TextInput
-                            id="author"
-                            className="mt-1 block w-full"
-                            value={data.author}
-                            onChange={(e) => setData('author', e.target.value)}
-                            style={{ fontSize: '10px', border: '1px solid #7B7B7B' }} // Added border rule
-                        />
+                        <h1>Course Selection</h1>
+                        <CourseDropdown onChange={handleCourseChange} value={data.course} />
                     </div>
+
+
+                    <div>
+                        <label htmlFor="author" className="block text-sm font-medium text-gray-700">
+                            Author(s)
+                        </label>
+                        {authorInputs.map((input, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                                <TextInput
+                                    className="mt-1 block w-full"
+                                    value={authors[index]}
+                                    onChange={(e) => handleAuthorChange(index, e.target.value)}
+                                    style={{ fontSize: '10px', border: '1px solid #7B7B7B' }}
+                                />
+                                {index === authorInputs.length - 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={addAuthorInput}
+                                        className="p-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    >
+                                        +
+                                    </button>
+                                )}
+                                {index !== 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeAuthorInput(index)}
+                                        className="p-1 rounded-md bg-red-500 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                    >
+                                        -
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+
+
                     <div>
                         <InputLabel htmlFor="date_published" value="Date Published" style={{ fontSize: '12px' }} />
                         <TextInput

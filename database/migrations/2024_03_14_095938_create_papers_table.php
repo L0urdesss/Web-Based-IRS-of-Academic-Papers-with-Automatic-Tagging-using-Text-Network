@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->json('author');
             $table->text('abstract');
+            $table->string('course');
             $table->string('file')->nullable();
             $table->string('date_published');
             $table->timestamps();
