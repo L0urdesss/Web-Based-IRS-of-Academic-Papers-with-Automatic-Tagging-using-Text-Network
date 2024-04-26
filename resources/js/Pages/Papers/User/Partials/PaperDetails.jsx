@@ -61,7 +61,7 @@ export default function PaperDetails({user, paper, className = '' ,success}) {
                 <div>
                     <p className="ml-3 mt-3" style={{ fontSize: '12px', color: '#352D2D' }}>Author/s</p>
                     <div className="mt-1 block w-full border border-white shadow-white" style={{ color: '#352D2D', fontSize: '14px', fontWeight: 'bold' }}>
-                        {author.join(' - ')}
+                        {author}
                     </div>
                 </div>
             </div>
