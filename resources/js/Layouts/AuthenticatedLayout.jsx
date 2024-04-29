@@ -24,18 +24,21 @@ export default function Authenticated({ user, header, children }) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
+                                {user.role === 'admin' ? (
+                                    <NavLink href={route('admindashboard')} active={route().current('admindashboard')} style={{ color: '#ffffff' }}>
                                     Home
-                                </NavLink>
+                                    </NavLink>
+                                ) : (
+                                    <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
+                                    Home
+                                    </NavLink>
+                                )}
+
 
                                 <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
                                     Research Papers
                                 </NavLink>
-                                {user.role === 'admin' && (
-                                    <NavLink href={route('papers.index')} active={route().current('papers*')} style={{ color: '#ffffff' }}>
-                                        Admin Panel
-                                    </NavLink>
-                                )}
+
                             </div>
                         </div>
 
@@ -68,7 +71,7 @@ export default function Authenticated({ user, header, children }) {
 
                                     <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                        <Dropdown.Link href={route('userrequest.index', { user_id: user.id })}>Request List</Dropdown.Link>
+                                        <Dropdown.Link href={route('userrequest.view', { user_id: user.id })}>Request List</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out
                                         </Dropdown.Link>

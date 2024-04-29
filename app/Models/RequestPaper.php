@@ -23,5 +23,9 @@ class RequestPaper extends Model
     {
         return $this->belongsTo(Paper::class, 'paper_id');
     }
-
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

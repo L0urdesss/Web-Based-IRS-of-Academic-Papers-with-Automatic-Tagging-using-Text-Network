@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\RequestPaper;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -14,6 +15,9 @@ class PaperFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+
+
     public function definition(): array
     {
         $autarray = [];

@@ -13,7 +13,17 @@ class RequestPaperController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
+    {
+        // Paginate the filtered records
+        $requestpapers = RequestPaper::with('paper')->paginate(5);
+        
+        // Return the view with the filtered request papers and user information
+        return Inertia::render('Request/Admin/AdminView', [
+            'requestpapers' => $requestpapers,
+        ]);
+    }
+    public function view(Request $request)
     {
         // Get the user ID from the request parameters
         $userId = $request->query('user_id');
@@ -31,7 +41,7 @@ class RequestPaperController extends Controller
         $requestpapers = $query->paginate(5);
 
         // Return the view with the filtered request papers and user information
-        return Inertia::render('Request/View', [
+        return Inertia::render('Request/User/View', [
             'requestpapers' => $requestpapers,
         ]);
     }
@@ -95,6 +105,6 @@ class RequestPaperController extends Controller
      */
     public function destroy(RequestPaper $requestPaper)
     {
-        //
+        $requestPaper->delete();
     }
 }

@@ -123,6 +123,7 @@ class PaperController extends Controller
     {
         return Inertia::render('Papers/Admin/Add');
     }
+    
     public function destroy(Paper $paper): void
     {
         $paper->delete();
