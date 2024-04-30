@@ -1,4 +1,3 @@
-// RequestForm.jsx
 import { useEffect } from 'react';
 import exitButtonImg from '@/Components/x_button.png';
 import logoImg from '@/Components/logo2.png'; // Import the logo image

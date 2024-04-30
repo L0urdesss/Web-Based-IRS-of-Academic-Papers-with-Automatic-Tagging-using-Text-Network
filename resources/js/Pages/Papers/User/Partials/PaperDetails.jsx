@@ -1,4 +1,3 @@
-// PaperDetails.jsx
 import { useState, useEffect, useRef } from 'react';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';

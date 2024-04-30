@@ -18,7 +18,7 @@ export default function Authenticated({ user, header, children }) {
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 {/* Make the logo clickable */}
-                                <Link href="/dashboard">
+                                <Link href="/admindashboard">
                                     <img src={logo} alt="Logo" className="block h-20 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
@@ -26,19 +26,17 @@ export default function Authenticated({ user, header, children }) {
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 {user.role === 'admin' ? (
                                     <NavLink href={route('admindashboard')} active={route().current('admindashboard')} style={{ color: '#ffffff' }}>
-                                    Home
+                                        Home
                                     </NavLink>
                                 ) : (
                                     <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
-                                    Home
+                                        Home
                                     </NavLink>
                                 )}
-
 
                                 <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
                                     Research Papers
                                 </NavLink>
-
                             </div>
                         </div>
 
@@ -71,7 +69,9 @@ export default function Authenticated({ user, header, children }) {
 
                                     <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                        <Dropdown.Link href={route('userrequest.view', { user_id: user.id })}>Request List</Dropdown.Link>
+                                        {user.role !== 'admin' && ( // Render "Request List" only if the user is not an admin
+                                            <Dropdown.Link href={route('userrequest.view', { user_id: user.id })}>Request List</Dropdown.Link>
+                                        )}
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out
                                         </Dropdown.Link>
