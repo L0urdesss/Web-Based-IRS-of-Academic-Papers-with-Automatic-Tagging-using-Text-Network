@@ -19,6 +19,10 @@ class RequestPaperFactory extends Factory
     {
         $userIds = User::pluck('id')->toArray();
 
+        if (empty($userIds)) {
+            throw new \Exception("No users found in the database.");
+        }
+        
         return [
             'user_id' => $this->faker->randomElement($userIds),
             'status' => 'pending',

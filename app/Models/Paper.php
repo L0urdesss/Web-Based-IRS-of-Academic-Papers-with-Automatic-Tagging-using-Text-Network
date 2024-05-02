@@ -25,11 +25,6 @@ class Paper extends Model
     {
         return $value ? Storage::url($value) : '';
     }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
     
     public function requestpapers(): HasMany
     {

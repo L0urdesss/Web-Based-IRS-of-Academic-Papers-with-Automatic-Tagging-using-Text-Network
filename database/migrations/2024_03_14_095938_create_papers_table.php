@@ -14,7 +14,6 @@ return new class extends Migration
     {
         Schema::create('papers', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class);
             $table->string('title');
             $table->json('author');
             $table->text('abstract');

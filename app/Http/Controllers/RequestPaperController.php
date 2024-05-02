@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\RequestPaper;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class RequestPaperController extends Controller
@@ -16,13 +18,21 @@ class RequestPaperController extends Controller
     public function index()
     {
         // Paginate the filtered records
-        $requestpapers = RequestPaper::with('paper')->paginate(5);
-        
+        $requestpapers = RequestPaper::with('user.student', 'paper')->paginate(5);
+        // foreach ($requestpapers as $requestpaper) {
+        //     $userid = $requestpaper->user;
+        //     dd($userid->toArray()); // Check the user attributes and relationships
+
+        // }
+
+
+
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/Admin/AdminView', [
             'requestpapers' => $requestpapers,
         ]);
     }
+
     public function view(Request $request)
     {
         // Get the user ID from the request parameters
@@ -30,7 +40,7 @@ class RequestPaperController extends Controller
 
 
         // Query RequestPaper records with the user ID
-        $query = RequestPaper::query()->with('paper');
+        $query = RequestPaper::query()->with('user','paper');
 
         // If user ID is provided, filter the records by user ID
         if ($userId) {

@@ -5,9 +5,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 const columns = ['Paper ID', 'Paper Title','Purpose','Status'];
 
-export default function View({ auth, requestpapers, searchQuery }) {
+export default function View({ auth, requestpapers }) {
     const [isLoading, setIsLoading] = useState(false);
-    const [inputValue, setInputValue] = useState(searchQuery || ''); // Initialize input value with searchQuery
     const {delete: deletePaper} = useForm();
 
     useEffect(() => {
@@ -19,13 +18,13 @@ export default function View({ auth, requestpapers, searchQuery }) {
             // deletePaper(route('papers.destroy', itemId));
         }
     };
-    console.log(requestpapers.data)
+
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">All Request Papers</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">User Request Papers</h2>}
         >
-            <Head title="All Request Papers" />
+            <Head title="User Request Papers" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -41,7 +40,7 @@ export default function View({ auth, requestpapers, searchQuery }) {
                                 {requestpapers.links.map((link, index) => (
                                     <li key={index} className="mx-2">
                                         <Link 
-                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'searchQuery=' + encodeURIComponent(inputValue)}
+                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'user_id=' + encodeURIComponent(auth.user.id)}
                                             className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-400 rounded-lg`}
                                         >
                                             {link.label === '&laquo; Previous' ? 'Previous' : link.label === 'Next &raquo;' ? 'Next' : link.label}

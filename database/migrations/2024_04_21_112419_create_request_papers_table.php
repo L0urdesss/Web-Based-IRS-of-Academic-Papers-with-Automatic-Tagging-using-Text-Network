@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('request_papers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('paper_id')->constrained('papers');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');;
+            $table->foreignId('paper_id')->constrained('papers')->onDelete('cascade');;
             $table->string('status')->default('pending');
             $table->longText('purpose');
             $table->timestamps();

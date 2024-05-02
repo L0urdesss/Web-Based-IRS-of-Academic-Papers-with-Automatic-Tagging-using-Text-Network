@@ -118,7 +118,6 @@ export default function PaperDetails({ user, paper, className = '', success }) {
             </div>
             {showForm && (
                 <RequestForm
-                    user={user}
                     data={data}
                     setData={setData}
                     submit={submit}

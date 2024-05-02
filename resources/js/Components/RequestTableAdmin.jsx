@@ -17,16 +17,18 @@ export default function RequestTableAdmin({ items, columns, primary, actionUpdat
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 #{item.id}
                             </th>
+                            
                             <td className="px-6 py-4">{item.paper_id}</td>
+                            <td className="px-6 py-4">{item.user.email}</td>
                             <td className="px-6 py-4">
-                                <a href={route(actionUpdate, item.paper_id)} >
+                                <a href={route("userpapers.preview", item.paper_id)} >
                                     {item.paper.title}
                                 </a>
                             </td>
                             <td className="px-6 py-4">{item.purpose}</td>
                             <td className="px-6 py-4">{item.status}</td>
                             <td className="px-6 py-4">
-                                <a href={route(actionUpdate, item.paper_id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Paper</a>
+                            <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={() => actionUpdate(item)}>View Paper</a>
                             </td>
                             {handleDelete === null && (
                                 <td className="px-6 py-4">

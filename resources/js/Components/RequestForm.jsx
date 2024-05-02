@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import exitButtonImg from '@/Components/x_button.png';
 import logoImg from '@/Components/logo2.png'; // Import the logo image
 
-const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) => {
+const RequestForm = ({data, setData, submit, handleCloseForm, title }) => {
     useEffect(() => {
         // Adjust useEffect as needed
     }, []);
@@ -26,15 +26,15 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="name" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Name:</label>
-                            <input type="text" id="name" value={user.name} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px', }} />
+                            <input type="text" id="name" value={data.user.student.name} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px', }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="email" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Email:</label>
-                            <input type="email" id="email" value={user.email} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                            <input type="email" id="email" value={data.user.email} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="course" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Course:</label>
-                            <input type="text" id="course" value={data.course} onChange={(e) => setData('course', e.target.value)} className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                            <input type="text" id="course" value={data.user.student.course} onChange={(e) => setData('course', e.target.value)} className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="title" style={{ marginRight: '5px', width: '50px', textAlign: 'left' ,fontWeight: 'bold'}}>Title:</label>

@@ -39,8 +39,6 @@ class PaperFactory extends Factory
         $abstract = implode(' ', $abstractSentences);
 
         return [
-            'id' => rand(111, 999),
-            'user_id' => rand(1, 10),
             'title' => $this->faker->sentence,
             'author' => $authorsString,
             'abstract' => $abstract,

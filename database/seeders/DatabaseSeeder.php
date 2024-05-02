@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Paper;
+use App\Models\Student;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,14 +15,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(10)->create();
-        Paper::factory()        
-        ->count(10)
-        ->hasRequestPapers(10)
-        ->create();
-
-        $this->call([
-            AdminUserSeeder::class,
-        ]);
+        // Seed students
+        Student::factory(50)->create();
+    
+        // Seed users
+        $this->call(UsersTableSeeder::class);
+    
+        // Seed papers with related request papers
+        Paper::factory()
+            ->count(30)
+            ->hasRequestPapers(3)
+            ->create();
+    
+        // Seed admin users
+        $this->call(AdminUserSeeder::class);
     }
+    
 }
