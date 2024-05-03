@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
+import React from 'react';
 import exitButtonImg from '@/Components/x_button.png';
-import logoImg from '@/Components/logo2.png'; // Import the logo image
+import logoImg from '@/Components/logo2.png';
 
-const RequestForm = ({data, setData, submit, handleCloseForm, title }) => {
-    useEffect(() => {
-        // Adjust useEffect as needed
-    }, []);
+const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) => {
+    // Determine whether the user is an admin
+    const isAdmin = user;
 
     return (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(2px)' }}>
@@ -40,7 +39,7 @@ const RequestForm = ({data, setData, submit, handleCloseForm, title }) => {
                             <label htmlFor="title" style={{ marginRight: '5px', width: '50px', textAlign: 'left' ,fontWeight: 'bold'}}>Title:</label>
                             <input type="text" id="title" value={title} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '10px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1px' }}>
                             <label htmlFor="purpose" style={{ fontSize: '14px' }}></label>
                             <textarea
                                 id="purpose"
@@ -54,26 +53,69 @@ const RequestForm = ({data, setData, submit, handleCloseForm, title }) => {
                             />
                         </div>
                     </div>
-                    <button
-                        type="submit"
-                        style={{
-                            backgroundColor: '#831B1C',
-                            color: 'white',
-                            borderRadius: '5px',
-                            padding: '5px 5px',
-                            fontSize: '12px',
-                            marginTop: '5px',
-                            width: '80%',
-                            position: 'relative',
-                            bottom:'20px',
-                            marginLeft: 'auto',
-                            marginRight: 'auto',
-                            display: 'block',
-                            fontWeight:'bold',
-                        }}
-                    >
-                        Submit Form
-                    </button>
+                    {/* Render submit button only if user is not an admin */}
+                    {isAdmin && (
+                        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '10px' }}>
+                            <button
+                                type="submit"
+                                style={{
+                                    backgroundColor: '#831B1C', // Red color for reject
+                                    color: 'white',
+                                    borderRadius: '5px',
+                                    padding: '5px 5px',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    width: '40%',
+                                    marginLeft: 'auto',
+                                    marginRight: '6px',
+                                    marginBottom: '6px',
+                                }}
+                            >
+                                Reject
+                            </button>
+                            <button
+                                type="submit"
+                                style={{
+                                    backgroundColor: '#3C6441', // Green color for approve
+                                    color: 'white',
+                                    borderRadius: '5px',
+                                    padding: '5px 5px',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    width: '40%',
+                                    marginLeft: '6px',
+                                    marginRight: 'auto',
+                                    marginBottom: '6px',
+                                }}
+                            >
+                                Approve
+                            </button>
+                        </div>
+                    )}
+
+                    {!isAdmin && (
+                        <button
+                            type="submit"
+                            style={{
+                                backgroundColor: '#831B1C',
+                                color: 'white',
+                                borderRadius: '5px',
+                                padding: '5px 5px',
+                                fontSize: '12px',
+                                marginTop: '5px',
+                                width: '80%',
+                                position: 'relative',
+                                bottom: '20px',
+                                marginLeft: 'auto',
+                                marginRight: 'auto',
+                                display: 'block',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            Submit Form
+                        </button>
+                    )}
+
                 </form>
             </div>
         </div>
