@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Paper;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Response;
@@ -77,8 +78,13 @@ class PaperController extends Controller
 
     public function preview(Paper $paper)
     {
+        $user = Auth::user(); // Fetch authenticated user
+
+        $status = (new RequestPaperController())->getStatus($user->id, $paper->id);
+
         return Inertia::render('Papers/User/Preview',[
             'paper' => $paper,
+            'status' => $status,
             'success' => session('success')
         ]);
     }
@@ -112,9 +118,7 @@ class PaperController extends Controller
         if ($filepath){
             $validatedData['file'] = $filepath->store('project/' . $validatedData['title'], 'public');
         }
-    
-        $validatedData['user_id'] = Auth::id(); 
-    
+        
         Paper::create($validatedData);
     
     }

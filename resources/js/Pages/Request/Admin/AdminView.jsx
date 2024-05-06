@@ -3,8 +3,9 @@ import { Head, Link ,useForm} from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import RequestTableAdmin from '@/Components/RequestTableAdmin';
 import RequestForm from '@/Components/RequestForm';
+import { router } from '@inertiajs/react'
 
-const columns = ['Paper ID','Student Email', 'Paper Title','Purpose','Status','Action'];
+const columns = ['Paper ID','Student Email', 'Paper Title','Status','Action'];
 
 export default function AdminView({ auth, requestpapers }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +33,23 @@ export default function AdminView({ auth, requestpapers }) {
         {console.log(rowData)}
 
     };
+
+    const handleSubmit = (action) => {
+
+        if (action === 'approve') {
+            console.log('approve');
+        } else {
+            console.log('reject');
+        }
+        console.log(rowData)
+        router.put('/request-papers-all', {
+            id: rowData.id,
+            action: action,
+          })
+
+    };
+    
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -70,6 +88,8 @@ export default function AdminView({ auth, requestpapers }) {
                     data={rowData}
                     handleCloseForm={handleCloseForm}
                     title="Your Form Title"
+                    submit={handleSubmit} // Pass the submit function as a prop
+
                 />
             )}
         </AuthenticatedLayout>

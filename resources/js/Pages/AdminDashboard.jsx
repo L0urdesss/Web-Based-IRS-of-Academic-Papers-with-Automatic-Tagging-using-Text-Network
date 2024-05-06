@@ -4,6 +4,8 @@ import logo from '@/Components/logo.png'; // Importing the logo image
 import modifyIcon from '../../../resources/js/Components/modify.png'; // Importing modify icon
 import requestIcon from '../../../resources/js/Components/request.png'; // Importing request icon
 import '../../../resources/css/Scrollbar.css';
+import { useEffect } from 'react';
+import { router } from '@inertiajs/react'
 
 export default function AdminDashboard({ auth }) {
     const handleSearch = (searchTerm, filters) => {
@@ -12,7 +14,6 @@ export default function AdminDashboard({ auth }) {
             filters: filters
         });
     };
-
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />

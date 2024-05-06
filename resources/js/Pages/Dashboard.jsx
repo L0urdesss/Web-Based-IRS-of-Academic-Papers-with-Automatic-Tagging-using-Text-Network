@@ -14,6 +14,7 @@ export default function Dashboard({ auth }) {
         });
       };
 
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />

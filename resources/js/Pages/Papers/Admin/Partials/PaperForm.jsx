@@ -11,7 +11,7 @@ import uploadBoxImage from '@/Components/uploadbox.png'; // Import the upload bo
 import browseButtonImage from '@/Components/browse_button.png'; // Import the browse button image
 import CourseDropdown from '@/Components/CourseDropdown';
 
-export default function PaperForm({ paper, className = '' }) {
+export default function PaperForm({ auth, paper, className = '' }) {
     const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm({
         title: paper ? paper.title : "",
         abstract: paper ? paper.abstract : "",

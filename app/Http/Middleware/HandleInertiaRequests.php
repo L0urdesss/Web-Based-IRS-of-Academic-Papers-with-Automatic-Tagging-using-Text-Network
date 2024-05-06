@@ -29,10 +29,18 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $authUser = null;
+
+        // Check if user is authenticated
+        if ($user = $request->user()) {
+            // Load the user's data only if user is authenticated
+            $authUser = $user->load('student');
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $authUser,
             ],
         ];
     }

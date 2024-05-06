@@ -4,7 +4,12 @@ import logoImg from '@/Components/logo2.png';
 
 const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) => {
     // Determine whether the user is an admin
-    const isAdmin = user;
+    const isAdmin = user.role === 'admin';
+
+    const handleSubmit = (e, action) => {
+        e.preventDefault();
+        submit(action);
+    };
 
     return (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(2px)' }}>
@@ -15,7 +20,7 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                 <div style={{ backgroundColor: '#831B1C', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '35px' }}>
                     <img src={logoImg} alt="Logo" className="block" style={{ width: 'auto', height: '200%' }} />
                 </div>
-                <form onSubmit={submit}>
+                <form onSubmit={(e) => handleSubmit(e)}>
                     <div className="p-5">
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', fontSize: '16px', color: '#831B1C', fontWeight: 'bold' }}>
                             Submit Your Request Here!
@@ -24,8 +29,8 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                             Fill out this form to send us your request. It's the fastest and easiest way to get in touch!
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
-                            <label htmlFor="name" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Name:</label>
-                            <input type="text" id="name" value={data.user.student.name} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px', }} />
+                            <label htmlFor="fullname" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Name:</label>
+                            <input type="text" id="fullname" value={data.user.student.name} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px', }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="email" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Email:</label>
@@ -58,6 +63,7 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '10px' }}>
                             <button
                                 type="submit"
+                                onClick={(e) => handleSubmit(e, 'reject')}
                                 style={{
                                     backgroundColor: '#831B1C', // Red color for reject
                                     color: 'white',
@@ -75,6 +81,7 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                             </button>
                             <button
                                 type="submit"
+                                onClick={(e) => handleSubmit(e, 'approve')}
                                 style={{
                                     backgroundColor: '#3C6441', // Green color for approve
                                     color: 'white',
@@ -96,6 +103,7 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                     {!isAdmin && (
                         <button
                             type="submit"
+                            onClick={(e) => handleSubmit(e, 'upload')}
                             style={{
                                 backgroundColor: '#831B1C',
                                 color: 'white',

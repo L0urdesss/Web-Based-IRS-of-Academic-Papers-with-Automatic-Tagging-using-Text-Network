@@ -29,6 +29,7 @@ Route::middleware('auth',)->group(function () {
     Route::get('/papers/{paper}',[PaperController::class, 'preview'])->name('userpapers.preview');
     Route::get('/request-papers',[RequestPaperController::class, 'view'])->name('userrequest.view');
     Route::post('/request-papers-add',[RequestPaperController::class, 'store'])->name('userrequest.store');
+    // Route::get('/papers/{paper}',[RequestPaperController::class, 'getStatus'])->name('userrequest.getStatus');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -42,8 +43,8 @@ Route::middleware('auth', 'admin')->group(function () {
     Route::get('/add-admin', [PaperController::class, 'add'])->name('papers.add');
     Route::patch('/papers-admin/{paper}',[PaperController::class, 'update'])->name('papers.update');
     Route::post('/add-admin',[PaperController::class, 'store'])->name('papers.store');
+    Route::put('/request-papers-all', [RequestPaperController::class, 'updateAll'])->name('userrequest.updateAll');
     Route::delete('/papers-admin/{paper}',[PaperController::class, 'destroy'])->name('papers.destroy');
-   // Route::get('/papers/search', [PaperController::class, 'search'])->name('papers.search');
 
 });
 

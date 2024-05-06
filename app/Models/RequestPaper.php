@@ -17,6 +17,7 @@ class RequestPaper extends Model
         'purpose',
         'user_id',
         'paper_id',
+        'status',
     ];
 
     public function paper()

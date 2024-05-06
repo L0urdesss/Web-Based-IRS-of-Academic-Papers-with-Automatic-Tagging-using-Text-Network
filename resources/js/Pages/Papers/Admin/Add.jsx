@@ -14,7 +14,7 @@ export default function Add({auth}) {
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <PaperForm paper={null} className="max-w-xl"></PaperForm>
+                        <PaperForm auth = {auth} paper={null} className="max-w-xl"></PaperForm>
                     </div>
                 </div>
             </div>

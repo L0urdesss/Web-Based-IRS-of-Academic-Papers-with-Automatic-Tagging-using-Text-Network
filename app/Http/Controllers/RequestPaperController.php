@@ -85,7 +85,29 @@ class RequestPaperController extends Controller
         ->with('success', 'Submitted Successfully');
     }
     
-
+    public function getStatus($userId, $paperId)
+    {
+        // Query the RequestPaper record with the provided user ID and paper ID
+        $requestPaper = RequestPaper::where('user_id', $userId)
+                                    ->where('paper_id', $paperId)
+                                    ->where('paper_id','approve')
+                                    ->latest()
+                                    ->first();
+        if (!$requestPaper) {
+            $requestPaper = RequestPaper::where('user_id', $userId)
+                                        ->where('paper_id', $paperId)
+                                        ->latest()
+                                        ->first();
+                                    }
+        // Check if the request paper exists
+        if ($requestPaper) {
+            // Retrieve and return the status
+            return $requestPaper->status;
+        } else {
+            // If no matching request paper is found, return null or appropriate error message
+            return null; // Or return an appropriate response based on your application logic
+        }
+    }
     /**
      * Display the specified resource.
      */
@@ -105,11 +127,26 @@ class RequestPaperController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RequestPaper $requestPaper)
+    public function update(Request $request, RequestPaper $requestpaper)
     {
-        //
+        
+        // $requestpaper->update(['status' => $request->action]);
     }
+    
+    public function updateAll(Request $request)
+    {
 
+        $request->validate([
+            'id' => 'required',
+            'action' => 'required|in:approve,reject', // Assuming only 'approve' and 'reject' actions are valid
+        ]);
+        $ids = $request->input('id');
+        $action = $request->input('action');
+
+        RequestPaper::where('id', $ids)->update(['status' => $action]);
+
+        return response()->json(['message' => 'Request papers updated successfully']);
+    }
     /**
      * Remove the specified resource from storage.
      */

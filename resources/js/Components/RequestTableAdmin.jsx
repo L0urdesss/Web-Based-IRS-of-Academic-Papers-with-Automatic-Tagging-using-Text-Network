@@ -25,7 +25,6 @@ export default function RequestTableAdmin({ items, columns, primary, actionUpdat
                                     {item.paper.title}
                                 </a>
                             </td>
-                            <td className="px-6 py-4">{item.purpose}</td>
                             <td className="px-6 py-4">{item.status}</td>
                             <td className="px-6 py-4">
                             <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={() => actionUpdate(item)}>View Paper</a>

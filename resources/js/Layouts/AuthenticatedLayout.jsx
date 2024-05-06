@@ -9,7 +9,6 @@ import logo from '@/Components/logo2.png';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white border-b border-gray-100" style={{ backgroundColor: '#af2429' }}>
@@ -50,7 +49,7 @@ export default function Authenticated({ user, header, children }) {
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                                 style={{ color: '#ffffff', backgroundColor: '#af2429' }}
                                             >
-                                                {user.name} {/* Displaying user's name */}
+                                                {user.student.name} {/* Displaying user's name */}
                                                 <svg
                                                     className="ms-2 -me-0.5 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +114,7 @@ export default function Authenticated({ user, header, children }) {
 
                     <div className="pt-4 pb-1 border-t border-gray-200" style={{ color: '#ffffff', backgroundColor: '#af2429' }}>
                         <div className="px-4">
-                            <div className="font-medium text-base">{user.name}</div>
+                            <div className="font-medium text-base">{user.student.name}</div>
                             <div className="font-medium text-sm">{user.email}</div>
                         </div>
 
