@@ -38,21 +38,19 @@ export default function ViewAll({ auth, papers, searchQuery }) {
     };
 
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-        >
+        <AuthenticatedLayout user={auth.user}>
             <Head title="All Papers" />
 
             <div className="py-12">
-                <div className="max-w-4xl mx-auto sm:px-6 lg:px-8" style={{ marginBottom: '20px' }}>
-                    <div>
-                        <div className="mb-10">
+                <div className="max-w-5xl mx-auto sm:flex sm:justify-between sm:px-6 lg:px-8">
+                    <div className="sm:w-3/4 mb-8 sm:mr-4">
+                        <div className="mb-1">
                             <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
                         </div>
                         {isLoading ? "Loading..." : (
                             <div>
                                 {papers.data.map((paper, index) => (
-                                    <div key={index} className="bg-white p-10 border-b border-gray-200 sm:rounded-lg mb-5"> {/* Added mb-20 for space */}
+                                    <div key={index} className="bg-white p-10 border-b border-gray-200 sm:rounded-lg mb-5 mt-10"> {/* Added mb-20 for space */}
                                         <div className="mb-2">
                                             <Link
                                                 href={route('userpapers.preview', { paper: paper.id })}
@@ -90,6 +88,85 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                             )}
                         </div>
                     </div>
+                    <div className="sm:w-3/10 bg-none border-white mt-20 ml-5 ">
+    <div className="bg-white border-white p-10">
+        <div className="mb-4">
+            <h2 className="text-lg mb-2">
+            <span style={{ color: '#757575', fontSize:'20px' }}>Sorted By</span>
+            </h2>
+            <div className="mb-2">
+                <span style={{ color: '#757575', fontSize:'14px' }}>Course</span>
+            </div>
+            <select className="border rounded p-1 w-full" style={{ borderColor: '#7B7B7B' }}>
+                <option value="">Select</option>
+                <option value="bscs">BSCS</option>
+                <option value="bsit">BSIT</option>
+                <option value="bsis">BSIS</option>
+                <option value="baslt">BASLT</option>
+                <option value="bses">BSES</option>
+            </select>
+        </div>
+        <div className="mb-4">
+            <h2 className="text-lg mb-2">
+                <span style={{ color: '#757575', fontSize:'14px' }}>Title</span>
+            </h2>
+            <select className="border  rounded p-1 w-full" style={{ borderColor: '#7B7B7B' }}>
+                <option value="">Select</option>
+                <option value="az">Ascending</option>
+                <option value="za">Descending</option>
+            </select>
+        </div>
+        <div className="mb-4">
+            <h2 className="text-lg mb-2">
+                <span style={{ color: '#757575', fontSize:'14px' }}>Author</span>
+            </h2>
+            <select className="border rounded p-1 w-full" style={{ borderColor: '#7B7B7B' }}>
+                <option value="">Select</option>
+                <option value="az">Ascending</option>
+                <option value="za">Descending</option>
+            </select>
+        </div>
+        <div className="mb-4">
+            <h2 className="text-lg  mb-2">
+                <span style={{ color: '#757575', fontSize:'14px' }}>Abstract</span>
+            </h2>
+            <div className="mb-2 flex items-center">
+                <input type="checkbox" id="searchWithinAbstracts" name="searchWithinAbstracts" className="mr-2" />
+                <label htmlFor="searchWithinAbstracts">Search within abstracts</label>
+            </div>
+        </div>
+        <div className="mb-4">
+            <h2 className="text-lg  mb-2">
+                <span style={{ color: '#757575', fontSize:'14px' }}>File</span>
+            </h2>
+            <div className="mb-2 flex items-center">
+                <input type="checkbox" id="withFile" name="withFile" className="mr-2" />
+                <label htmlFor="withFile">With file</label>
+            </div>
+            <div className="mb-2 flex items-center">
+                <input type="checkbox" id="withoutFile" name="withoutFile" className="mr-2" />
+                <label htmlFor="withoutFile">Without file</label>
+            </div>
+        </div>
+        <div>
+            <h2 className="text-lg mb-2 ">
+                <span style={{ color: '#757575', fontSize:'14px' }}>Publication Date</span>
+            </h2>
+            <div>
+            <ul>
+    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2024</li>
+    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2023</li>
+    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2022</li>
+    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2021</li>
+    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2020</li>
+</ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+                    {/* End of Sort container */}
                 </div>
             </div>
         </AuthenticatedLayout>
