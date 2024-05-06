@@ -42,7 +42,7 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="title" style={{ marginRight: '5px', width: '50px', textAlign: 'left' ,fontWeight: 'bold'}}>Title:</label>
-                            <input type="text" id="title" value={title} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                            <input type="text" id="title" value={data.paper.title} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1px' }}>
                             <label htmlFor="purpose" style={{ fontSize: '14px' }}></label>

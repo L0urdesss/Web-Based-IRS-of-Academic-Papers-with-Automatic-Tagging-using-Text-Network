@@ -144,8 +144,6 @@ class RequestPaperController extends Controller
         $action = $request->input('action');
 
         RequestPaper::where('id', $ids)->update(['status' => $action]);
-
-        return response()->json(['message' => 'Request papers updated successfully']);
     }
     /**
      * Remove the specified resource from storage.

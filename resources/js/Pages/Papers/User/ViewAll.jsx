@@ -3,9 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import SearchBar from '@/Components/Searchbar';
 
-const columns = ['title', 'author', 'date_published']; // Remove 'status' from columns array
-
-// Function to truncate text to a specified number of words
 const truncateText = (text, maxWords) => {
     const words = text.split(' ');
     if (words.length <= maxWords) {
@@ -165,8 +162,6 @@ export default function ViewAll({ auth, papers, searchQuery }) {
         </div>
     </div>
 </div>
-
-                    {/* End of Sort container */}
                 </div>
             </div>
         </AuthenticatedLayout>

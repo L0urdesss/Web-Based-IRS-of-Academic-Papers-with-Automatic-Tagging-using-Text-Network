@@ -16,6 +16,7 @@ export default function AdminView({ auth, requestpapers }) {
 
     useEffect(() => {
         setIsLoading(false); // Reset loading state when component re-renders
+        setSuccessMessage(null)
     }, [requestpapers]); // Reset loading state when requestpapers data changes
 
     const handleDelete = (itemId, itemTitle) => {
@@ -35,16 +36,21 @@ export default function AdminView({ auth, requestpapers }) {
     };
 
     const handleSubmit = (action) => {
-        if (action === 'approve') {
-            setSuccessMessage('Approve Successfully');
-        } else {
-            setSuccessMessage('Reject Successfully');
-        }
         console.log(rowData);
         router.put('/request-papers-all', {
             id: rowData.id,
             action: action,
         });
+        setShowForm(false); // Show the form
+
+        setIsLoading(true); // Start loading state
+
+        if (action === 'approve') {
+            setSuccessMessage('Approve Successfully');
+        } else {
+            setSuccessMessage('Reject Successfully');
+        }
+
     };
 
     return (
@@ -58,7 +64,7 @@ export default function AdminView({ auth, requestpapers }) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 {successMessage && (
     <div className="rounded-md p-4 mb-1 text-white" style={{backgroundColor: successMessage === 'Approve Successfully' ? '#3C6441' : '#831B1C'}}>
-        {successMessage}
+    {"Request ID  #" + rowData.id + " " + successMessage}
     </div>
 )}
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
