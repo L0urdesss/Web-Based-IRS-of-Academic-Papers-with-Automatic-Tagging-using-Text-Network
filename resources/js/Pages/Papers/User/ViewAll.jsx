@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import SearchBar from '@/Components/Searchbar';
+import Toggle from '@/Components/Toggle'; 
+
+// Import the icon image
+import filtersIcon from '@/Components/filters-icon.png';
+
 
 const truncateText = (text, maxWords) => {
     const words = text.split(' ');
@@ -14,40 +19,133 @@ const truncateText = (text, maxWords) => {
 export default function ViewAll({ auth, papers, searchQuery }) {
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(searchQuery || '');
-    const [sortBy, setSortBy] = useState('relevance'); // State for sorting
+    const [selectedCourse, setSelectedCourse] = useState(''); // State for selected course
+    const [sortOrder, setSortOrder] = useState('asc'); // State for sorting order
+    const [appliedFilters, setAppliedFilters] = useState([]); // State for applied filters
 
     useEffect(() => {
         setIsLoading(false);
     }, [papers]);
 
-    const handleSearch = (searchTerm, filters) => {
+    const handleSearch = (searchTerm) => {
         setIsLoading(true);
         window.location = route('userpapers.view', {
-            searchQuery: searchTerm,
-            filters: filters
+            searchQuery: searchTerm
         });
     };
 
-    // Function to handle sorting
-    const handleSortChange = (event) => {
-        setSortBy(event.target.value);
-        // Perform sorting logic here and update papers accordingly
+    const handleFilterClick = (filterType) => {
+        let filterText = filterType;
+        if (filterType === 'Title') {
+            filterText = 'Title';
+        } else if (filterType === 'Author') {
+            filterText = 'Author';
+        } else if (filterType === 'Abstract') {
+            filterText = 'Abstract';
+        }
+
+        if (!appliedFilters.includes(filterText)) {
+            setAppliedFilters([...appliedFilters, filterText]);
+        }
+    };
+
+    const handleRemoveFilter = (filter) => {
+        const updatedFilters = appliedFilters.filter((item) => item !== filter);
+        setAppliedFilters(updatedFilters);
+    };
+
+    const handleClearFilters = () => {
+        setAppliedFilters([]);
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="All Papers" />
 
-            <div className="py-12">
-                <div className="max-w-5xl mx-auto sm:flex sm:justify-between sm:px-6 lg:px-8">
-                    <div className="sm:w-3/4 mb-8 sm:mr-4">
+            <div className="py-12 bg-white">
+                <div className="max-w-7xl mx-auto sm:flex sm:justify-between sm:px-6 lg:px-8">
+                    <div className="sm:w-1/5 bg-none border-white mr-5 mt-20">
+                        <div className="bg-white p-5" style={{ border: '2px solid #F0F0F0' }}>
+                            <div className="mb-4 flex justify-between items-center">
+                                <p className="font-semibold" style={{ fontSize: '16px', color: '#352D2D' }}>
+                                    <img src={filtersIcon} alt="Filters Icon" className="inline-block w-6 h-6 mr-1 mb-1" />
+                                    Filters
+                                </p>
+                            </div>
+                            <hr style={{ border: 'none', borderBottom: '2px solid #F0F0F0', margin: '1rem 0' }} />
+                            <div className="mb-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <p className="font-semibold" style={{ fontSize: '12px', color: '#352D2D' }}>Applied Filters</p>
+                                    {appliedFilters.length > 0 && (
+                                        <button onClick={handleClearFilters} className="text-blue-500 underline" style={{ fontSize: '11px', color: '#352D2D' }}>
+                                            Clear All
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex items-center flex-wrap mb-2">
+                                    {appliedFilters.map((filter, index) => (
+                                        <button key={index} onClick={() => handleRemoveFilter(filter)} className="text-white rounded-md px-4 py-2 mr-2 mb-2" style={{ fontSize: '11px', backgroundColor: '#CC0000' }}>
+                                            {filter} <span className="ml-1">X</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="mb-4">
+                            <select id="course" className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} style={{ fontSize: '10px', borderColor: '#7B7B7B', width: '150px' }}>
+    <option value="" disabled>Select Course</option>
+    <option value="BSCS">BSCS</option>
+    <option value="BSIS">BSIS</option>
+    <option value="BSES">BSES</option>
+    <option value="BASLT">BASLT</option>
+    <option value="BSIT">BSIT</option>
+</select>
+
+                            </div>
+                            <div className="mb-4">
+                                <select id="sort" className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ fontSize: '10px', borderColor: '#7B7B7B', width: '150px' }}>
+                                    <option value="asc">Sort Ascending</option>
+                                    <option value="desc">Sort Descending</option>
+                                </select>
+                            </div>
+                            <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
+                            <div className="mt-4 flex flex-col">
+                                <p className="font-semibold mb-2" style={{ fontSize: '12px', color: '#352D2D' }}>Filter Types</p>
+                                <div className="flex flex-wrap">
+                                    <button onClick={() => handleFilterClick('Title')} className="text-blue-500 border border-gray-500 rounded-md px-4 py-2 mr-2 mb-2 " style={{ fontSize: '11px', color: '#352D2D' }}>Title</button>
+                                    <button onClick={() => handleFilterClick('Author')} className="text-blue-500 border border-gray-500 rounded-md px-4 py-2 mb-2 " style={{ fontSize: '11px', color: '#352D2D' }}>Author</button>
+                                    <button onClick={() => handleFilterClick('Abstract')} className="text-blue-500 border border-gray-500 rounded-md px-4 py-2 w-1/2 mb-5" style={{ fontSize: '11px', color: '#352D2D' }}>Abstract</button>
+                                </div>
+                            </div>
+                            <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
+                            <Toggle />
+                            <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
+                            <div className="mt-4">
+                                <p className="font-semibold" style={{ fontSize: '12px', color: '#352D2D' }}>Publication Date</p>
+                                <ul className="list-none">
+                                    <li>
+                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Last 12 Months</button>
+                                    </li>
+                                    <li>
+                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Last 2 Years</button>
+                                    </li>
+                                    <li>
+                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Last 5 Years</button>
+                                    </li>
+                                    <li>
+                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Custom Date</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="sm:w-3/4">
                         <div className="mb-1">
                             <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
                         </div>
                         {isLoading ? "Loading..." : (
                             <div>
                                 {papers.data.map((paper, index) => (
-                                    <div key={index} className="bg-white p-10 border-b border-gray-200 sm:rounded-lg mb-5 mt-10"> {/* Added mb-20 for space */}
+                                    <div key={index} className="bg-white p-10 border-b border-gray-200 mb-5 mt-10" style={{ border: '2px solid #F0F0F0' }}>
                                         <div className="mb-2">
                                             <Link
                                                 href={route('userpapers.preview', { paper: paper.id })}
@@ -61,7 +159,7 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                                             {paper.date_published} &bull; <span style={{ fontSize: '10px', color: '#352D2D' }}>{paper.author}</span>
                                         </div>
                                         <div className="mb-2" style={{ fontSize: '13px', color: '#352D2D', textAlign: 'justify' }}>
-                                            {truncateText(paper.abstract, 60)} {/* Truncate abstract to 250 words */}
+                                            {truncateText(paper.abstract, 60)}
                                         </div>
                                     </div>
                                 ))}
@@ -85,83 +183,6 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                             )}
                         </div>
                     </div>
-                    <div className="sm:w-3/10 bg-none border-white mt-20 ml-5 ">
-    <div className="bg-white border-white p-10">
-        <div className="mb-4">
-            <h2 className="text-lg mb-2">
-            <span style={{ color: '#757575', fontSize:'20px' }}>Sorted By</span>
-            </h2>
-            <div className="mb-2">
-                <span style={{ color: '#757575', fontSize:'14px' }}>Course</span>
-            </div>
-            <select className="border rounded p-1 w-full" style={{ borderColor: '#7B7B7B' }}>
-                <option value="">Select</option>
-                <option value="bscs">BSCS</option>
-                <option value="bsit">BSIT</option>
-                <option value="bsis">BSIS</option>
-                <option value="baslt">BASLT</option>
-                <option value="bses">BSES</option>
-            </select>
-        </div>
-        <div className="mb-4">
-            <h2 className="text-lg mb-2">
-                <span style={{ color: '#757575', fontSize:'14px' }}>Title</span>
-            </h2>
-            <select className="border  rounded p-1 w-full" style={{ borderColor: '#7B7B7B' }}>
-                <option value="">Select</option>
-                <option value="az">Ascending</option>
-                <option value="za">Descending</option>
-            </select>
-        </div>
-        <div className="mb-4">
-            <h2 className="text-lg mb-2">
-                <span style={{ color: '#757575', fontSize:'14px' }}>Author</span>
-            </h2>
-            <select className="border rounded p-1 w-full" style={{ borderColor: '#7B7B7B' }}>
-                <option value="">Select</option>
-                <option value="az">Ascending</option>
-                <option value="za">Descending</option>
-            </select>
-        </div>
-        <div className="mb-4">
-            <h2 className="text-lg  mb-2">
-                <span style={{ color: '#757575', fontSize:'14px' }}>Abstract</span>
-            </h2>
-            <div className="mb-2 flex items-center">
-                <input type="checkbox" id="searchWithinAbstracts" name="searchWithinAbstracts" className="mr-2" />
-                <label htmlFor="searchWithinAbstracts">Search within abstracts</label>
-            </div>
-        </div>
-        <div className="mb-4">
-            <h2 className="text-lg  mb-2">
-                <span style={{ color: '#757575', fontSize:'14px' }}>File</span>
-            </h2>
-            <div className="mb-2 flex items-center">
-                <input type="checkbox" id="withFile" name="withFile" className="mr-2" />
-                <label htmlFor="withFile">With file</label>
-            </div>
-            <div className="mb-2 flex items-center">
-                <input type="checkbox" id="withoutFile" name="withoutFile" className="mr-2" />
-                <label htmlFor="withoutFile">Without file</label>
-            </div>
-        </div>
-        <div>
-            <h2 className="text-lg mb-2 ">
-                <span style={{ color: '#757575', fontSize:'14px' }}>Publication Date</span>
-            </h2>
-            <div>
-            <ul>
-    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2024</li>
-    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2023</li>
-    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2022</li>
-    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2021</li>
-    <li className="cursor-pointer mb-2" style={{ color: '#AF2429', textDecoration: 'none' }}>2020</li>
-</ul>
-
-            </div>
-        </div>
-    </div>
-</div>
                 </div>
             </div>
         </AuthenticatedLayout>
