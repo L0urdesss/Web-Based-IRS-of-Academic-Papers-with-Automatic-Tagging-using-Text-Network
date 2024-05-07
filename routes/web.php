@@ -6,6 +6,8 @@ use App\Http\Controllers\RequestPaperController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -15,8 +17,24 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
 
- Route::get('/dashboard', function () {
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+ 
+    return redirect('/');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+ 
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+Route::get('/dashboard', function () {
      return Inertia::render('Dashboard');
  })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -24,7 +42,7 @@ Route::get('/', function () {
     return Inertia::render('AdminDashboard');
 })->middleware(['auth','verified', 'admin'])->name('admindashboard');
 
-Route::middleware('auth',)->group(function () {
+Route::middleware('auth','verified')->group(function () {
     Route::get('/papers',[PaperController::class, 'view'])->name('userpapers.view');
     Route::get('/papers/{paper}',[PaperController::class, 'preview'])->name('userpapers.preview');
     Route::get('/request-papers',[RequestPaperController::class, 'view'])->name('userrequest.view');
