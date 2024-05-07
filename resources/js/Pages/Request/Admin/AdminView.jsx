@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import RequestTableAdmin from '@/Components/RequestTableAdmin';
 import RequestForm from '@/Components/RequestForm';
 import { router } from '@inertiajs/react';
+import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFilter component
 
 const columns = ['Paper ID', 'Student Email', 'Paper Title', 'Status', 'Action'];
 
@@ -11,13 +12,14 @@ export default function AdminView({ auth, requestpapers }) {
     const [isLoading, setIsLoading] = useState(false);
     const { delete: deletePaper } = useForm();
     const [showForm, setShowForm] = useState(false);
-    const [rowData, setRowData] = useState(null); // State to hold data of clicked row
-    const [successMessage, setSuccessMessage] = useState(null); // State to hold success message
+    const [rowData, setRowData] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [filterOption, setFilterOption] = useState('all'); // State for filter option
 
     useEffect(() => {
-        setIsLoading(false); // Reset loading state when component re-renders
-        setSuccessMessage(null)
-    }, [requestpapers]); // Reset loading state when requestpapers data changes
+        setIsLoading(false);
+        setSuccessMessage(null);
+    }, [requestpapers]);
 
     const handleDelete = (itemId, itemTitle) => {
         if (confirm(`Are you sure you want to delete "${itemTitle}"?`)) {
@@ -30,27 +32,37 @@ export default function AdminView({ auth, requestpapers }) {
     };
 
     const handleActionUpdate = (rowData) => {
-        setRowData(rowData); // Set the clicked row data
-        setShowForm(true); // Show the form
-        console.log(rowData);
+        setRowData(rowData);
+        setShowForm(true);
     };
 
+
+    // Function to handle filter change
+    const handleFilterChange = (option) => {
+        setFilterOption(option);
+    };
+
+    // Filter data based on the selected option
+    const filteredData = requestpapers.data.filter((item) => {
+        if (filterOption === 'all') {
+            return true; // Show all items
+        } else {
+            return item.status === filterOption; // Filter by status
+        }
+    });
     const handleSubmit = (action) => {
-        console.log(rowData);
         router.put('/request-papers-all', {
             id: rowData.id,
             action: action,
         });
-        setShowForm(false); // Show the form
-
-        setIsLoading(true); // Start loading state
+        setShowForm(false);
+        setIsLoading(true);
 
         if (action === 'approve') {
             setSuccessMessage('Approve Successfully');
         } else {
             setSuccessMessage('Reject Successfully');
         }
-
     };
 
     return (
@@ -62,17 +74,28 @@ export default function AdminView({ auth, requestpapers }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                {successMessage && (
-    <div className="rounded-md p-4 mb-1 text-white" style={{backgroundColor: successMessage === 'Approve Successfully' ? '#3C6441' : '#831B1C'}}>
-    {"Request ID  #" + rowData.id + " " + successMessage}
-    </div>
-)}
+                <div className="flex">
+  {/* Message container */}
+  <div className="w-full">
+    {successMessage && (
+      <div className="rounded-md p-4 mb-1 text-white h-15" style={{ backgroundColor: successMessage === 'Approve Successfully' ? '#3C6441' : '#831B1C' }}>
+        {"Request ID #" + rowData.id + " " + successMessage}
+      </div>
+    )}
+  </div>
+  
+  {/* Filter dropdown container */}
+  <div className="w-1/5">
+    <RequestFilter filterOption={filterOption} handleFilterChange={handleFilterChange} />
+  </div>
+</div>
+
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         {isLoading ? (
                             "Loading..."
                         ) : (
                             <RequestTableAdmin
-                                items={requestpapers.data}
+                                items={filteredData}
                                 columns={columns}
                                 primary="Request ID"
                                 actionUpdate={handleActionUpdate}
@@ -110,7 +133,7 @@ export default function AdminView({ auth, requestpapers }) {
                     data={rowData}
                     handleCloseForm={handleCloseForm}
                     title="Your Form Title"
-                    submit={handleSubmit} // Pass the submit function as a prop
+                    submit={handleSubmit}
                 />
             )}
         </AuthenticatedLayout>

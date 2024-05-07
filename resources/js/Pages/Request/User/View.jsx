@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { Head, Link ,useForm} from '@inertiajs/react';
 import Table from '@/Components/Table';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFilter component
 
 const columns = ['Paper ID', 'Paper Title','Purpose','Status'];
 
 export default function View({ auth, requestpapers }) {
     const [isLoading, setIsLoading] = useState(false);
     const {delete: deletePaper} = useForm();
+    const [filterOption, setFilterOption] = useState('all'); // State for filter option
 
     useEffect(() => {
         setIsLoading(false); // Reset loading state when component re-renders
@@ -19,6 +21,20 @@ export default function View({ auth, requestpapers }) {
         }
     };
 
+    // Function to handle filter change
+    const handleFilterChange = (option) => {
+        setFilterOption(option);
+    };
+
+    // Filter data based on the selected option
+    const filteredData = requestpapers.data.filter((item) => {
+        if (filterOption === 'all') {
+            return true; // Show all items
+        } else {
+            return item.status === filterOption; // Filter by status
+        }
+    });
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -28,10 +44,11 @@ export default function View({ auth, requestpapers }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    {/* Filter dropdown */}
+                    <RequestFilter filterOption={filterOption} handleFilterChange={handleFilterChange} />
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         {isLoading ? "Loading..." : (
-                           <Table items={requestpapers.data} columns={columns} primary="Request ID" actionUpdate="userpapers.preview" handleDelete={handleDelete} />
-
+                           <Table items={filteredData} columns={columns} primary="Request ID" actionUpdate="userpapers.preview" handleDelete={handleDelete} />
                         )}
                     </div>
                     <div className="mt-4">
