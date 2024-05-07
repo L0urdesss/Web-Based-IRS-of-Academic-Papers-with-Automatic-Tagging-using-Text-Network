@@ -40,7 +40,6 @@ export default function AdminDashboard({ auth }) {
                         </a>
                     </div>
                 </div>
-
             </div>
         </AuthenticatedLayout>
     );

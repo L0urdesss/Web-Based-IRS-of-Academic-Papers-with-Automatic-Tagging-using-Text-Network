@@ -8,13 +8,13 @@ import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFil
 
 const columns = ['Paper ID', 'Student Email', 'Paper Title', 'Status', 'Action'];
 
-export default function AdminView({ auth, requestpapers }) {
+export default function AdminView({ auth, requestpapers , status}) {
     const [isLoading, setIsLoading] = useState(false);
     const { delete: deletePaper } = useForm();
     const [showForm, setShowForm] = useState(false);
     const [rowData, setRowData] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
-    const [filterOption, setFilterOption] = useState('all'); // State for filter option
+    const [filterOption, setFilterOption] = useState(status || 'all'); // Set filterOption based on 'status' prop
 
     useEffect(() => {
         setIsLoading(false);
@@ -36,20 +36,13 @@ export default function AdminView({ auth, requestpapers }) {
         setShowForm(true);
     };
 
-
-    // Function to handle filter change
     const handleFilterChange = (option) => {
+        setIsLoading(true); // Start loading state
         setFilterOption(option);
+        setIsLoading(true); // Start loading state
+        window.location = route('userrequest.index', { status: option }); 
     };
 
-    // Filter data based on the selected option
-    const filteredData = requestpapers.data.filter((item) => {
-        if (filterOption === 'all') {
-            return true; // Show all items
-        } else {
-            return item.status === filterOption; // Filter by status
-        }
-    });
     const handleSubmit = (action) => {
         router.put('/request-papers-all', {
             id: rowData.id,
@@ -95,7 +88,7 @@ export default function AdminView({ auth, requestpapers }) {
                             "Loading..."
                         ) : (
                             <RequestTableAdmin
-                                items={filteredData}
+                                items={requestpapers.data}
                                 columns={columns}
                                 primary="Request ID"
                                 actionUpdate={handleActionUpdate}
@@ -109,7 +102,7 @@ export default function AdminView({ auth, requestpapers }) {
                                 {requestpapers.links.map((link, index) => (
                                     <li key={index} className="mx-2">
                                         <Link
-                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '')}
+                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'status=' + encodeURIComponent(filterOption)}
                                             className={`px-4 py-2 ${
                                                 link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
                                             } hover:bg-blue-400 rounded-lg`}

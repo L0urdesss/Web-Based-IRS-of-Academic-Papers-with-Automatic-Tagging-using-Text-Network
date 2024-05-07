@@ -15,21 +15,28 @@ class RequestPaperController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        $query = RequestPaper::query();
+        if ($request->has('status') && $request->input('status') !== 'all') {
+            $query->where('status', '=', $request->input('status'));
+            // Add more search conditions if needed
+        }
+    
+        $requestpapers = $query->with('user.student','paper')->paginate(5);
+
         // Paginate the filtered records
-        $requestpapers = RequestPaper::with('user.student', 'paper')->paginate(5);
         // foreach ($requestpapers as $requestpaper) {
         //     $userid = $requestpaper->user;
         //     dd($userid->toArray()); // Check the user attributes and relationships
 
         // }
 
-
-
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/Admin/AdminView', [
             'requestpapers' => $requestpapers,
+            'status' => $request->input('status'),
         ]);
     }
 
