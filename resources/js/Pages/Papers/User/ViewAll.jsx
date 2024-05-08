@@ -16,12 +16,15 @@ const truncateText = (text, maxWords) => {
     return words.slice(0, maxWords).join(' ') + '...';
 };
 
-export default function ViewAll({ auth, papers, searchQuery,filters,sortCourse,sortOrders }) {
+export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse, sortOrders }) {
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(searchQuery || '');
     const [selectedCourse, setSelectedCourse] = useState(sortCourse || ''); // State for selected course
     const [sortOrder, setSortOrder] = useState(sortOrders || 'asc'); // State for sorting order
     const [appliedFilters, setAppliedFilters] = useState(filters || []); // State for applied filters
+    const buildArrayParams = (key, array) => {
+        return array.map((item, index) => `${key}[${index}]=${encodeURIComponent(item)}`).join('&');
+      };
 
     useEffect(() => {
         setIsLoading(false);
@@ -175,9 +178,10 @@ export default function ViewAll({ auth, papers, searchQuery,filters,sortCourse,s
                                         <li key={index} className="mx-2">
                                             <Link
                                                 href={(link.url ? link.url + (link.url.includes('?') ? '&' : '') : '') + 
-                                                'searchQuery=' + encodeURIComponent(inputValue) + 
-                                                'sortOrders=' + encodeURIComponent(sortOrder) + 
-                                                'sortCourse=' + encodeURIComponent(selectedCourse)}
+                                                'searchQuery=' + encodeURIComponent(inputValue) +
+                                                '&' + buildArrayParams('filters', appliedFilters) +
+                                                '&sortOrders=' + encodeURIComponent(sortOrder) + 
+                                                '&sortCourse=' + encodeURIComponent(selectedCourse)}
                                               className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-red-300 rounded-lg`}
                                                 style={{ backgroundColor: link.active ? '#831b1c' : '' }}
                                             >

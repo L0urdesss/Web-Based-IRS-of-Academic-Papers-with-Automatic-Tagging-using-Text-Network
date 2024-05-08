@@ -53,20 +53,20 @@ class PaperController extends Controller
         }
     
         // Apply sorting if sortOrder is provided
-        // if ($request->has('sortOrders')){
-        //     $sortOrder = $request->input('sortOrders');
-        //     if ($sortOrder === 'asc') {
-        //         $query->orderBy('title', 'asc');
-        //     } elseif ($sortOrder === 'desc') {
-        //         $query->orderBy('title', 'desc');
-        //     }
-        // }
+        if ($request->has('sortOrders')){
+            $sortOrder = $request->input('sortOrders');
+            if ($sortOrder === 'asc') {
+                $query->orderBy('title', 'asc');
+            } elseif ($sortOrder === 'desc') {
+                $query->orderBy('title', 'desc');
+            }
+        }
     
         // Apply sorting if sortCourse is provided
-        // if ($request->has('sortCourse')){
-        //     $sortCourse = $request->input('sortCourse');
-        //     $query->where('course', $sortCourse);
-        // }
+        if ($request->has('sortCourse')){
+            $sortCourse = $request->input('sortCourse');
+            $query->where('course', $sortCourse);
+        }
         
         $papers = $query->paginate(5);
         
@@ -74,6 +74,9 @@ class PaperController extends Controller
             'papers' => $papers,
             'searchQuery' => $request->input('searchQuery'), 
             'filters' => $request->input('filters'), 
+            'sortOrders' => $request->input('sortOrders'), 
+            'sortCourse' => $request->input('sortCourse'), 
+
         ]);
     }
     
