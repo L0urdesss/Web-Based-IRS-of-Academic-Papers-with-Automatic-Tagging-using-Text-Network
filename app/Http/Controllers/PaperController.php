@@ -32,31 +32,40 @@ class PaperController extends Controller
     public function view(Request $request)
     {
         $query = Paper::query();
-        
         // Apply search query if provided
         if ($request->has('searchQuery')) {
-            $searchTerm = $request->input('searchQuery');
-            $query->where(function($query) use ($searchTerm) {
-                $query->where('title', 'like', '%' . $searchTerm . '%')
-                      ->orWhere('author', 'like', '%' . $searchTerm . '%')
-                      ->orWhere('date_published', 'like', '%' . $searchTerm . '%');
-            });
+            $searchTerms = explode(' ', $request->input('searchQuery'));
         }
-    
+        
         // Apply additional filters if selected
         if ($request->has('filters')) {
             $filters = $request->input('filters');
-            $query->where(function($query) use ($filters, $searchTerm) {
-                if ($filters['title']) {
-                    $query->orWhere('title', 'like', '%' . $searchTerm . '%');
-                }
-                if ($filters['author']) {
-                    $query->orWhere('author', 'like', '%' . $searchTerm . '%');
-                }
-                if ($filters['date_published']) {
-                    $query->orWhere('date_published', 'like', '%' . $searchTerm . '%');
+            $query->where(function($query) use ($filters, $searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $query->where(function($query) use ($term, $filters) {
+                        // Check if the term matches any of the specified filters
+                        foreach ($filters as $filter) {
+                            $query->orWhere($filter, 'like', '%' . $term . '%');
+                        }
+                    });
                 }
             });
+        }
+    
+        // Apply sorting if sortOrder is provided
+        if ($request->has('sortOrders')){
+            $sortOrder = $request->input('sortOrders');
+            if ($sortOrder === 'asc') {
+                $query->orderBy('title', 'asc');
+            } elseif ($sortOrder === 'desc') {
+                $query->orderBy('title', 'desc');
+            }
+        }
+    
+        // Apply sorting if sortCourse is provided
+        if ($request->has('sortCourse')){
+            $sortCourse = $request->input('sortCourse');
+            $query->where('course', $sortCourse);
         }
         
         $papers = $query->paginate(5);
@@ -64,8 +73,11 @@ class PaperController extends Controller
         return Inertia::render('Papers/User/ViewAll', [
             'papers' => $papers,
             'searchQuery' => $request->input('searchQuery'), 
+            'filters' => $request->input('filters'), 
         ]);
     }
+    
+    
     
 
     

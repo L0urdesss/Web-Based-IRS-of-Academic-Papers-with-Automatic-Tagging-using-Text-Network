@@ -16,12 +16,12 @@ const truncateText = (text, maxWords) => {
     return words.slice(0, maxWords).join(' ') + '...';
 };
 
-export default function ViewAll({ auth, papers, searchQuery }) {
+export default function ViewAll({ auth, papers, searchQuery,filters,sortCourse,sortOrders }) {
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(searchQuery || '');
-    const [selectedCourse, setSelectedCourse] = useState(''); // State for selected course
-    const [sortOrder, setSortOrder] = useState('asc'); // State for sorting order
-    const [appliedFilters, setAppliedFilters] = useState([]); // State for applied filters
+    const [selectedCourse, setSelectedCourse] = useState(sortCourse || ''); // State for selected course
+    const [sortOrder, setSortOrder] = useState(sortOrders || 'asc'); // State for sorting order
+    const [appliedFilters, setAppliedFilters] = useState(filters || []); // State for applied filters
 
     useEffect(() => {
         setIsLoading(false);
@@ -30,7 +30,10 @@ export default function ViewAll({ auth, papers, searchQuery }) {
     const handleSearch = (searchTerm) => {
         setIsLoading(true);
         window.location = route('userpapers.view', {
-            searchQuery: searchTerm
+            searchQuery: searchTerm,
+            filters: appliedFilters,
+            sortCourse: selectedCourse,
+            sortOrders: sortOrder,
         });
     };
 
@@ -43,12 +46,12 @@ export default function ViewAll({ auth, papers, searchQuery }) {
         } else if (filterType === 'Abstract') {
             filterText = 'Abstract';
         }
-
+        const lowercaseFilter = filterType.toLowerCase(); 
         if (!appliedFilters.includes(filterText)) {
-            setAppliedFilters([...appliedFilters, filterText]);
+            setAppliedFilters([...appliedFilters, lowercaseFilter]);
         }
     };
-
+    
     const handleRemoveFilter = (filter) => {
         const updatedFilters = appliedFilters.filter((item) => item !== filter);
         setAppliedFilters(updatedFilters);
@@ -171,8 +174,11 @@ export default function ViewAll({ auth, papers, searchQuery }) {
                                     {papers.links.map((link, index) => (
                                         <li key={index} className="mx-2">
                                             <Link
-                                                href={(link.url ? link.url + (link.url.includes('?') ? '&' : '') : '') + 'searchQuery=' + encodeURIComponent(inputValue)}
-                                                className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-red-300 rounded-lg`}
+                                                href={(link.url ? link.url + (link.url.includes('?') ? '&' : '') : '') + 
+                                                'searchQuery=' + encodeURIComponent(inputValue) + 
+                                                'sortOrders=' + encodeURIComponent(sortOrder) + 
+                                                'sortCourse=' + encodeURIComponent(selectedCourse)}
+                                              className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-red-300 rounded-lg`}
                                                 style={{ backgroundColor: link.active ? '#831b1c' : '' }}
                                             >
                                                 {link.label === '&laquo; Previous' ? 'Previous' : link.label === 'Next &raquo;' ? 'Next' : link.label}

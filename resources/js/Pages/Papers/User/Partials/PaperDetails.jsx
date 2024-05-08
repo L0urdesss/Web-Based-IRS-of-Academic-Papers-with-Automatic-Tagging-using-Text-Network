@@ -20,8 +20,7 @@ export default function PaperDetails({ user, paper, className = '', success , st
 
 
     const { name, email } = user;
-    const [course, setCourse] = useState('');
-    const { title, date_published, author, abstract } = paper;
+    const { title, date_published, author, abstract, course } = paper;
     const [showForm, setShowForm] = useState(false);
 
     const abstractContainerRef = useRef(null);
@@ -69,7 +68,7 @@ export default function PaperDetails({ user, paper, className = '', success , st
                     {title}
                 </div>
                 <div className="mt-1 flex items-center border border-white shadow-white" style={{ fontSize: '14px', minWidth: '200px' }}>
-                    {date_published} • College of Science
+                    {date_published} • College of Science • {course}
                 </div>
                 <div>
                     <p className="ml-3 mt-3" style={{ fontSize: '12px', color: '#352D2D' }}>Author/s</p>
