@@ -63,7 +63,7 @@ class PaperController extends Controller
         }
     
         // Apply sorting if sortCourse is provided
-        if ($request->has('sortCourse')){
+        if ($request->has('sortCourse') && $request->input('sortCourse') !== null){
             $sortCourse = $request->input('sortCourse');
             $query->where('course', $sortCourse);
         }
