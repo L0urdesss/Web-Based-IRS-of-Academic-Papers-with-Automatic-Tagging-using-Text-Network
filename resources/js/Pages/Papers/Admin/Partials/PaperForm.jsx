@@ -97,6 +97,8 @@ export default function PaperForm({ auth, paper, className = '' }) {
                             onChange={(e) => setData('title', e.target.value)}
                             style={{ fontSize: '10px', border: '1px solid #7B7B7B' }} // Added border rule
                         />
+                        <InputError className="mt-2" message={errors.title} />
+
                     </div>
                     <div>
                         <h1>Course Selection</h1>
@@ -116,6 +118,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
                                     onChange={(e) => handleAuthorChange(index, e.target.value)}
                                     style={{ fontSize: '10px', border: '1px solid #7B7B7B' }}
                                 />
+
                                 {index === authorInputs.length - 1 && (
                                     <button
                                         type="button"
@@ -136,6 +139,8 @@ export default function PaperForm({ auth, paper, className = '' }) {
                                 )}
                             </div>
                         ))}
+                        <InputError className="mt-2" message={errors.author} />
+
                     </div>
 
 
@@ -160,6 +165,8 @@ export default function PaperForm({ auth, paper, className = '' }) {
                             onChange={(e) => setData({ ...data, abstract: e.target.value })}
                             style={{ fontSize: '10px', border: '1px solid #7B7B7B', resize: 'none' }} // Removed resizing
                         />
+                            <InputError className="mt-2" message={errors.abstract} />
+
                     </div>
                     <div className="flex items-center justify-end gap-4">
                         <PrimaryButton style={{ backgroundColor: '#831B1C', fontSize: '10px', textTransform: 'capitalize' }} disabled={processing}>Save Changes</PrimaryButton>
@@ -209,16 +216,32 @@ export default function PaperForm({ auth, paper, className = '' }) {
                                 id="file"
                                 type="file"
                                 className="hidden"
-                                onChange={(e) => setData('file', e.target.files[0])}
+                                onChange={(e) => {
+                                    setData('file', e.target.files[0]);
+                                }}
                             />
                         </label>
                     </div>
                     {/* View File link */}
                     {data.file && (
-                        <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
+                        <div className="mt-2">                    
+                        {/* Preview File link */}
+                            {data.file.type && data.file.type.startsWith && data.file.type.startsWith('image/') ? (
+                                <img src={URL.createObjectURL(data.file)} alt="File Preview" style={{ maxWidth: '150px', height: 'auto' }} />
+                            ) : data.file.type === 'application/pdf' ? (
+                                <embed src={URL.createObjectURL(data.file)} type="application/pdf" width="100%" height="400px" />
+                            ) : (
+                                /* Real File Link*/
+                                <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
+                            )}
+                        </div>
                     )}
+
+
                 </div>
+                <InputError className="mt-2" message={errors.file} />
             </div>
+
         </div>
     );
 }

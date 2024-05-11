@@ -106,7 +106,7 @@ class PaperController extends Controller
 
     public function update(Paper $paper, Request $request):void
     {    
-        dd($request); // or var_dump($paper);
+        // dd($request); // or var_dump($paper);
 
         $paper->update([
             'title' => $request->title,
