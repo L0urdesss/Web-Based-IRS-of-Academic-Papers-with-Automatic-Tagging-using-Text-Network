@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -20,7 +20,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
         date_published: paper ? paper.date_published : "",
         file: paper ? paper.file : null,
     });
-    
+
     const initialAuthors = paper && paper.author ? paper.author.split(',').map(author => author.trim()) : [''];
     const [authors, setAuthors] = useState(initialAuthors);
 
@@ -29,7 +29,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
 
     const handleCourseChange = (e) => {
         setSelectedCourse(e.target.value);
-      };
+    };
 
     const handleAuthorChange = (index, value) => {
         const updatedAuthors = [...authors];
@@ -56,7 +56,6 @@ export default function PaperForm({ auth, paper, className = '' }) {
         setData('author', combinedAuthors);
     },[authors]);
 
-
     const [selectedCourse, setSelectedCourse] = useState(paper ? paper.course : 'BASLT'); // Set initial value to paper.course
     useEffect(() => {   
         // Update paper.course when selectedCourse changes
@@ -64,7 +63,6 @@ export default function PaperForm({ auth, paper, className = '' }) {
     }, [selectedCourse]);
 
     const [isDragging, setIsDragging] = useState(false); // State to track dragging status
-
 
     const submit = async (e) => {
         e.preventDefault();
@@ -79,9 +77,9 @@ export default function PaperForm({ auth, paper, className = '' }) {
             });
         }
     };
-    
+
     return (
-        <div className="flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
+        <div className="relative flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
             <section className={`bg-white p-4 md:p-10 ${className}`} style={{ width: "100%" }}>
                 <header>
                     <h2 className="text-lg font-medium text-gray-900" style={{ fontSize: '20px', fontWeight:'bolder' }}>Research Paper Information</h2>
@@ -98,14 +96,11 @@ export default function PaperForm({ auth, paper, className = '' }) {
                             style={{ fontSize: '10px', border: '1px solid #7B7B7B' }} // Added border rule
                         />
                         <InputError className="mt-2" message={errors.title} />
-
                     </div>
                     <div>
                         <h1>Course Selection</h1>
                         <CourseDropdown onChange={handleCourseChange} value={data.course} />
                     </div>
-
-
                     <div>
                         <label htmlFor="author" className="block text-sm font-medium text-gray-700">
                             Author(s)
@@ -118,7 +113,6 @@ export default function PaperForm({ auth, paper, className = '' }) {
                                     onChange={(e) => handleAuthorChange(index, e.target.value)}
                                     style={{ fontSize: '10px', border: '1px solid #7B7B7B' }}
                                 />
-
                                 {index === authorInputs.length - 1 && (
                                     <button
                                         type="button"
@@ -140,10 +134,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
                             </div>
                         ))}
                         <InputError className="mt-2" message={errors.author} />
-
                     </div>
-
-
                     <div>
                         <InputLabel htmlFor="date_published" value="Date Published" style={{ fontSize: '12px' }} />
                         <TextInput
@@ -159,14 +150,13 @@ export default function PaperForm({ auth, paper, className = '' }) {
                         <InputLabel htmlFor="abstract" value="Abstract" style={{ fontSize: '12px' }} />
                         <TextInput
                             id="abstract"
-                            type="textarea" 
+                            type="textarea"
                             className="mt-1 block w-full h-32 p-2 border border-gray-300 rounded-md overflow-y-auto"
-                            value={data.abstract} 
+                            value={data.abstract}
                             onChange={(e) => setData({ ...data, abstract: e.target.value })}
                             style={{ fontSize: '10px', border: '1px solid #7B7B7B', resize: 'none' }} // Removed resizing
                         />
-                            <InputError className="mt-2" message={errors.abstract} />
-
+                        <InputError className="mt-2" message={errors.abstract} />
                     </div>
                     <div className="flex items-center justify-end gap-4">
                         <PrimaryButton style={{ backgroundColor: '#831B1C', fontSize: '10px', textTransform: 'capitalize' }} disabled={processing}>Save Changes</PrimaryButton>
@@ -183,7 +173,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
                 </form>
             </section>
             <div 
-                className="bg-white p-4 md:p-6 mt-5" 
+                className="relative bg-white p-4 md:p-6 mt-5" 
                 style={{ width: "100%", maxWidth: "500px", height: "400px", backgroundColor: '#831B1C' ,marginTop:"50px" }}
                 onDrop={(e) => {
                     e.preventDefault();
@@ -222,26 +212,16 @@ export default function PaperForm({ auth, paper, className = '' }) {
                             />
                         </label>
                     </div>
-                    {/* View File link */}
-                    {data.file && (
-                        <div className="mt-2">                    
-                        {/* Preview File link */}
-                            {data.file.type && data.file.type.startsWith && data.file.type.startsWith('image/') ? (
-                                <img src={URL.createObjectURL(data.file)} alt="File Preview" style={{ maxWidth: '150px', height: 'auto' }} />
-                            ) : data.file.type === 'application/pdf' ? (
-                                <embed src={URL.createObjectURL(data.file)} type="application/pdf" width="100%" height="400px" />
-                            ) : (
-                                /* Real File Link*/
-                                <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
-                            )}
-                        </div>
-                    )}
-
-
                 </div>
                 <InputError className="mt-2" message={errors.file} />
-            </div>
 
+                {/* Floating PDF Preview */}
+                {data.file && data.file.type === 'application/pdf' && (
+                    <div className="absolute" style={{ top: '10px', left: '10px', width: 'calc(100% - 20px)', height: 'calc(100% - 20px)', zIndex: 50, padding: '10px', borderRadius: '8px' }}>
+                        <embed src={URL.createObjectURL(data.file)} type="application/pdf" width="100%" height="100%" />
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
