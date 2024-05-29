@@ -1,46 +1,45 @@
-// Dashboard.jsx
-
+import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import pictureLogin from '../../../resources/js/Components/picture_login.png';
 import Searchbar from '../../../resources/js/Components/Searchbar'; // Import the Searchbar component
 import '../../../resources/css/Scrollbar.css';
+import page1 from '@/Components/page1.png'; // Importing the logo image
+import page2 from '@/Components/page2.png'; // Importing the logo image
+import page3 from '@/Components/page3.png'; // Importing the logo image
+import page4 from '@/Components/page4.png'; // Importing the logo image
 
-export default function Dashboard({ auth }) {
+const Dashboard = ({ auth }) => {
     const handleSearch = (searchTerm, filters) => {
         window.location = route('userpapers.view', {
-            searchQuery: searchTerm ,
+            searchQuery: searchTerm,
             filters: filters
         });
-      };
-
+    };
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between">
-                    <div className="sm:w-1/2 p-6 text-gray-900">
-                        <blockquote className="text-lg font-semibold italic">
-                            <span style={{ color: '#831b1c', fontWeight: 'bold', fontSize: '5.5em' }}>TUP</span><br></br><br></br>
-                            <span style={{ color: '#831b1c', fontWeight: 'bold', fontSize: '5.5em' }}>CORNER</span><br></br> 
-                            <span style={{ color: '#af2429' }}>A research engine, steaming with knowledge for students' academic journey.</span>
-                        </blockquote>
+            <div className="bg-white">
+                <div className="">
+                    {/* Render page1, page2, and page3 in full width vertically */}
+                    <div className="flex flex-col items-center justify-center w-full sm:w-auto mb-8 sm:mb-0 relative">
+                        <img src={page1} alt="Page 1" className="w-full" />
+                        <div className="absolute right-1/5 mt-20 w-3/4">
+
+                            <Searchbar onSearch={handleSearch} />
+                        </div>
                     </div>
-                    <div className="w-full sm:w-auto p-6 flex justify-center sm:justify-between flex-col items-center">
-                        <img src={pictureLogin} alt="Login Picture" className="max-w-full h-auto" />
-                    </div>
+                    <img src={page2} alt="Page 2" className="w-full" />
+                    <img src={page3} alt="Page 3" className="w-full mt-20" />
                 </div>
-                <div className="mt-8">
-                <div className="relative flex justify-center items-center mx-auto w-3/4">
-    <Searchbar onSearch={handleSearch} />
-</div>
-                </div>
-                <div className="mt-9" style={{ marginLeft: '20px', marginRight: '20px' }}> {/* Added marginLeft and marginRight style */}
-                    <h2 className="text-xl font-semibold" style={{ color: '#831b1c', textAlign: 'center' }}>Recently Viewed Research Paper</h2>
-                </div>
+  
+                <img src={page4} alt="Page 4" className="w-full" />
+                    {/* Removed the blockquote content */}
+        
             </div>
         </AuthenticatedLayout>
     );
-}
+};
+
+export default Dashboard;
