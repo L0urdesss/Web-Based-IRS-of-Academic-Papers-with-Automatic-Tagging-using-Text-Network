@@ -105,7 +105,8 @@ export default function AdminView({ auth, requestpapers , status}) {
                                             href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'status=' + encodeURIComponent(filterOption)}
                                             className={`px-4 py-2 ${
                                                 link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                                            } hover:bg-blue-400 rounded-lg`}
+                                            } hover:bg-red-300 rounded-lg`}
+                                            style={{ backgroundColor: link.active ? '#831b1c' : '' }}
                                         >
                                             {link.label === '&laquo; Previous'
                                                 ? 'Previous'

@@ -1,4 +1,6 @@
-export default function Admin({ items, columns, primary, actionUpdate , handleDelete }) {
+import deleteIcon from '@/Components/delete.png';
+import viewIcon from '@/Components/view.png';
+export default function Admin({ items, columns, primary, actionUpdate, handleDelete }) {
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -27,7 +29,9 @@ export default function Admin({ items, columns, primary, actionUpdate , handleDe
                             </td>
 
                             <td className="px-6 py-4">
-                                <button onClick={() => handleDelete(item.id,item.title)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete Item</button>
+                                <button onClick={() => handleDelete(item.id,item.title)} className="flex items-center font-medium text-red-600 dark:text-red-500 hover:underline">
+                                    <img src={deleteIcon} alt="Delete" className="w-12" />
+                                </button>
                             </td>
                         </tr>
                     )}

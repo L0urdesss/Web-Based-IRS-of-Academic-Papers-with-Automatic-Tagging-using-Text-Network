@@ -67,11 +67,11 @@ export default function PaperDetails({ user, paper, className = '', success , st
                 <div className="mt-1 block w-full border border-white shadow-white" style={{ fontSize: '25px', color: '#AF2429', fontWeight: 'bold' }}>
                     {title}
                 </div>
-                <div className="mt-1 flex items-center border border-white shadow-white" style={{ fontSize: '14px', minWidth: '200px' }}>
+                <div className="mt-1 ml-1 flex items-center border border-white shadow-white" style={{ fontSize: '14px', minWidth: '200px' }}>
                     {date_published} • College of Science • {course}
                 </div>
                 <div>
-                    <p className="ml-3 mt-3" style={{ fontSize: '12px', color: '#352D2D' }}>Author/s</p>
+                    <p className="ml-1 mt-3" style={{ fontSize: '12px', color: '#352D2D' }}>Author/s</p>
                     <div className="mt-1 block w-full border border-white shadow-white" style={{ color: '#352D2D', fontSize: '14px', fontWeight: 'bold' }}>
                         {author}
                     </div>

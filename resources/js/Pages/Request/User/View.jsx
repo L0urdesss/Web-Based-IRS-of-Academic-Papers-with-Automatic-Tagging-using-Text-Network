@@ -58,7 +58,8 @@ export default function View({ auth, requestpapers }) {
                                     <li key={index} className="mx-2">
                                         <Link 
                                             href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'user_id=' + encodeURIComponent(auth.user.id)}
-                                            className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-400 rounded-lg`}
+                                            className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-red-300 rounded-lg`}
+                                            style={{ backgroundColor: link.active ? '#831b1c' : '' }}
                                         >
                                             {link.label === '&laquo; Previous' ? 'Previous' : link.label === 'Next &raquo;' ? 'Next' : link.label}
                                         </Link>
