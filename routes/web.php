@@ -3,6 +3,7 @@
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestPaperController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -62,6 +63,14 @@ Route::middleware('auth', 'admin')->group(function () {
     Route::get('/add-admin', [PaperController::class, 'add'])->name('papers.add');
     Route::patch('/papers-admin/{paper}',[PaperController::class, 'update'])->name('papers.update');
     Route::post('/add-admin',[PaperController::class, 'store'])->name('papers.store');
+
+    //student crud
+    Route::get('/student',[StudentController::class, 'view'])->name('student.view');
+    Route::post('/student/store',[StudentController::class, 'store'])->name('student.store');
+    Route::patch('/student/{student}',[StudentController::class, 'update'])->name('student.update');
+    Route::get('/student/add', [StudentController::class, 'add'])->name('student.add');
+    Route::get('/student/{student}',[StudentController::class, 'edit'])->name('student.edit');
+    Route::delete('/student/{student}',[StudentController::class, 'destroy'])->name('student.destroy');
 
     Route::put('/request-papers-all', [RequestPaperController::class, 'updateAll'])->name('userrequest.updateAll');
     Route::delete('/papers-admin/{paper}',[PaperController::class, 'destroy'])->name('papers.destroy');

@@ -5,7 +5,7 @@ import modifyIcon from '../../../resources/js/Components/modify.png'; // Importi
 import requestIcon from '../../../resources/js/Components/request.png'; // Importing request icon
 import '../../../resources/css/Scrollbar.css';
 import { useEffect } from 'react';
-import { router } from '@inertiajs/react'
+import { Link } from '@inertiajs/react'
 
 export default function AdminDashboard({ auth }) {
     const handleSearch = (searchTerm, filters) => {
@@ -30,14 +30,21 @@ export default function AdminDashboard({ auth }) {
 
                 <div className="flex justify-center items-center mx-auto w-1/2"> {/* Adjusted width to center the icons */}
                     <div style={{ marginRight: '20px' }}>
-                        <a href={route('papers.index')} style={{ color: '#831b1c'}}>
+                        <Link href={route('papers.index')} style={{ color: '#831b1c'}}>
                             <img src={modifyIcon} alt="Modify Research Paper" style={{ width: '100%', height: '100%' }}/>
-                        </a>
+                        </Link>
                     </div>
+
                     <div style={{ marginLeft: '20px' }}>
-                        <a href={route('userrequest.index')} style={{ color: '#831b1c'}}>
+                        <Link href={route('userrequest.index')} style={{ color: '#831b1c'}}>
                             <img src={requestIcon} alt="Modify Request Paper" style={{ width: '100%', height: '100%' }} />
-                        </a>
+                        </Link>
+                    </div>
+
+                    <div style={{ marginLeft: '20px' }}>
+                        <Link href={route('student.view')} style={{ color: '#831b1c'}}>
+                            <img src={requestIcon} alt="Modify Student Database" style={{ width: '100%', height: '100%' }} />
+                        </Link>
                     </div>
                 </div>
             </div>
