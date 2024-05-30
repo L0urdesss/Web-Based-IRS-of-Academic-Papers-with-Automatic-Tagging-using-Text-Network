@@ -67,6 +67,32 @@ class PaperController extends Controller
             $sortCourse = $request->input('sortCourse');
             $query->where('course', $sortCourse);
         }
+
+        if ($request->has('paperFile')) {
+            if ($request->input('paperFile') == 'true'){
+                // Get only non-null 'file' field
+                $query->whereNotNull('file');
+            }
+        }
+
+        if ($request->has('paperDate')){
+            $paperDate = $request->input('paperDate');
+            $currentYear = date('Y');
+    
+            if (is_string($paperDate)) {
+                if ($paperDate == '1') {
+                    $query->where('date_published', '>=', $currentYear - 1);
+                } elseif ($paperDate == '3') {
+                    $query->where('date_published', '>=', $currentYear - 3);
+                }
+            } elseif (is_array($paperDate) && count($paperDate) == 2) {
+                $startYear = $paperDate[0];
+                $endYear = $paperDate[1];
+                $query->where('date_published', '>=', $startYear)
+                      ->where('date_published', '<=', $endYear);
+            }
+        }
+        \Log::info($request);
         
         $papers = $query->paginate(5);
         
@@ -76,6 +102,8 @@ class PaperController extends Controller
             'filters' => $request->input('filters'), 
             'sortOrders' => $request->input('sortOrders'), 
             'sortCourse' => $request->input('sortCourse'), 
+            'paperFile' => $request->input('paperFile'), 
+            'paperDate' => $request->input('paperDate'), 
 
         ]);
     }

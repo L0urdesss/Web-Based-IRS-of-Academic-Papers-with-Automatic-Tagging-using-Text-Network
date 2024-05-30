@@ -12,7 +12,7 @@ const Dashboard = ({ auth }) => {
     const handleSearch = (searchTerm, filters) => {
         window.location = route('userpapers.view', {
             searchQuery: searchTerm,
-            filters: filters
+            filters: ['title','author','abstract']
         });
     };
 

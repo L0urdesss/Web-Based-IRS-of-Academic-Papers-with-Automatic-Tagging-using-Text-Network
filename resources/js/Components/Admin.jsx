@@ -1,5 +1,5 @@
 import deleteIcon from '@/Components/delete.png';
-import viewIcon from '@/Components/view.png';
+// import viewIcon from '@/Components/view.png';
 export default function Admin({ items, columns, primary, actionUpdate, handleDelete }) {
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">

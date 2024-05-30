@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import SearchBar from '@/Components/Searchbar';
 import Toggle from '@/Components/Toggle'; 
 
@@ -16,31 +16,65 @@ const truncateText = (text, maxWords) => {
     return words.slice(0, maxWords).join(' ') + '...';
 };
 
-export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse, sortOrders }) {
+export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse, sortOrders, paperFile ,paperDate }) {
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(searchQuery || '');
     const [selectedCourse, setSelectedCourse] = useState(sortCourse || ''); // State for selected course
     const [sortOrder, setSortOrder] = useState(sortOrders || 'asc'); // State for sorting order
     const [appliedFilters, setAppliedFilters] = useState(filters || []); // State for applied filters
+    const [triggerSearch, setTriggerSearch] = useState(false); // State to trigger search
+    const [withFile, setWithFile] = useState(paperFile || false);
+    const [selectedRange, setSelectedRange] = useState(paperDate || null);
+    const [customDate, setCustomDate] = useState({ start: '', end: '' });
+    const [showCustomInput, setShowCustomInput] = useState(false);
+
     const buildArrayParams = (key, array) => {
         return array.map((item, index) => `${key}[${index}]=${encodeURIComponent(item)}`).join('&');
       };
 
+    const currentYear = new Date().getFullYear();
+
     useEffect(() => {
+        console.log("test")
         setIsLoading(false);
     }, [papers]);
 
+    useEffect(()=> {
+        console.log("test2")
+
+        setInputValue(searchQuery);
+    },[searchQuery]);
+
+
     const handleSearch = (searchTerm) => {
         setIsLoading(true);
-        window.location = route('userpapers.view', {
+        
+        const url = route('userpapers.view');
+        const data = {
             searchQuery: searchTerm,
             filters: appliedFilters,
             sortCourse: selectedCourse,
             sortOrders: sortOrder,
-        });
+            paperFile: withFile,
+            paperDate: selectedRange
+        };
+
+        router.get(url, data, { preserveScroll: true });
     };
 
+    // const handleOnClickSearch = (searchTerm,course) => {
+    //     setIsLoading(true);
+    //     console.log(course)
+    //     window.location = route('userpapers.view', {
+    //         searchQuery: searchTerm,
+    //         filters: appliedFilters,
+    //         sortCourse: course,
+    //         sortOrders: sortOrder,
+    //     });
+    // };
+
     const handleFilterClick = (filterType) => {
+        console.log(appliedFilters)
         let filterText = filterType;
         if (filterType === 'Title') {
             filterText = 'Title';
@@ -63,6 +97,74 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
     const handleClearFilters = () => {
         setAppliedFilters([]);
     };
+
+    const handleToggleChange = (event) => {
+        const checked = event.target.checked;
+        console.log("Toggle changed:", checked);
+        setWithFile(checked);
+        setTriggerSearch(true);
+      };
+    
+    useEffect(() => {
+    console.log("withFile state changed:", withFile);
+    }, [withFile]);
+
+
+    const handleCourseChange = (e) => {
+        const newCourse = e.target.value;
+        setSelectedCourse(newCourse);
+        console.log(newCourse);
+        setTriggerSearch(true);
+    };
+
+    const handleSortCourseChange = (e) => {
+        const newSort = e.target.value;
+        setSortOrder(newSort);
+        console.log(newSort);
+        setTriggerSearch(true);
+    };
+
+    useEffect(() => {
+        if (triggerSearch) {
+            handleSearch(inputValue);
+            setTriggerSearch(false); // Reset triggerSearch to prevent infinite loop
+        }
+    }, [triggerSearch, inputValue]); // Trigger effect only when triggerSearch or inputValue changes
+    
+    const handleButtonClick = (range) => {
+        if (range === 'custom') {
+            setShowCustomInput(true);
+        } else if(range === 0){
+            setSelectedRange(null);
+            setShowCustomInput(false);
+        }
+        else {
+            setSelectedRange(range);
+            setShowCustomInput(false);
+        }
+        if (range != 'custom'){
+            setTriggerSearch(true);
+        }
+    };
+
+    const handleCustomDateSubmit = () => {
+        let { start, end } = customDate;
+        start = parseInt(start);
+        end = parseInt(end);
+
+        if (start > end) {
+            [start, end] = [end, start];
+        }
+
+        if (start > currentYear) start = currentYear;
+        if (end > currentYear) end = currentYear;
+        
+        setSelectedRange([start, end]);
+        setShowCustomInput(false);
+        setTriggerSearch(true);
+    };
+
+
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -97,18 +199,25 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                                 </div>
                             </div>
                             <div className="mb-4">
-                            <select id="course" className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value={selectedCourse} onChange={(e) => setSelectedCourse(e.target.value)} style={{ fontSize: '10px', borderColor: '#7B7B7B', width: '150px' }}>
-    <option value="" disabled>Select Course</option>
-    <option value="BSCS">BSCS</option>
-    <option value="BSIS">BSIS</option>
-    <option value="BSES">BSES</option>
-    <option value="BASLT">BASLT</option>
-    <option value="BSIT">BSIT</option>
-</select>
+                            <select id="course" 
+                                className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                                value={selectedCourse} 
+                                onChange={handleCourseChange}
+                                style={{ fontSize: '10px', borderColor: '#7B7B7B', width: '150px' }}>
+                                    <option value="" disabled>Select Course</option>
+                                    <option value="">ALL</option>
+                                    <option value="BSCS">BSCS</option>
+                                    <option value="BSIS">BSIS</option>
+                                    <option value="BSES">BSES</option>
+                                    <option value="BASLT">BASLT</option>
+                                    <option value="BSIT">BSIT</option>
+                            </select>
 
                             </div>
                             <div className="mb-4">
-                                <select id="sort" className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ fontSize: '10px', borderColor: '#7B7B7B', width: '150px' }}>
+                                <select id="sort" className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                                value={sortOrder} 
+                                onChange={handleSortCourseChange} style={{ fontSize: '10px', borderColor: '#7B7B7B', width: '150px' }}>
                                     <option value="asc">Sort Ascending</option>
                                     <option value="desc">Sort Descending</option>
                                 </select>
@@ -123,30 +232,81 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                                 </div>
                             </div>
                             <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
-                            <Toggle />
+                            <Toggle checked={withFile} onChange={handleToggleChange} disabled={isLoading} />
                             <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
                             <div className="mt-4">
                                 <p className="font-semibold" style={{ fontSize: '12px', color: '#352D2D' }}>Publication Date</p>
+                            <div>
                                 <ul className="list-none">
                                     <li>
-                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Last 12 Months</button>
+                                        <button
+                                            className="text-blue-500 hover:underline"
+                                            style={{ fontSize: '11px', color: '#AF2429' }}
+                                            onClick={() => handleButtonClick(0)}
+                                        >
+                                            Clear
+                                        </button>
                                     </li>
                                     <li>
-                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Last 2 Years</button>
+                                        <button
+                                            className="text-blue-500 hover:underline"
+                                            style={{ fontSize: '11px', color: '#AF2429' }}
+                                            onClick={() => handleButtonClick(1)}
+                                        >
+                                            Last 1 Year
+                                        </button>
                                     </li>
                                     <li>
-                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Last 5 Years</button>
+                                        <button
+                                            className="text-blue-500 hover:underline"
+                                            style={{ fontSize: '11px', color: '#AF2429' }}
+                                            onClick={() => handleButtonClick(3)}
+                                        >
+                                            Last 3 Years
+                                        </button>
                                     </li>
                                     <li>
-                                        <button className="text-blue-500 hover:underline" style={{ fontSize: '11px', color: '#AF2429' }}>Custom Date</button>
+                                        <button
+                                            className="text-blue-500 hover:underline"
+                                            style={{ fontSize: '11px', color: '#AF2429' }}
+                                            onClick={() => handleButtonClick('custom')}
+                                        >
+                                            Custom Date
+                                        </button>
                                     </li>
                                 </ul>
+
+                                {showCustomInput && (
+                                    <div>
+                                        <input
+                                            type="text"
+                                            placeholder="Start Year"
+                                            value={customDate.start}
+                                            onChange={(e) => setCustomDate({ ...customDate, start: e.target.value })}
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="End Year"
+                                            value={customDate.end}
+                                            onChange={(e) => setCustomDate({ ...customDate, end: e.target.value })}
+                                        />
+                                        <button onClick={handleCustomDateSubmit}>Submit</button>
+                                    </div>
+                                )}
+
+                                {selectedRange && (
+                                    <div>
+                                        <p>Selected Date Range: {`${selectedRange}`}</p>
+                                    </div>
+                                )}
+                            </div>
+
                             </div>
                         </div>
                     </div>
                     <div className="sm:w-3/4">
                         <div className="mb-1">
-                            <SearchBar onSearch={handleSearch} searchQuery={searchQuery} />
+                            <SearchBar onSearch={handleSearch} searchQuery={inputValue} />
                         </div>
                         {isLoading ? "Loading..." : (
                             <div>
@@ -178,10 +338,14 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                                         <li key={index} className="mx-2">
                                             <Link
                                                 href={(link.url ? link.url + (link.url.includes('?') ? '&' : '') : '') + 
-                                                'searchQuery=' + encodeURIComponent(inputValue) +
+                                                'searchQuery=' + (inputValue ? encodeURIComponent(inputValue) : '') +
                                                 '&' + buildArrayParams('filters', appliedFilters) +
                                                 '&sortOrders=' + encodeURIComponent(sortOrder) + 
-                                                '&sortCourse=' + encodeURIComponent(selectedCourse)}
+                                                '&sortCourse=' + encodeURIComponent(selectedCourse) +
+                                                '&paperFile=' + encodeURIComponent(withFile)+
+                                                '&paperDate=' + encodeURIComponent(selectedRange)
+
+                                            }
                                               className={`px-4 py-2 ${link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-red-300 rounded-lg`}
                                                 style={{ backgroundColor: link.active ? '#831b1c' : '' }}
                                             >

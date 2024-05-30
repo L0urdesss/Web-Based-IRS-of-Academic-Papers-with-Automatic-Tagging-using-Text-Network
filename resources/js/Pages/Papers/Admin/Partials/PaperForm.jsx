@@ -212,6 +212,10 @@ export default function PaperForm({ auth, paper, className = '' }) {
                             />
                         </label>
                     </div>
+                    {/* View File link */}
+                    {data.file && (
+                        <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
+                    )}
                 </div>
                 <InputError className="mt-2" message={errors.file} />
 
