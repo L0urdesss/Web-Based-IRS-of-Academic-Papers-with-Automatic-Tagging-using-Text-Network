@@ -30,7 +30,7 @@ class RequestPaperController extends Controller
         WHEN status = 'reject' THEN 3
         ELSE 4 END");
         
-        $requestpapers = $query->with('user.student', 'paper')->paginate(5);
+        $requestpapers = $query->with('user.student', 'paper')->paginate(7);
     
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/Admin/AdminView', [
@@ -55,7 +55,7 @@ class RequestPaperController extends Controller
         }
 
         // Paginate the filtered records
-        $requestpapers = $query->paginate(5);
+        $requestpapers = $query->paginate(7);
 
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/User/View', [

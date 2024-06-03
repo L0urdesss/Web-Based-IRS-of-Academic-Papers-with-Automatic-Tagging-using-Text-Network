@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { useForm, usePage } from '@inertiajs/react';
+import { useForm, usePage, router } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
 // Import the images using @/ alias
@@ -68,15 +68,25 @@ export default function PaperForm({ auth, paper, className = '' }) {
         e.preventDefault();
         
         if (paper) {
-            patch(route('papers.update', paper.id), {
+            router.post(`/papers-admin/${paper.id}`, {
+                ...data,
+                _method: "patch",
                 preserveScroll: true
             });
         } else {
-            post(route('papers.store'), {
+            router.post('/add-admin', {
+                ...data,
                 preserveScroll: true
             });
         }
     };
+
+    const handleClick = () => {
+        setData({ ...data, file: null });
+        console.log(data)
+      };
+
+
 
     return (
         <div className="relative flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
@@ -174,7 +184,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
             </section>
             <div 
                 className="relative bg-white p-4 md:p-6 mt-5" 
-                style={{ width: "100%", maxWidth: "500px", height: "400px", backgroundColor: '#831B1C' ,marginTop:"50px" }}
+                style={{ width: "100%", maxWidth: "500px", height: "400px", backgroundColor: '#831B1C' ,marginTop:"20px" }}
                 onDrop={(e) => {
                     e.preventDefault();
                     setIsDragging(false);
@@ -214,10 +224,12 @@ export default function PaperForm({ auth, paper, className = '' }) {
                     </div>
                     {/* View File link */}
                     {data.file && (
+                        <>
                         <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
+                        
+                        </>
                     )}
                 </div>
-                <InputError className="mt-2" message={errors.file} />
 
                 {/* Floating PDF Preview */}
                 {data.file && data.file.type === 'application/pdf' && (
@@ -225,6 +237,9 @@ export default function PaperForm({ auth, paper, className = '' }) {
                         <embed src={URL.createObjectURL(data.file)} type="application/pdf" width="100%" height="100%" />
                     </div>
                 )}
+                <button className="mt-2 p-4 md:p-6" onClick={handleClick}>Clear File</button>
+                <InputError className="mt-2" message={errors.file} />
+
             </div>
         </div>
     );

@@ -10,14 +10,18 @@ use Inertia\Inertia;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
+// Route::get('/', function () {
+//     return Inertia::render('Auth/Login', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 Route::get('/', function () {
-    return Inertia::render('Auth/Login', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect('/dashboard');
 });
+
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
@@ -37,7 +41,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::get('/dashboard', function () {
      return Inertia::render('Dashboard');
- })->middleware(['auth', 'verified'])->name('dashboard');
+ })->name('dashboard');
 
  Route::get('/admindashboard', function () {
     return Inertia::render('AdminDashboard');
@@ -62,6 +66,7 @@ Route::middleware('auth', 'admin')->group(function () {
     Route::get('/papers-admin/{paper}',[PaperController::class, 'edit'])->name('papers.edit');
     Route::get('/add-admin', [PaperController::class, 'add'])->name('papers.add');
     Route::patch('/papers-admin/{paper}',[PaperController::class, 'update'])->name('papers.update');
+    // Route::post('/papers-admin-file/{paper}',[PaperController::class, 'updateFile'])->name('papers.updateFile');
     Route::post('/add-admin',[PaperController::class, 'store'])->name('papers.store');
 
     //student crud

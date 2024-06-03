@@ -7,7 +7,10 @@ use App\Models\Paper;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Response;
+use Illuminate\Support\Str;
+use App\Rules\YearBelowCurrent;
 
 class PaperController extends Controller
 {
@@ -20,7 +23,7 @@ class PaperController extends Controller
             // Add more search conditions if needed
         }
     
-        $papers = $query->paginate(3);
+        $papers = $query->paginate(7);
 
     
         return Inertia::render('Papers/Admin/All', [
@@ -94,7 +97,7 @@ class PaperController extends Controller
         }
         \Log::info($request);
         
-        $papers = $query->paginate(5);
+        $papers = $query->paginate(7);
         
         return Inertia::render('Papers/User/ViewAll', [
             'papers' => $papers,
@@ -132,29 +135,66 @@ class PaperController extends Controller
         ]);
     }
 
-    public function update(Paper $paper, Request $request):void
+    public function update(Paper $paper, Request $request): void
     {    
-        // dd($request); // or var_dump($paper);
-
-        $paper->update([
-            'title' => $request->title,
-            'abstract' => $request->abstract,
-            'author' => $request->author,
-            'course' => $request->course,
-            'date_published' => $request->date_published,
-            'file' => $request->file,
-        ]);
-    }
-
-    public function store(Request $request): void
-    {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
             'author' => 'required|string', 
             'course' => 'required|string',
-            'file' => 'nullable|extensions:pdf',
-            'date_published' => 'required|string',
+            'file' => 'nullable|file|mimes:pdf',
+            'date_published' => ['required', 'string', new YearBelowCurrent()],
+        ]);
+    
+        // Get the old file path
+        $oldFilePath = $paper->file;
+    
+        // Generate a clean file name without special characters
+        $file = $request->file('file');
+        $cleanFileName = $file ? Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension() : null;
+    
+        // Check if a file was uploaded and store it with the cleaned file name
+        if ($file) {
+            // Delete the old file if it exists
+            if ($oldFilePath) {
+                // Ensure the old file path is correct
+                $oldFilePath = str_replace('/storage', '', $oldFilePath);
+    
+                // Debugging: Log the old file path
+                \Log::info('Attempting to delete old file:', ['path' => $oldFilePath]);
+                
+                // Attempt to delete the old file
+                $deleted = Storage::disk('public')->delete($oldFilePath);
+                
+                // Debugging: Log whether the file was deleted or not
+                \Log::info('File deleted status:', ['status' => $deleted]);
+            }
+    
+            // Store the new file with a cleaned file name
+            $validatedData['file'] = $file->storeAs('project/' . Str::slug($validatedData['title']), $cleanFileName, 'public');
+        }
+    
+        // Update the paper with the validated data
+        $paper->update([
+            'title' => $validatedData['title'],
+            'abstract' => $validatedData['abstract'],
+            'author' => $validatedData['author'],
+            'course' => $validatedData['course'],
+            'date_published' => $validatedData['date_published'],
+            'file' => $validatedData['file'],
+        ]);
+    }
+    public function store(Request $request): void
+    {
+        // dd($request); 
+
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'abstract' => 'required|string',
+            'author' => 'required|string', 
+            'course' => 'required|string',
+            'file' => 'nullable|mimes:pdf',
+            'date_published' => ['required', 'string', new YearBelowCurrent()],
         ]);
         
         $filepath = $validatedData['file'] ?? null;

@@ -11,6 +11,8 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.student.name,
         email: user.email,
+        course: user.student.course,
+        college: user.student.college
     });
 
     const submit = (e) => {
@@ -25,7 +27,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                 <h2 className="text-lg font-medium text-gray-900">Profile Information</h2>
 
                 <p className="mt-1 text-sm text-gray-600">
-                    Update your account's profile information and email address.
+                    Your account's profile information and email address.
                 </p>
             </header>
 
@@ -41,6 +43,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         required
                         isFocused
                         autoComplete="name"
+                        disabled
                     />
 
                     <InputError className="mt-2" message={errors.name} />
@@ -57,9 +60,42 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         onChange={(e) => setData('email', e.target.value)}
                         required
                         autoComplete="username"
+                        disabled
                     />
 
                     <InputError className="mt-2" message={errors.email} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="course" value="Course" />
+
+                    <TextInput
+                        id="course"
+                        className="mt-1 block w-full"
+                        value={data.course}
+                        onChange={(e) => setData('course', e.target.value)}
+                        required
+                        autoComplete="username"
+                        disabled
+                    />
+
+                    <InputError className="mt-2" message={errors.course} />
+                </div>
+
+                <div>
+                    <InputLabel htmlFor="college" value="College" />
+
+                    <TextInput
+                        id="college"
+                        className="mt-1 block w-full"
+                        value={data.college}
+                        onChange={(e) => setData('college', e.target.value)}
+                        required
+                        autoComplete="username"
+                        disabled
+                    />
+
+                    <InputError className="mt-2" message={errors.college} />
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (
@@ -85,7 +121,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                 )}
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    {/* <PrimaryButton disabled={processing}>Save</PrimaryButton> */}
 
                     <Transition
                         show={recentlySuccessful}

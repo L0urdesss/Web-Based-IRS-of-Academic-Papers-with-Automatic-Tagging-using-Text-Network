@@ -1,3 +1,5 @@
+import { Link } from '@inertiajs/react';
+
 export default function Table({ items, columns, primary, actionUpdate, handleDelete }) {
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">
@@ -22,7 +24,7 @@ export default function Table({ items, columns, primary, actionUpdate, handleDel
                             <td className="px-6 py-4">{item.purpose}</td>
                             <td className="px-6 py-4">{item.status}</td>
                             <td className="px-6 py-4">
-                                <a href={route(actionUpdate, item.paper_id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Paper</a>
+                                <Link href={route(actionUpdate, item.paper_id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Paper</Link>
                             </td>
                             {handleDelete === null && (
                                 <td className="px-6 py-4">

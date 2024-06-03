@@ -28,7 +28,7 @@ class StudentController extends Controller
         }
         
     
-        $students = $query->paginate(5);
+        $students = $query->paginate(7);
         
         return Inertia::render('Student/All', [
             'students' => $students,

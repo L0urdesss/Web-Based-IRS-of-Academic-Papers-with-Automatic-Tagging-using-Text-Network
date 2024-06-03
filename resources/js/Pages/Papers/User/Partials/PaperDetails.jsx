@@ -16,6 +16,9 @@ export default function PaperDetails({ user, paper, className = '', success , st
         user_id: user.id,
         paper_id: paper.id,
     });
+    console.log(user);
+    console.log(paper);
+
     console.log(status);
 
 
@@ -24,7 +27,6 @@ export default function PaperDetails({ user, paper, className = '', success , st
     const [showForm, setShowForm] = useState(false);
 
     const abstractContainerRef = useRef(null);
-    const fileContainerRef = useRef(null);
 
     useEffect(() => {
         if (abstractContainerRef.current) {
@@ -92,35 +94,38 @@ export default function PaperDetails({ user, paper, className = '', success , st
                 <div className="w-5/12 pl-2 mt-4 ml-6">
                     <div className="bg-white p-4 rounded-md">
                         {paper.file ? (
-                            <div
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md border border-white bg-white text-center"
-                                ref={fileContainerRef}
-                                style={{ minHeight: '200px', maxHeight: '300px', overflowY: 'hidden' }}
-                            >
+                            <div>
                                 {status === 'approve' ? (
-                                    <a href={paper.file} target="_blank" rel="noopener noreferrer">
-                                        <img
-                                            src={pdfIconImg}
-                                            alt="PDF Icon"
-                                            className="block mx-auto w-15 h-20 mb-4"
-                                            style={{ pointerEvents: 'none' }}
-                                        />
-                                    </a>
+                                    <div>
+                                        <a href={paper.file} target="_blank" rel="noopener noreferrer">
+                                            <img
+                                                src={pdfIconImg}
+                                                alt="PDF Icon"
+                                                className="block mx-auto w-15 h-20 mb-4"
+                                                style={{ pointerEvents: 'none' }}
+                                            />
+                                        </a>
+                                        <p className="text-sm mt-2 mb-4" style={{ fontSize: '10px', lineHeight: '1.4' }}>
+                                            View PDF File
+                                        </p>
+                                    </div>
                                 ) : (
-                                    <p>Cannot Be Displayed</p>
-                                )}
-
-                                <p className="text-sm mt-2 mb-4" style={{ fontSize: '10px', lineHeight: '1.4' }}>
+                                    <div>
+                                    <p className="text-sm mt-2 mb-4" style={{ fontSize: '10px', lineHeight: '1.4' }}>
                                     To read the full-text of this research,<br></br>
                                     you can request a copy directly<br></br> from the authors.
-                                </p>
+                                    </p>
 
-                                <img
-                                    src={requestButtonImg}
-                                    alt="Request Button"
-                                    className="block mx-auto w-15 h-10"
-                                    onClick={handleRequestButtonClick}
-                                />
+                                    <img
+                                        src={requestButtonImg}
+                                        alt="Request Button"
+                                        className="block mx-auto w-15 h-10"
+                                        onClick={handleRequestButtonClick}
+                                    />
+                                    </div>
+                                )}
+
+
                             </div>
                         ) : (
                             <p>No file</p>
