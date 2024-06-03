@@ -4,7 +4,7 @@ const RequestFilter = ({ filterOption, handleFilterChange }) => {
     return (
         <div className="flex justify-end mb-4">
             <div className="flex items-center">
-                <label htmlFor="filter" className="mr-2">Filter by:</label>
+                <label htmlFor="filter" className="ml-1">Filter by:</label>
                 <select
                     id="filter"
                     className="p-2 rounded-md border border-solid border-#352D2D bg-white focus:outline-none"

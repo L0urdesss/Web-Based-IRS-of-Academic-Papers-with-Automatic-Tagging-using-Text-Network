@@ -21,6 +21,7 @@ export default function AdminView({ auth, requestpapers , status}) {
         setSuccessMessage(null);
     }, [requestpapers]);
 
+    console.log(requestpapers)
     const handleDelete = (itemId, itemTitle) => {
         if (confirm(`Are you sure you want to delete "${itemTitle}"?`)) {
             // deletePaper(route('papers.destroy', itemId));
@@ -126,7 +127,6 @@ export default function AdminView({ auth, requestpapers , status}) {
                     user={auth.user}
                     data={rowData}
                     handleCloseForm={handleCloseForm}
-                    title="Your Form Title"
                     submit={handleSubmit}
                 />
             )}

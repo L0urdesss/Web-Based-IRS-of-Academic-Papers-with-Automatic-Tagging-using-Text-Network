@@ -5,9 +5,10 @@ import { useForm } from '@inertiajs/react';
 import RequestForm from '@/Components/RequestForm'; // Adjust the path as needed
 // Import the request_button.png, pdf_icon.png, and x_button.png images
 import requestButtonImg from '@/Components/request_button.png';
-import pdfIconImg from '@/Components/pdf_icon.png';
+import pdfIconImg from '@/Components/view file.png';
 import exitButtonImg from '@/Components/x_button.png';
-import logoImg from '@/Components/logo2.png'; // Import the logo image
+import noFile from '@/Components/nofile.png'; // Import the logo image
+import pendingFile from '@/Components/pending file.png'; 
 
 export default function PaperDetails({ user, paper, className = '', success , status}) {
     const { data, setData, post } = useForm({
@@ -101,25 +102,18 @@ export default function PaperDetails({ user, paper, className = '', success , st
                                             <img
                                                 src={pdfIconImg}
                                                 alt="PDF Icon"
-                                                className="block mx-auto w-15 h-20 mb-4"
+                                                className=" mx-auto w-1/2 h-1/2 mb-4"
                                                 style={{ pointerEvents: 'none' }}
                                             />
                                         </a>
-                                        <p className="text-sm mt-2 mb-4" style={{ fontSize: '10px', lineHeight: '1.4' }}>
-                                            View PDF File
-                                        </p>
                                     </div>
                                 ) : (
                                     <div>
-                                    <p className="text-sm mt-2 mb-4" style={{ fontSize: '10px', lineHeight: '1.4' }}>
-                                    To read the full-text of this research,<br></br>
-                                    you can request a copy directly<br></br> from the authors.
-                                    </p>
 
                                     <img
-                                        src={requestButtonImg}
+                                        src={pendingFile}
                                         alt="Request Button"
-                                        className="block mx-auto w-15 h-10"
+                                        className="mx-auto w-1/2 h-1/2"
                                         onClick={handleRequestButtonClick}
                                     />
                                     </div>
@@ -128,7 +122,12 @@ export default function PaperDetails({ user, paper, className = '', success , st
 
                             </div>
                         ) : (
-                            <p>No file</p>
+                            <img
+                            src={noFile}
+                            alt="PDF Icon"
+                            className="mx-auto w-1/2 h-1/2 mb-4"
+                            style={{ pointerEvents: 'none' }}
+                        />
                         )}
                         {success && (
                             <div className="bg-green-400 p-4 rounded-md relative">

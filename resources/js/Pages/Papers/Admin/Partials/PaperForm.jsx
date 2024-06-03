@@ -93,7 +93,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
             <section className={`bg-white p-4 md:p-10 ${className}`} style={{ width: "100%" }}>
                 <header>
                     <h2 className="text-lg font-medium text-gray-900" style={{ fontSize: '20px', fontWeight:'bolder' }}>Research Paper Information</h2>
-                    <p className="mt-1 text-sm text-gray-600" style={{ fontSize: '10px', }}>Update Research Paper here!</p>
+                    <p className="mt-1 text-sm text-gray-600" style={{ fontSize: '10px', }}></p>
                 </header>
                 <form onSubmit={submit} className="mt-6 space-y-6">
                     <div>
@@ -225,7 +225,8 @@ export default function PaperForm({ auth, paper, className = '' }) {
                     {/* View File link */}
                     {data.file && (
                         <>
-                        <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
+                        <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2" style={{ color: 'white', textDecoration: 'underline', fontWeight: 'normal' }}>View File</a>
+
                         
                         </>
                     )}
