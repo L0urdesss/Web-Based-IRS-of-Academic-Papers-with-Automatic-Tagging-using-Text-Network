@@ -9,6 +9,7 @@ import pdfIconImg from '@/Components/view file.png';
 import exitButtonImg from '@/Components/x_button.png';
 import noFile from '@/Components/nofile.png'; // Import the logo image
 import pendingFile from '@/Components/pending file.png'; 
+import Toast from '@/Components/Toast';
 
 export default function PaperDetails({ user, paper, className = '', success , status}) {
     const { data, setData, post } = useForm({
@@ -66,6 +67,7 @@ export default function PaperDetails({ user, paper, className = '', success , st
 
     return (
         <section className={className}>
+            <Toast/>
             <div className="bg-white p-4 rounded-md">
                 <div className="mt-1 block w-full border border-white shadow-white" style={{ fontSize: '25px', color: '#AF2429', fontWeight: 'bold' }}>
                     {title}
@@ -128,11 +130,6 @@ export default function PaperDetails({ user, paper, className = '', success , st
                             className="mx-auto w-1/2 h-1/2 mb-4"
                             style={{ pointerEvents: 'none' }}
                         />
-                        )}
-                        {success && (
-                            <div className="bg-green-400 p-4 rounded-md relative">
-                                {success}
-                            </div>
                         )}
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import RequestTableAdmin from '@/Components/RequestTableAdmin';
 import RequestForm from '@/Components/RequestForm';
 import { router } from '@inertiajs/react';
 import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFilter component
+import Toast from '@/Components/Toast';
 
 const columns = ['Paper ID', 'Student Email', 'Paper Title', 'Status', 'Action'];
 
@@ -64,25 +65,18 @@ export default function AdminView({ auth, requestpapers , status}) {
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">All Request Papers</h2>}
         >
+            <Toast/>
             <Head title="All Request Papers" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="flex">
-  {/* Message container */}
-  <div className="w-full">
-    {successMessage && (
-      <div className="rounded-md p-4 mb-1 text-white h-15" style={{ backgroundColor: successMessage === 'Approve Successfully' ? '#3C6441' : '#831B1C' }}>
-        {"Request ID #" + rowData.id + " " + successMessage}
-      </div>
-    )}
-  </div>
-  
-  {/* Filter dropdown container */}
-  <div className="w-1/5">
-    <RequestFilter filterOption={filterOption} handleFilterChange={handleFilterChange} />
-  </div>
-</div>
+                    
+                    {/* Filter dropdown container */}
+                    <div className="w-1/5 ml-auto">
+                        <RequestFilter filterOption={filterOption} handleFilterChange={handleFilterChange} />
+                    </div>
+                    </div>
 
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         {isLoading ? (
@@ -128,6 +122,7 @@ export default function AdminView({ auth, requestpapers , status}) {
                     data={rowData}
                     handleCloseForm={handleCloseForm}
                     submit={handleSubmit}
+                    title={rowData.paper.title}
                 />
             )}
         </AuthenticatedLayout>

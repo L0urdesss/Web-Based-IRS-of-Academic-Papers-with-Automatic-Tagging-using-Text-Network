@@ -1,3 +1,5 @@
+import { Link } from "@inertiajs/react";
+
 export default function RequestTableAdmin({ items, columns, primary, actionUpdate, handleDelete }) {
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">
@@ -21,14 +23,16 @@ export default function RequestTableAdmin({ items, columns, primary, actionUpdat
                             <td className="px-6 py-4">{item.paper_id}</td>
                             <td className="px-6 py-4">{item.user.email}</td>
                             <td className="px-6 py-4">
-                                <a href={route("userpapers.preview", item.paper_id)} >
+                                <Link href={route("papers.edit", item.paper_id)} >
                                     {item.paper.title}
-                                </a>
+                                </Link>
                             </td>
                             <td className="px-6 py-4">{item.status}</td>
-                            <td className="px-6 py-4">
-                            <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={() => actionUpdate(item)}>View Paper</a>
-                            </td>
+                            {item.status !== 'approve' && item.status !== 'reject' && (
+                                <td className="px-6 py-4">
+                                <a href="#" className="font-medium text-blue-600 dark:text-blue-500 hover:underline" onClick={() => actionUpdate(item)}>View Request</a>
+                                </td>
+                            )}
                             {handleDelete === null && (
                                 <td className="px-6 py-4">
                                     <button onClick={() => handleDelete(item.id, item.paper.title)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete Item</button>

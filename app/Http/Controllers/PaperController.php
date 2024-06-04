@@ -135,7 +135,7 @@ class PaperController extends Controller
         ]);
     }
 
-    public function update(Paper $paper, Request $request): void
+    public function update(Paper $paper, Request $request)
     {    
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
@@ -173,46 +173,67 @@ class PaperController extends Controller
             // Store the new file with a cleaned file name
             $validatedData['file'] = $file->storeAs('project/' . Str::slug($validatedData['title']), $cleanFileName, 'public');
         }
-    
-        // Update the paper with the validated data
-        $paper->update([
-            'title' => $validatedData['title'],
-            'abstract' => $validatedData['abstract'],
-            'author' => $validatedData['author'],
-            'course' => $validatedData['course'],
-            'date_published' => $validatedData['date_published'],
-            'file' => $validatedData['file'],
-        ]);
-    }
-    public function store(Request $request): void
-    {
-        // dd($request); 
 
+        try {
+            $status = $paper->update([
+                'title' => $validatedData['title'],
+                'abstract' => $validatedData['abstract'],
+                'author' => $validatedData['author'],
+                'course' => $validatedData['course'],
+                'date_published' => $validatedData['date_published'],
+                'file' => $validatedData['file'],
+            ]);
+
+            if($status){
+                return redirect()->back()->with('success', 'Paper updated succesfully.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
+        }
+
+    }
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
-            'author' => 'required|string', 
+            'author' => 'required|string',
             'course' => 'required|string',
             'file' => 'nullable|mimes:pdf',
             'date_published' => ['required', 'string', new YearBelowCurrent()],
         ]);
-        
-        $filepath = $validatedData['file'] ?? null;
-        if ($filepath){
-            $validatedData['file'] = $filepath->store('project/' . $validatedData['title'], 'public');
-        }
-        
-        Paper::create($validatedData);
     
+        if ($request->hasFile('file')) {
+            $filepath = $request->file('file')->store('project/' . $validatedData['title'], 'public');
+            $validatedData['file'] = $filepath;
+        }
+    
+        try {
+            $status = Paper::create($validatedData);
+            if($status){
+                return redirect('/papers-admin')->with('success', 'Paper added successfully.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
+        }
     }
+    
+    
 
     public function add()
     {
         return Inertia::render('Papers/Admin/Add');
     }
     
-    public function destroy(Paper $paper): void
+    public function destroy(Paper $paper)
     {
-        $paper->delete();
+    try {
+        $status = $paper->delete();
+        if($status){
+            return redirect('/papers-admin')->with('success', 'Paper deleted successfully');
+        }
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'An error occurred while deleting the paper');
+    }
     }
 }

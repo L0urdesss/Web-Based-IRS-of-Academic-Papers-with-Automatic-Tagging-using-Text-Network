@@ -51,7 +51,7 @@ export default function Authenticated({ user, header, children }) {
                             </div>
                         </div>
 
-                        <div className="hidden sm:flex sm:items-center sm:ms-6">
+                        <div className="flex items-center space-x-8">
                             {userRole === 'guest' ? (
                                 <>
                                     <NavLink href={route('login')} style={{ color: '#ffffff' }}>Log in</NavLink>

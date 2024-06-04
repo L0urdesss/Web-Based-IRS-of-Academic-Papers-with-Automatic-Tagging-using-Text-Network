@@ -10,9 +10,11 @@ import { Transition } from '@headlessui/react';
 import uploadBoxImage from '@/Components/uploadbox.png'; // Import the upload box image
 import browseButtonImage from '@/Components/browse_button.png'; // Import the browse button image
 import CourseDropdown from '@/Components/CourseDropdown';
+import Toast from '@/Components/Toast';
 
 export default function PaperForm({ auth, paper, className = '' }) {
-    const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm({
+    const { errors } = usePage().props
+    const { data, setData, processing, recentlySuccessful } = useForm({
         title: paper ? paper.title : "",
         abstract: paper ? paper.abstract : "",
         author: paper ? paper.author : "", 
@@ -90,6 +92,8 @@ export default function PaperForm({ auth, paper, className = '' }) {
 
     return (
         <div className="relative flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
+                        <Toast />
+
             <section className={`bg-white p-4 md:p-10 ${className}`} style={{ width: "100%" }}>
                 <header>
                     <h2 className="text-lg font-medium text-gray-900" style={{ fontSize: '20px', fontWeight:'bolder' }}>Research Paper Information</h2>
@@ -170,15 +174,6 @@ export default function PaperForm({ auth, paper, className = '' }) {
                     </div>
                     <div className="flex items-center justify-end gap-4">
                         <PrimaryButton style={{ backgroundColor: '#831B1C', fontSize: '10px', textTransform: 'capitalize' }} disabled={processing}>Save Changes</PrimaryButton>
-                        <Transition
-                            show={recentlySuccessful}
-                            enter="transition ease-in-out"
-                            enterFrom="opacity-0"
-                            leave="transition ease-in-out"
-                            leaveTo="opacity-0"
-                        >
-                            <p className="text-sm text-gray-600">Saved.</p>
-                        </Transition>
                     </div>
                 </form>
             </section>

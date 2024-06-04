@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import searchImage from './search.png';
 
-const SearchBar = ({ onSearch, searchQuery }) => {
+const SearchBar = ({ onSearch, searchQuery, onChange}) => {
   const [searchTerm, setSearchTerm] = useState(searchQuery || '');
   const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (event) => {
     setSearchTerm(event.target.value);
+    onChange(event.target.value);
   };
 
   const handleSubmit = (event) => {

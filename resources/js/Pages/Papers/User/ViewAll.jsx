@@ -45,11 +45,11 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
         setInputValue(searchQuery);
     },[searchQuery]);
 
-
+    console.log(inputValue)
     const handleSearch = (searchTerm) => {
         setIsLoading(true);
-        
         const url = route('userpapers.view');
+        
         const data = {
             searchQuery: searchTerm,
             filters: appliedFilters,
@@ -59,7 +59,11 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
             paperDate: selectedRange
         };
 
-        router.get(url, data, { preserveScroll: true });
+        const option = {
+            preserveScroll: true
+        }
+
+        router.get(url, data, option);
     };
 
     // const handleOnClickSearch = (searchTerm,course) => {
@@ -84,17 +88,23 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
             filterText = 'Abstract';
         }
         const lowercaseFilter = filterType.toLowerCase(); 
-        if (!appliedFilters.includes(filterText)) {
+        if (!appliedFilters.includes(lowercaseFilter)) {
             setAppliedFilters([...appliedFilters, lowercaseFilter]);
+            setTriggerSearch(true);
+
         }
+
     };
     
     const handleRemoveFilter = (filter) => {
         const updatedFilters = appliedFilters.filter((item) => item !== filter);
         setAppliedFilters(updatedFilters);
+        setTriggerSearch(true);
+
     };
 
     const handleClearFilters = () => {
+        setTriggerSearch(true);
         setAppliedFilters([]);
     };
 
@@ -129,8 +139,12 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
             handleSearch(inputValue);
             setTriggerSearch(false); // Reset triggerSearch to prevent infinite loop
         }
+        
     }, [triggerSearch, inputValue]); // Trigger effect only when triggerSearch or inputValue changes
     
+    const setInput = (searchQuery) => {
+        setInputValue(searchQuery);
+    };
     const handleButtonClick = (range) => {
         if (range === 'custom') {
             setShowCustomInput(true);
@@ -306,7 +320,7 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                     </div>
                     <div className="sm:w-3/4">
                         <div className="mb-1">
-                            <SearchBar onSearch={handleSearch} searchQuery={inputValue} />
+                            <SearchBar onSearch={handleSearch} searchQuery={inputValue} onChange={setInput}/>
                         </div>
                         {isLoading ? "Loading..." : (
                             <div>

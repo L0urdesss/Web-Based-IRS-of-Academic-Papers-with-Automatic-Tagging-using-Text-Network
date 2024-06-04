@@ -13,7 +13,6 @@ const Dashboard = ({ auth }) => {
         const url = route('userpapers.view');
         const data = {
             searchQuery: searchTerm,
-            filters:  ['title','author','abstract'],
         };
 
         router.get(url, data);
