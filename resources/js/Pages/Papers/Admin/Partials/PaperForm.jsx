@@ -66,7 +66,7 @@ export default function PaperForm({ auth, paper, className = '' }) {
 
     const submit = async (e) => {
         e.preventDefault();
-        
+        console.log(paper)
         if (paper) {
             patch(route('papers.update', paper.id), {
                 preserveScroll: true

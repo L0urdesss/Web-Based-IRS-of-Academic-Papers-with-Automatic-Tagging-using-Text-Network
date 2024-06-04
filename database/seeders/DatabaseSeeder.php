@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed students
-        Student::factory(50)->create();
+        // Student::factory(50)->create();
     
         // Seed users
-        $this->call(UsersTableSeeder::class);
+        // $this->call(UsersTableSeeder::class);
     
         // Seed papers with related request papers
         Paper::factory()
@@ -28,8 +28,8 @@ class DatabaseSeeder extends Seeder
             ->create();
     
         // Seed admin users
-        $this->call(AdminUserSeeder::class);
-        $this->call(SampleUserSeeder::class);
+        // $this->call(AdminUserSeeder::class);
+        // $this->call(SampleUserSeeder::class);
 
     }
     
