@@ -289,30 +289,68 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                                         </button>
                                     </li>
                                 </ul>
-
                                 {showCustomInput && (
-                                    <div>
-                                        <input
-                                            type="text"
-                                            placeholder="Start Year"
-                                            value={customDate.start}
-                                            onChange={(e) => setCustomDate({ ...customDate, start: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="End Year"
-                                            value={customDate.end}
-                                            onChange={(e) => setCustomDate({ ...customDate, end: e.target.value })}
-                                        />
-                                        <button onClick={handleCustomDateSubmit}>Submit</button>
-                                    </div>
-                                )}
+    <div>
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+            <input
+                type="text"
+                placeholder="Start Year"
+                value={customDate.start}
+                onChange={(e) => setCustomDate({ ...customDate, start: e.target.value })}
+                style={{ 
+                    width: '90px', 
+                    marginRight: '5px', 
+                    fontSize: '10px', 
+                    height: '20px', 
+                    background: '#F0F0F0', 
+                    border: 'none', 
+                    borderBottom: '1px solid #626262',
+                }}
+            />
+            <span style={{ marginRight: '5px', color: '#626262' }}>-</span>
+            <input
+                type="text"
+                placeholder="End Year"
+                value={customDate.end}
+                onChange={(e) => setCustomDate({ ...customDate, end: e.target.value })}
+                style={{ 
+                    width: '90px', 
+                    marginRight: '10px', 
+                    fontSize: '10px', 
+                    height: '20px', 
+                    background: '#F0F0F0', 
+                    border: 'none', 
+                    borderBottom: '1px solid #626262' 
+                }}
+            />
+        </div>
+        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
+            <button 
+                onClick={handleCustomDateSubmit} 
+                style={{ 
+                    fontSize: '8px', 
+                    backgroundColor: '#B8B8B8', 
+                    color: 'white', 
+                    borderRadius: '10px', 
+                    padding: '5px 20px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    width: '100%'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#626262'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#B8B8B8'}
+            >
+                Submit
+            </button>
+        </div>
+    </div>
+)}
+{selectedRange && (
+    <div>
+        <p style={{ fontSize: '14px', color: '#626262' }}>Selected Date Range: {`${selectedRange}`}</p>
+    </div>
+)}
 
-                                {selectedRange && (
-                                    <div>
-                                        <p>Selected Date Range: {`${selectedRange}`}</p>
-                                    </div>
-                                )}
                             </div>
 
                             </div>

@@ -233,7 +233,15 @@ export default function PaperForm({ auth, paper, className = '' }) {
                         <embed src={URL.createObjectURL(data.file)} type="application/pdf" width="100%" height="100%" />
                     </div>
                 )}
-                <button className="mt-2 p-4 md:p-6" onClick={handleClick}>Clear File</button>
+<button
+  className="mt-7 p-4 md:p-2 absolute right-0 "
+  onClick={handleClick}
+  style={{ backgroundColor: '#831b1c', color: 'white', textAlign: 'center', fontSize:'12px', width: '100%'}}
+>
+  Clear File
+</button>
+
+
                 <InputError className="mt-2" message={errors.file} />
 
             </div>
