@@ -17,7 +17,7 @@ const Dashboard = ({ auth }) => {
 
         router.get(url, data);
     };
-
+        console.log("in dash ",auth)
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />
