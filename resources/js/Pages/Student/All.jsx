@@ -6,6 +6,7 @@ import RequestForm from '@/Components/RequestForm';
 import { router } from '@inertiajs/react';
 import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFilter component
 import StudentTable from '@/Components/StudentTable';
+import Toast from '@/Components/Toast';
 
 const columns = [ 'Email', 'Name', 'Course', 'College', 'Action'];
 
@@ -45,6 +46,7 @@ export default function All({ auth, students, searchQuery }) {
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Student List</h2>}
         >
+            <Toast/>
             <Head title="Student List" />
 
             <div className="py-12">

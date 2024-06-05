@@ -2,14 +2,14 @@ import React from 'react';
 import exitButtonImg from '@/Components/x_button.png';
 import logoImg from '@/Components/logo2.png';
 
-const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) => {
+const RequestForm = ({ user, data, setData, submit, handleCloseForm, title}) => {
     // Determine whether the user is an admin
     const isAdmin = user.role === 'admin';
-
     const handleSubmit = (e, action) => {
         e.preventDefault();
         submit(action);
     };
+    console.log("in requestform: ",data)
 
     return (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center" style={{ backdropFilter: 'blur(2px)' }}>
@@ -38,11 +38,11 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="course" style={{ marginRight: '5px', width: '50px', textAlign: 'left', fontWeight: 'bold' }}>Course:</label>
-                            <input type="text" id="course" value={data.user.student.course} onChange={(e) => setData('course', e.target.value)} className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                            <input type="text" id="course" value={data.user.student.course} onChange={(e) => setData('course', e.target.value)} className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} disabled/>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: '10px', fontSize: '10px' }}>
                             <label htmlFor="title" style={{ marginRight: '5px', width: '50px', textAlign: 'left' ,fontWeight: 'bold'}}>Title:</label>
-                            <input type="text" id="title" value={data.paper.title} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} />
+                            <input type="text" id="title" value={title} disabled className="rounded-md border-none bg-gray-200 p-1" style={{ width: 'calc(100% - 60px)', fontSize: '10px', borderRadius: '3px' }} disabled/>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', marginBottom: '1px' }}>
                             <label htmlFor="purpose" style={{ fontSize: '14px' }}></label>
@@ -55,7 +55,8 @@ const RequestForm = ({ user, data, setData, submit, handleCloseForm, title }) =>
                                 placeholder="Describe Your Purpose here.."
                                 onFocus={(e) => e.target.placeholder = ''}
                                 onBlur={(e) => e.target.placeholder = 'Describe Your Purpose here..'}
-                            />
+                                disabled={!setData} // Conditionally set disabled attribute based on setData
+                                />
                         </div>
                     </div>
                     {/* Render submit button only if user is not an admin */}

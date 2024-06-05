@@ -19,6 +19,8 @@ class SampleUserSeeder extends Seeder
             'id'    => 'TUPM-00-0001',
             'name'  => 'Sample User',
             'email' => 'sample@tup.edu.ph',
+            'course'=> 'BSCS',
+            'college'=> 'COS'
         ]);
 
         // Create a user record for the admin user using the retrieved id

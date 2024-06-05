@@ -28,7 +28,7 @@ class StudentController extends Controller
         }
         
     
-        $students = $query->paginate(5);
+        $students = $query->paginate(7);
         
         return Inertia::render('Student/All', [
             'students' => $students,
@@ -43,28 +43,52 @@ class StudentController extends Controller
         ]);
     }
 
-    public function update(Student $student, Request $request):void
+    public function update(Student $student, Request $request)
     {    
         // dd($request); // or var_dump($paper);
 
-        $student->update([
-            'email' => $request->email,
-            'name' => $request->name,
-            'course' => $request->course,
-            'college' => $request->college,
-        ]);
-    }
-
-    public function store(Request $request): void
-    {
         $validatedData = $request->validate([
-            'email' => 'required|string|max:255',
-            'name' => 'required|string',
+            'email' => 'required|email|string',
+            'name' => 'required|string|max:255',
             'course' => 'required|string', 
             'college' => 'required|string',
         ]);
+
+        try {
+            $status = $student->update([
+                'email' => $validatedData['email'],
+                'name' => $validatedData['name'],
+                'course' => $validatedData['course'],
+                'college' => $validatedData['college'],
+            ]);
+
+            if($status){
+                return redirect()->back()->with('success', 'Student updated succesfully.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the student.');
+        }
+
         
-        Student::create($validatedData);
+    }
+
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email|string',
+            'name' => 'required|string|max:255',
+            'course' => 'required|string', 
+            'college' => 'required|string',
+        ]);
+    
+        try {
+            $status = Student::create($validatedData);
+            if($status){
+                return redirect('/student')->with('success', 'Student added successfully.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the student.');
+        }
     }
 
     public function add()
@@ -72,7 +96,14 @@ class StudentController extends Controller
         return Inertia::render('Student/Add');
     }
     
-    public function destroy(Student $student): void
+    public function destroy(Student $student)
     {
-        $student->delete();
+        try {
+            $status = $student->delete();
+            if($status){
+                return redirect('/student')->with('success', 'Student deleted successfully');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while deleting the student');
+        }
     }}

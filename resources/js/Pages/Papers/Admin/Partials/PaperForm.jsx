@@ -3,16 +3,18 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { useForm, usePage } from '@inertiajs/react';
+import { useForm, usePage, router } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
 // Import the images using @/ alias
 import uploadBoxImage from '@/Components/uploadbox.png'; // Import the upload box image
 import browseButtonImage from '@/Components/browse_button.png'; // Import the browse button image
 import CourseDropdown from '@/Components/CourseDropdown';
+import Toast from '@/Components/Toast';
 
 export default function PaperForm({ auth, paper, className = '' }) {
-    const { data, setData, patch, post, errors, processing, recentlySuccessful } = useForm({
+    const { errors } = usePage().props
+    const { data, setData, processing, recentlySuccessful } = useForm({
         title: paper ? paper.title : "",
         abstract: paper ? paper.abstract : "",
         author: paper ? paper.author : "", 
@@ -68,22 +70,34 @@ export default function PaperForm({ auth, paper, className = '' }) {
         e.preventDefault();
         console.log(paper)
         if (paper) {
-            patch(route('papers.update', paper.id), {
+            router.post(`/papers-admin/${paper.id}`, {
+                ...data,
+                _method: "patch",
                 preserveScroll: true
             });
         } else {
-            post(route('papers.store'), {
+            router.post('/add-admin', {
+                ...data,
                 preserveScroll: true
             });
         }
     };
 
+    const handleClick = () => {
+        setData({ ...data, file: null });
+        console.log(data)
+      };
+
+
+
     return (
         <div className="relative flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
+                        <Toast />
+
             <section className={`bg-white p-4 md:p-10 ${className}`} style={{ width: "100%" }}>
                 <header>
                     <h2 className="text-lg font-medium text-gray-900" style={{ fontSize: '20px', fontWeight:'bolder' }}>Research Paper Information</h2>
-                    <p className="mt-1 text-sm text-gray-600" style={{ fontSize: '10px', }}>Update Research Paper here!</p>
+                    <p className="mt-1 text-sm text-gray-600" style={{ fontSize: '10px', }}></p>
                 </header>
                 <form onSubmit={submit} className="mt-6 space-y-6">
                     <div>
@@ -160,21 +174,12 @@ export default function PaperForm({ auth, paper, className = '' }) {
                     </div>
                     <div className="flex items-center justify-end gap-4">
                         <PrimaryButton style={{ backgroundColor: '#831B1C', fontSize: '10px', textTransform: 'capitalize' }} disabled={processing}>Save Changes</PrimaryButton>
-                        <Transition
-                            show={recentlySuccessful}
-                            enter="transition ease-in-out"
-                            enterFrom="opacity-0"
-                            leave="transition ease-in-out"
-                            leaveTo="opacity-0"
-                        >
-                            <p className="text-sm text-gray-600">Saved.</p>
-                        </Transition>
                     </div>
                 </form>
             </section>
             <div 
                 className="relative bg-white p-4 md:p-6 mt-5" 
-                style={{ width: "100%", maxWidth: "500px", height: "400px", backgroundColor: '#831B1C' ,marginTop:"50px" }}
+                style={{ width: "100%", maxWidth: "500px", height: "400px", backgroundColor: '#831B1C' ,marginTop:"20px" }}
                 onDrop={(e) => {
                     e.preventDefault();
                     setIsDragging(false);
@@ -214,10 +219,13 @@ export default function PaperForm({ auth, paper, className = '' }) {
                     </div>
                     {/* View File link */}
                     {data.file && (
-                        <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
+                        <>
+                        <a href={data.file} target="_blank" rel="noopener noreferrer" className="mt-2" style={{ color: 'white', textDecoration: 'underline', fontWeight: 'normal' }}>View File</a>
+
+                        
+                        </>
                     )}
                 </div>
-                <InputError className="mt-2" message={errors.file} />
 
                 {/* Floating PDF Preview */}
                 {data.file && data.file.type === 'application/pdf' && (
@@ -225,6 +233,17 @@ export default function PaperForm({ auth, paper, className = '' }) {
                         <embed src={URL.createObjectURL(data.file)} type="application/pdf" width="100%" height="100%" />
                     </div>
                 )}
+<button
+  className="mt-7 p-4 md:p-2 absolute right-0 "
+  onClick={handleClick}
+  style={{ backgroundColor: '#831b1c', color: 'white', textAlign: 'center', fontSize:'12px', width: '100%'}}
+>
+  Clear File
+</button>
+
+
+                <InputError className="mt-2" message={errors.file} />
+
             </div>
         </div>
     );

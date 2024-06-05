@@ -30,7 +30,7 @@ class RequestPaperController extends Controller
         WHEN status = 'reject' THEN 3
         ELSE 4 END");
         
-        $requestpapers = $query->with('user.student', 'paper')->paginate(5);
+        $requestpapers = $query->with('user.student', 'paper')->paginate(7);
     
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/Admin/AdminView', [
@@ -55,7 +55,7 @@ class RequestPaperController extends Controller
         }
 
         // Paginate the filtered records
-        $requestpapers = $query->paginate(5);
+        $requestpapers = $query->paginate(7);
 
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/User/View', [
@@ -85,11 +85,23 @@ class RequestPaperController extends Controller
         // Add user_id and paper_id to the validated data
         $validatedData['user_id'] = $request->user_id;
         $validatedData['paper_id'] = $request->paper_id;
-    
-        RequestPaper::create($validatedData);
 
-        return to_route('userpapers.preview', ['paper' => $request->paper_id])
-        ->with('success', 'Submitted Successfully');
+        $oldRequest = RequestPaper::where('user_id',$validatedData['user_id'])
+                                    ->where('paper_id',$validatedData['paper_id'])
+                                    ->where('status',"pending")
+                                    ->first();
+        if ($oldRequest){
+            return redirect()->back()->with('error', 'You Already submitted a request.');
+        }
+        try {
+            $status = RequestPaper::create($validatedData);
+            if($status){
+                return redirect()->back()->with('success', 'Request submitted successfully.');
+            }
+        } catch (\Exception $e) {
+            \Log::info($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while submitting the request.');
+        }
     }
     
     public function getStatus($userId, $paperId)
@@ -150,7 +162,19 @@ class RequestPaperController extends Controller
         $ids = $request->input('id');
         $action = $request->input('action');
 
-        RequestPaper::where('id', $ids)->update(['status' => $action]);
+        
+        try {
+            $status = RequestPaper::where('id', $ids)->update(['status' => $action]);
+            if($status){
+                if($action == 'approve'){
+                    return redirect()->back()->with('success', 'Request ID ' . $ids .' approved successfully.');
+                } else if($action == 'reject'){
+                    return redirect()->back()->with('success', 'Request ID ' . $ids .' rejected successfully.');
+                }
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while submitting the request.');
+        }
     }
     /**
      * Remove the specified resource from storage.

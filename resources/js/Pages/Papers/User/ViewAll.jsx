@@ -45,11 +45,11 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
         setInputValue(searchQuery);
     },[searchQuery]);
 
-
+    console.log(inputValue)
     const handleSearch = (searchTerm) => {
         setIsLoading(true);
-        
         const url = route('userpapers.view');
+        
         const data = {
             searchQuery: searchTerm,
             filters: appliedFilters,
@@ -59,7 +59,11 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
             paperDate: selectedRange
         };
 
-        router.get(url, data, { preserveScroll: true });
+        const option = {
+            preserveScroll: true
+        }
+
+        router.get(url, data, option);
     };
 
     // const handleOnClickSearch = (searchTerm,course) => {
@@ -84,17 +88,23 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
             filterText = 'Abstract';
         }
         const lowercaseFilter = filterType.toLowerCase(); 
-        if (!appliedFilters.includes(filterText)) {
+        if (!appliedFilters.includes(lowercaseFilter)) {
             setAppliedFilters([...appliedFilters, lowercaseFilter]);
+            setTriggerSearch(true);
+
         }
+
     };
     
     const handleRemoveFilter = (filter) => {
         const updatedFilters = appliedFilters.filter((item) => item !== filter);
         setAppliedFilters(updatedFilters);
+        setTriggerSearch(true);
+
     };
 
     const handleClearFilters = () => {
+        setTriggerSearch(true);
         setAppliedFilters([]);
     };
 
@@ -129,8 +139,12 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
             handleSearch(inputValue);
             setTriggerSearch(false); // Reset triggerSearch to prevent infinite loop
         }
+        
     }, [triggerSearch, inputValue]); // Trigger effect only when triggerSearch or inputValue changes
     
+    const setInput = (searchQuery) => {
+        setInputValue(searchQuery);
+    };
     const handleButtonClick = (range) => {
         if (range === 'custom') {
             setShowCustomInput(true);
@@ -275,30 +289,68 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                                         </button>
                                     </li>
                                 </ul>
-
                                 {showCustomInput && (
-                                    <div>
-                                        <input
-                                            type="text"
-                                            placeholder="Start Year"
-                                            value={customDate.start}
-                                            onChange={(e) => setCustomDate({ ...customDate, start: e.target.value })}
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="End Year"
-                                            value={customDate.end}
-                                            onChange={(e) => setCustomDate({ ...customDate, end: e.target.value })}
-                                        />
-                                        <button onClick={handleCustomDateSubmit}>Submit</button>
-                                    </div>
-                                )}
+    <div>
+        <div style={{ display: 'flex', alignItems: 'center'}}>
+            <input
+                type="text"
+                placeholder="Start Year"
+                value={customDate.start}
+                onChange={(e) => setCustomDate({ ...customDate, start: e.target.value })}
+                style={{ 
+                    width: '90px', 
+                    marginRight: '5px', 
+                    fontSize: '10px', 
+                    height: '20px', 
+                    background: '#F0F0F0', 
+                    border: 'none', 
+                    borderBottom: '1px solid #626262',
+                }}
+            />
+            <span style={{ marginRight: '5px', color: '#626262' }}>-</span>
+            <input
+                type="text"
+                placeholder="End Year"
+                value={customDate.end}
+                onChange={(e) => setCustomDate({ ...customDate, end: e.target.value })}
+                style={{ 
+                    width: '90px', 
+                    marginRight: '10px', 
+                    fontSize: '10px', 
+                    height: '20px', 
+                    background: '#F0F0F0', 
+                    border: 'none', 
+                    borderBottom: '1px solid #626262' 
+                }}
+            />
+        </div>
+        <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'center' }}>
+            <button 
+                onClick={handleCustomDateSubmit} 
+                style={{ 
+                    fontSize: '8px', 
+                    backgroundColor: '#B8B8B8', 
+                    color: 'white', 
+                    borderRadius: '10px', 
+                    padding: '5px 20px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    width: '100%'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#626262'}
+                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#B8B8B8'}
+            >
+                Submit
+            </button>
+        </div>
+    </div>
+)}
+{selectedRange && (
+    <div>
+        <p style={{ fontSize: '14px', color: '#626262' }}>Selected Date Range: {`${selectedRange}`}</p>
+    </div>
+)}
 
-                                {selectedRange && (
-                                    <div>
-                                        <p>Selected Date Range: {`${selectedRange}`}</p>
-                                    </div>
-                                )}
                             </div>
 
                             </div>
@@ -306,7 +358,7 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                     </div>
                     <div className="sm:w-3/4">
                         <div className="mb-1">
-                            <SearchBar onSearch={handleSearch} searchQuery={inputValue} />
+                            <SearchBar onSearch={handleSearch} searchQuery={inputValue} onChange={setInput}/>
                         </div>
                         {isLoading ? "Loading..." : (
                             <div>

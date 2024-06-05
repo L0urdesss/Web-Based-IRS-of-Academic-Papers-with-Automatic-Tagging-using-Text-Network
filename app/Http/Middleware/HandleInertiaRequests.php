@@ -37,11 +37,21 @@ class HandleInertiaRequests extends Middleware
             $authUser = $user->load('student');
         }
 
-        return [
-            ...parent::share($request),
+        return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $authUser,
             ],
-        ];
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
+            'urlPrev'	=> function() {
+                if (url()->previous() !== route('login') && url()->previous() !== '' && url()->previous() !== url()->current()) {
+		    		return url()->previous();
+		    	}else {
+		    		return 'empty'; // used in javascript to disable back button behavior
+		    	}
+		    },
+        ]);
     }
 }

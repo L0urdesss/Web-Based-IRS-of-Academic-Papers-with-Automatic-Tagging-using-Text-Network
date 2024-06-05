@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import StudentForm from './Partials/StudentForm';
+import Toast from '@/Components/Toast';
 
 
 export default function Edit({ auth, student }) {
@@ -10,6 +11,7 @@ export default function Edit({ auth, student }) {
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Student #{student.id}</h2>}
         >
+            <Toast/>
             <Head title={'Student #' + student.id} />
 
             <div className="py-12">

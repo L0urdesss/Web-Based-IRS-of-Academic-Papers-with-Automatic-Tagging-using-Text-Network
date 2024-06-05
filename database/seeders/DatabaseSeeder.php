@@ -22,10 +22,10 @@ class DatabaseSeeder extends Seeder
         // $this->call(UsersTableSeeder::class);
     
         // Seed papers with related request papers
-        Paper::factory()
-            ->count(30)
-            ->hasRequestPapers(3)
-            ->create();
+        // Paper::factory()
+            // ->count(30)
+            // ->hasRequestPapers(3)
+            // ->create();
     
         // Seed admin users
         // $this->call(AdminUserSeeder::class);
