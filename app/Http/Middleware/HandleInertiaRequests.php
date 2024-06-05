@@ -34,7 +34,7 @@ class HandleInertiaRequests extends Middleware
         // Check if user is authenticated
         if ($user = $request->user()) {
             // Load the user's data only if user is authenticated
-            $authUser = $user->load('student');
+            $authUser = $user->load(['student', 'notif']);
         }
 
         return array_merge(parent::share($request), [

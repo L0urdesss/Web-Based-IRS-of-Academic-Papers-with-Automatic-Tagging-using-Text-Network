@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
+import { Link,router } from '@inertiajs/react';
 
 // Import the logo image
 import logo from '@/Components/logo2.png';
@@ -12,6 +12,7 @@ export default function Authenticated({ user, header, children }) {
     const userRole = user?.role || 'guest';
     const userName = user?.student?.name || 'Guest';
     const userEmail = user?.email || '';
+    console.log(user)
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -58,7 +59,7 @@ export default function Authenticated({ user, header, children }) {
                                     <NavLink href={route('register')} style={{ color: '#ffffff' }}>Register</NavLink>
                                 </>
                             ) : (
-                                <div className="ms-3 relative">
+                                <div className="ms-3 relative" style={{ display: 'flex', alignItems: 'center' }}>
                                     <Dropdown>
                                         <Dropdown.Trigger>
                                             <span className="inline-flex rounded-md">
@@ -85,7 +86,30 @@ export default function Authenticated({ user, header, children }) {
                                         </Dropdown.Trigger>
 
                                         <Dropdown.Content>
-                                            <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                        <Dropdown.Link href={route('profile.edit')}>
+                                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                                Profile
+                                                <div
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        backgroundColor: 'red',
+                                                        borderRadius: '50%',
+                                                        border: '1px solid white',
+                                                        color: 'white',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginLeft: '8px', // Adjust this value to control the space between the text and the circle
+                                                        fontSize: '12px',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                               {user.notif.count}
+                                            
+                                                </div>
+                                            </span>
+                                        </Dropdown.Link>                                            
                                             {userRole !== 'admin' && (
                                                 <Dropdown.Link href={route('userrequest.view', { user_id: user?.id })}>Request List</Dropdown.Link>
                                             )}
@@ -94,7 +118,18 @@ export default function Authenticated({ user, header, children }) {
                                             </Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
+                                    <div
+                                        style={{
+                                            width: '10px',
+                                            height: '10px',
+                                            backgroundColor: 'white',
+                                            borderRadius: '50%',
+                                            border: '1px solid black',
+                                        }}
+
+                                    ></div>
                                 </div>
+                                
                             )}
                         </div>
 

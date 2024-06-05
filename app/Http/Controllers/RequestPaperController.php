@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notif;
 use App\Models\RequestPaper;
 use App\Models\Student;
 use App\Models\User;
@@ -166,6 +167,11 @@ class RequestPaperController extends Controller
         try {
             $status = RequestPaper::where('id', $ids)->update(['status' => $action]);
             if($status){
+                $notif = Notif::updateOrCreate(
+                    ['user_id' => $ids], // Assuming user() method returns the currently authenticated user
+                    ['count' => \DB::raw('count + 1')]
+                );
+                dd($notif);
                 if($action == 'approve'){
                     return redirect()->back()->with('success', 'Request ID ' . $ids .' approved successfully.');
                 } else if($action == 'reject'){
@@ -173,7 +179,7 @@ class RequestPaperController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while submitting the request.');
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
     /**

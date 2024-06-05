@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NotifController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestPaperController;
@@ -79,6 +80,8 @@ Route::middleware('auth', 'admin')->group(function () {
 
     Route::put('/request-papers-all', [RequestPaperController::class, 'updateAll'])->name('userrequest.updateAll');
     Route::delete('/papers-admin/{paper}',[PaperController::class, 'destroy'])->name('papers.destroy');
+
+    Route::get('/notifications/count', [NotifController::class, 'count'])->name('notif.count');
 
 });
 
