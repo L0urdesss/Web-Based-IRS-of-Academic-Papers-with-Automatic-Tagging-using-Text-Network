@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Notif;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -30,11 +32,14 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $authUser = null;
+        $notifCount = 0;
 
         // Check if user is authenticated
-        if ($user = $request->user()) {
+        if ($user = Auth::user()) {
             // Load the user's data only if user is authenticated
             $authUser = $user->load(['student', 'notif']);
+            $notif = Notif::where('user_id', $user->id)->first();
+            $notifCount = $notif ? $notif->count : 0;
         }
 
         return array_merge(parent::share($request), [
@@ -45,13 +50,14 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
-            'urlPrev'	=> function() {
+            'urlPrev' => function() {
                 if (url()->previous() !== route('login') && url()->previous() !== '' && url()->previous() !== url()->current()) {
-		    		return url()->previous();
-		    	}else {
-		    		return 'empty'; // used in javascript to disable back button behavior
-		    	}
-		    },
+                    return url()->previous();
+                } else {
+                    return 'empty'; // used in javascript to disable back button behavior
+                }
+            },
+            'notifCount' => $notifCount,
         ]);
     }
 }

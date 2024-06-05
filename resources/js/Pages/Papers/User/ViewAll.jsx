@@ -112,12 +112,11 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
         const checked = event.target.checked;
         console.log("Toggle changed:", checked);
         setWithFile(checked);
+        console.log("Toggle changed after:", checked);
+
+
         setTriggerSearch(true);
       };
-    
-    useEffect(() => {
-    console.log("withFile state changed:", withFile);
-    }, [withFile]);
 
 
     const handleCourseChange = (e) => {

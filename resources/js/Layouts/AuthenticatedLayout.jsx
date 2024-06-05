@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link,router } from '@inertiajs/react';
+import { Link,router,usePage} from '@inertiajs/react';
 
 // Import the logo image
 import logo from '@/Components/logo2.png';
@@ -12,6 +12,17 @@ export default function Authenticated({ user, header, children }) {
     const userRole = user?.role || 'guest';
     const userName = user?.student?.name || 'Guest';
     const userEmail = user?.email || '';
+    const { notifCount } = usePage().props;
+
+    // Initialize userNotif with useState
+    const [userNotif, setUserNotif] = useState(user?.notif?.count || 0);
+
+    // Update userNotif when notifCount changes
+    useEffect(() => {
+        setUserNotif(notifCount);
+    }, [notifCount]);
+
+
     console.log(user)
 
     return (
@@ -87,9 +98,17 @@ export default function Authenticated({ user, header, children }) {
 
                                         <Dropdown.Content>
                                         <Dropdown.Link href={route('profile.edit')}>
-                                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
                                                 Profile
-                                                <div
+
+                                        </Dropdown.Link>                                            
+                                            {userRole !== 'admin' && (
+                                                <Dropdown.Link href={route('userrequest.view', { user_id: user?.id })}>
+                                                {userNotif !== 0 ? (
+
+                                                                                               <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+ 
+ Request List
+                                                    <div
                                                     style={{
                                                         width: '20px',
                                                         height: '20px',
@@ -105,19 +124,27 @@ export default function Authenticated({ user, header, children }) {
                                                         fontWeight: 'bold'
                                                     }}
                                                 >
-                                               {user.notif.count}
-                                            
+                                                                                                {userNotif}
+
                                                 </div>
                                             </span>
-                                        </Dropdown.Link>                                            
-                                            {userRole !== 'admin' && (
-                                                <Dropdown.Link href={route('userrequest.view', { user_id: user?.id })}>Request List</Dropdown.Link>
+                                                ) : (
+                                                    <>
+                                                    Request List
+                                                    </>
+                                                )}
+
+                                                </Dropdown.Link>
+                                                
+                                            
                                             )}
                                             <Dropdown.Link href={route('logout')} method="post" as="button">
                                                 Log Out
                                             </Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
+                                    {userNotif !== 0 && (
+
                                     <div
                                         style={{
                                             width: '10px',
@@ -128,6 +155,7 @@ export default function Authenticated({ user, header, children }) {
                                         }}
 
                                     ></div>
+                                    )}
                                 </div>
                                 
                             )}

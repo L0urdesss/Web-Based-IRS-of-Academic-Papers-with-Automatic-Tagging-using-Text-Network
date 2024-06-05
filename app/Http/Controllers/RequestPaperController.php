@@ -46,6 +46,8 @@ class RequestPaperController extends Controller
         // Get the user ID from the request parameters
         $userId = $request->query('user_id');
 
+        //resets the notification counter
+        Notif::where('user_id',$userId)->update(['count' => 0]);
 
         // Query RequestPaper records with the user ID
         $query = RequestPaper::query()->with('user','paper');
@@ -55,12 +57,16 @@ class RequestPaperController extends Controller
             $query->where('user_id', $userId);
         }
 
+            // Get the updated notification count
+        $notifCount = Notif::where('user_id', $userId)->first()->count;
+
         // Paginate the filtered records
         $requestpapers = $query->paginate(7);
 
         // Return the view with the filtered request papers and user information
         return Inertia::render('Request/User/View', [
             'requestpapers' => $requestpapers,
+            'notifCount' => $notifCount,
         ]);
     }
 
@@ -163,15 +169,17 @@ class RequestPaperController extends Controller
         $ids = $request->input('id');
         $action = $request->input('action');
 
-        
+        \Log::info($request);
         try {
-            $status = RequestPaper::where('id', $ids)->update(['status' => $action]);
+            $requestPaper = RequestPaper::where('id', $ids)->first();
+            $status = $requestPaper->update(['status' => $action]);
+            // dd($requestPaper);
             if($status){
                 $notif = Notif::updateOrCreate(
-                    ['user_id' => $ids], // Assuming user() method returns the currently authenticated user
+                    ['user_id' => $requestPaper->user_id], // Assuming user() method returns the currently authenticated user
                     ['count' => \DB::raw('count + 1')]
                 );
-                dd($notif);
+                // dd($notif);
                 if($action == 'approve'){
                     return redirect()->back()->with('success', 'Request ID ' . $ids .' approved successfully.');
                 } else if($action == 'reject'){
