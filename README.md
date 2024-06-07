@@ -4,7 +4,7 @@ Sample Users
 User - sample@tup.edu.ph
 Admin - admin@tup.edu.ph
 Password - password
-IRS project with Laravel-React Framework + Inertia
+# IRS project with Laravel-React Framework + Inertia
 
 ## Installation (For CMS)
 
