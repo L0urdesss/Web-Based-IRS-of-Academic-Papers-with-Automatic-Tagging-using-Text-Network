@@ -5,99 +5,103 @@ import RequestTableAdmin from '@/Components/RequestTableAdmin';
 import RequestForm from '@/Components/RequestForm';
 import { router } from '@inertiajs/react';
 import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFilter component
+import StudentTable from '@/Components/StudentTable';
 import Toast from '@/Components/Toast';
 
-const columns = ['Paper ID', 'Student Email', 'Paper Title', 'Status', 'Action'];
+const columns = [ 'Email', 'Name', 'Course', 'College', 'Action'];
 
-export default function AdminView({ auth, requestpapers , status}) {
+export default function All({ auth, students, searchQuery }) {
     const [isLoading, setIsLoading] = useState(false);
     const { delete: deletePaper } = useForm();
     const [showForm, setShowForm] = useState(false);
     const [rowData, setRowData] = useState(null);
-    const [successMessage, setSuccessMessage] = useState(null);
-    const [filterOption, setFilterOption] = useState(status || 'all'); // Set filterOption based on 'status' prop
+    const [inputValue, setInputValue] = useState(searchQuery || ''); // Initialize input value with searchQuery
 
+    const [successMessage, setSuccessMessage] = useState(null);
     useEffect(() => {
         setIsLoading(false);
         setSuccessMessage(null);
-    }, [requestpapers]);
+    }, [students]);
 
-    console.log(requestpapers)
-    const handleDelete = (itemId, itemTitle) => {
-        if (confirm(`Are you sure you want to delete "${itemTitle}"?`)) {
-            // deletePaper(route('papers.destroy', itemId));
+    const handleDelete = (itemId) => {
+        if (confirm(`Are you sure you want to delete "${itemId}"?`)) {
+             deletePaper(route('student.destroy', itemId));
         }
     };
 
-    const handleCloseForm = () => {
-        setShowForm(false);
-    };
 
-    const handleActionUpdate = (rowData) => {
-        setRowData(rowData);
-        setShowForm(true);
-    };
-
-    const handleFilterChange = (option) => {
-        setIsLoading(true); // Start loading state
-        setFilterOption(option);
-        setIsLoading(true); // Start loading state
-        window.location = route('userrequest.index', { status: option }); 
-    };
-
-    const handleSubmit = (action) => {
-        router.put('/request-papers-all', {
-            id: rowData.id,
-            action: action,
-        });
-        setShowForm(false);
+     const handleSearch = () => {
         setIsLoading(true);
+        
+        const url = route('student.view');
+        const data = {
+            searchQuery: inputValue,
+        };
 
-        if (action === 'approve') {
-            setSuccessMessage('Approve Successfully');
-        } else {
-            setSuccessMessage('Reject Successfully');
-        }
+        router.get(url, data, { preserveScroll: true });
     };
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">All Request Papers</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Student List</h2>}
         >
             <Toast/>
-            <Head title="All Request Papers" />
+            <Head title="Student List" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div className="flex">
+                    {/* Message container */}
+                    <div className="w-full">
+                        {successMessage && (
+                        <div className="rounded-md p-4 mb-1 text-white h-15" style={{ backgroundColor: successMessage === 'Approve Successfully' ? '#3C6441' : '#831B1C' }}>
+                            {"Student ID #" + rowData.id + " " + successMessage}
+                        </div>
+                        )}
+                    </div>
                     
                     {/* Filter dropdown container */}
-                    <div className="w-1/5 ml-auto">
+                    {/* <div className="w-1/5">
                         <RequestFilter filterOption={filterOption} handleFilterChange={handleFilterChange} />
+                    </div> */}
                     </div>
+                    <div className="flex justify-between">
+                        <Link href={route('student.add')} className="text-green-500 hover:underline"> + Add Paper</Link>
+                        <div className="flex">
+                            <input
+                                type="text"
+                                placeholder="Search.."
+                                className="border px2 rounded-lg"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                            <button onClick={handleSearch} style={{ backgroundColor: '#af2429' }} className="text-white px-4 py-2 ml-2 rounded-lg">Search</button>
+                        </div>
                     </div>
-
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         {isLoading ? (
                             "Loading..."
                         ) : (
-                            <RequestTableAdmin
-                                items={requestpapers.data}
+                            <StudentTable
+                                items={students.data}
                                 columns={columns}
-                                primary="Request ID"
-                                actionUpdate={handleActionUpdate}
+                                primary="Student ID"
+                                actionUpdate="student.edit"
                                 handleDelete={handleDelete}
                             />
                         )}
                     </div>
                     <div className="mt-4">
-                        {requestpapers.links && (
+                        {students.links && (
                             <ul className="flex justify-center">
-                                {requestpapers.links.map((link, index) => (
+                                {students.links.map((link, index) => (
                                     <li key={index} className="mx-2">
                                         <Link
-                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'status=' + encodeURIComponent(filterOption)}
+                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') +
+                                            'searchQuery=' + (inputValue ? encodeURIComponent(inputValue) : '') 
+
+                                            }
                                             className={`px-4 py-2 ${
                                                 link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
                                             } hover:bg-red-300 rounded-lg`}
@@ -121,8 +125,8 @@ export default function AdminView({ auth, requestpapers , status}) {
                     user={auth.user}
                     data={rowData}
                     handleCloseForm={handleCloseForm}
+                    title="Your Form Title"
                     submit={handleSubmit}
-                    title={rowData.paper.title}
                 />
             )}
         </AuthenticatedLayout>

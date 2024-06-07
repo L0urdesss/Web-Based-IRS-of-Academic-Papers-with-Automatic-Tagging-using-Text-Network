@@ -1,6 +1,6 @@
 import React from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
-import GuestLayout from '@/Layouts/GuestLayout';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import PrimaryButton from '@/Components/PrimaryButton';
 import logoImg from '@/Components/logo.png';
 
@@ -13,7 +13,7 @@ export default function VerifyEmail({ status }) {
     };
 
     return (
-        <GuestLayout>
+        <AuthenticatedLayout user={null}>
             <Head title="Email Verification" />
             
             <div className="flex items-center justify-center mt-24">
@@ -53,6 +53,6 @@ export default function VerifyEmail({ status }) {
                     </form>
                 </div>
             </div>
-        </GuestLayout>
+        </AuthenticatedLayout>
     );
 }

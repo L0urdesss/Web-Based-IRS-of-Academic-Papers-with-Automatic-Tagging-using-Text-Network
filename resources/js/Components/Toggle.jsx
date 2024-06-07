@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import "./../../css/Toggle.css";
 
-const Toggle = () => {
-  const [checked, setChecked] = useState(false);
-
-  const handleChange = () => {
-    setChecked(!checked);
-    // Logic to handle "Only full-texts" toggle
-  };
-
+const Toggle = ({ checked, onChange, disabled }) => {
+  console.log("check inside",checked)
   return (
     <div className="toggle-container">
       <input
@@ -16,7 +10,9 @@ const Toggle = () => {
         id="toggle"
         className="toggle-checkbox"
         checked={checked}
-        onChange={handleChange}
+        onChange={onChange}
+        value={checked}
+        disabled={disabled} 
       />
       <label htmlFor="toggle" className="toggle-label">
         <div className="toggle-inner" />

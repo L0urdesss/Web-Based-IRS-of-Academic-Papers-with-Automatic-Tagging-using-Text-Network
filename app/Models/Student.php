@@ -13,7 +13,7 @@ class Student extends Model
     public $incrementing = false;
 
     protected $fillable = [
-        'name', 'email', 'course',
+        'name', 'email', 'course', 'college'
     ];
 
     protected $casts = [
@@ -25,14 +25,16 @@ class Student extends Model
         return $this->hasMany(User::class, 'id');
     }
 
-protected static function booted()
-{
-    // Generate a custom ID before creating a new student if role is not admin
-    static::creating(function ($student) {
-        if ($student->role !== 'admin') {
-            $student->id = 'TUPM-21-' . str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
-        }
-    });
-}
+    protected static function booted()
+    {
+        // Generate a custom ID before creating a new student if role is not admin
+        static::creating(function ($student) {
+            if ($student->role !== 'admin') {
+                do {
+                    $student->id = 'TUPM-21-' . str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+                } while (self::where('id', $student->id)->exists());
+            }
+        });
+    }
 
 }

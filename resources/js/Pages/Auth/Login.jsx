@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link } from '@inertiajs/react';
 
 // Import your images
 import logoImg from '@/Components/logo.png';
@@ -84,7 +84,7 @@ export default function Login({ status }) {
                             </div>
 
                             <div className="mt-2 text-center text-sm text-gray-700">
-                                Not yet verified? <a href="#" className="text-red-500">Verify here</a>
+                                Not yet registered? <Link href={route('register')} className="text-red-500">Register here</Link>
                             </div>
                         </form>
                     </div>

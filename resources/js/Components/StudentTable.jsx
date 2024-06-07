@@ -1,8 +1,7 @@
-import deleteIcon from '@/Components/delete.png';
 import { Link } from '@inertiajs/react';
 
-// import viewIcon from '@/Components/view.png';
-export default function Admin({ items, columns, primary, actionUpdate, handleDelete , handleUpload }) {
+export default function StudentTable({ items, columns, primary, actionUpdate, handleDelete }) {
+
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -21,28 +20,16 @@ export default function Admin({ items, columns, primary, actionUpdate, handleDel
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 #{item.id}
                             </th>
-                            {columns.map((column) =>
-                                <td key={column} className="px-6 py-4">
-                                    {Array.isArray(item[column]) ? item[column].join(', ') : item[column]}
-                                </td>
-                            )}
+
+                            <td className="px-6 py-4">{item.email}</td>
+                            <td className="px-6 py-4">{item.name}</td>
+                            <td className="px-6 py-4">{item.course}</td>
+                            <td className="px-6 py-4">{item.college}</td>
                             <td className="px-6 py-4">
                                 <Link href={route(actionUpdate, item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</Link>
                             </td>
-
                             <td className="px-6 py-4">
-                                 {item.file ? (
-                                    <a href={item.file} target="_blank" rel="noopener noreferrer" className="mt-2">View File</a>
-                                 ) : (
-                                     <p>No file</p>
-                                 )}
-
-                            </td>
-
-                            <td className="px-6 py-4">
-                                <button onClick={() => handleDelete(item.id,item.title)} className="flex items-center font-medium text-red-600 dark:text-red-500 hover:underline">
-                                    <img src={deleteIcon} alt="Delete" className="w-12" />
-                                </button>
+                                <button onClick={() => handleDelete(item.id)} className="font-medium text-red-600 dark:text-red-500 hover:underline">Delete Item</button>
                             </td>
                         </tr>
                     )}

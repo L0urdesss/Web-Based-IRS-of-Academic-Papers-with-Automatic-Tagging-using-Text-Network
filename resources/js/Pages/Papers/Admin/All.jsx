@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Admin from '../../../Components/Admin';
+import Toast from '@/Components/Toast';
+
 
 const columns = ['title', 'author', 'date_published'];
 
@@ -9,6 +11,8 @@ export default function All({ auth, papers, searchQuery }) {
     const [isLoading, setIsLoading] = useState(false);
     const [inputValue, setInputValue] = useState(searchQuery || ''); // Initialize input value with searchQuery
     const { delete: deletePaper } = useForm();
+
+
 
     useEffect(() => {
         setIsLoading(false); // Reset loading state when component re-renders
@@ -38,12 +42,19 @@ export default function All({ auth, papers, searchQuery }) {
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">All Papers</h2>}
         >
+        <Toast />
+
             <Head title="All Papers" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex justify-between">
-                        <Link href={route('papers.add')} className="text-green-500 hover:underline"> + Add Paper</Link>
+                        <div>
+                            <Link href={route('papers.add')} className="text-green-500 hover:underline"> + Add Paper</Link>
+                            
+                        </div>
+                        {/* <button onClick={showToastMessageSuccess}>Notify</button> */}
+
                         <div className="flex">
                             <input
                                 type="text"

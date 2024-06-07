@@ -5,9 +5,11 @@ import { useForm } from '@inertiajs/react';
 import RequestForm from '@/Components/RequestForm'; // Adjust the path as needed
 // Import the request_button.png, pdf_icon.png, and x_button.png images
 import requestButtonImg from '@/Components/request_button.png';
-import pdfIconImg from '@/Components/pdf_icon.png';
+import pdfIconImg from '@/Components/view file.png';
 import exitButtonImg from '@/Components/x_button.png';
-import logoImg from '@/Components/logo2.png'; // Import the logo image
+import noFile from '@/Components/nofile.png'; // Import the logo image
+import pendingFile from '@/Components/pending file.png'; 
+import Toast from '@/Components/Toast';
 
 export default function PaperDetails({ user, paper, className = '', success , status}) {
     const { data, setData, post } = useForm({
@@ -16,6 +18,9 @@ export default function PaperDetails({ user, paper, className = '', success , st
         user_id: user.id,
         paper_id: paper.id,
     });
+    console.log(user);
+    console.log(paper);
+
     console.log(status);
 
 
@@ -24,7 +29,6 @@ export default function PaperDetails({ user, paper, className = '', success , st
     const [showForm, setShowForm] = useState(false);
 
     const abstractContainerRef = useRef(null);
-    const fileContainerRef = useRef(null);
 
     useEffect(() => {
         if (abstractContainerRef.current) {
@@ -63,6 +67,7 @@ export default function PaperDetails({ user, paper, className = '', success , st
 
     return (
         <section className={className}>
+            <Toast/>
             <div className="bg-white p-4 rounded-md">
                 <div className="mt-1 block w-full border border-white shadow-white" style={{ fontSize: '25px', color: '#AF2429', fontWeight: 'bold' }}>
                     {title}
@@ -92,43 +97,39 @@ export default function PaperDetails({ user, paper, className = '', success , st
                 <div className="w-5/12 pl-2 mt-4 ml-6">
                     <div className="bg-white p-4 rounded-md">
                         {paper.file ? (
-                            <div
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md border border-white bg-white text-center"
-                                ref={fileContainerRef}
-                                style={{ minHeight: '200px', maxHeight: '300px', overflowY: 'hidden' }}
-                            >
+                            <div>
                                 {status === 'approve' ? (
-                                    <a href={paper.file} target="_blank" rel="noopener noreferrer">
-                                        <img
-                                            src={pdfIconImg}
-                                            alt="PDF Icon"
-                                            className="block mx-auto w-15 h-20 mb-4"
-                                            style={{ pointerEvents: 'none' }}
-                                        />
-                                    </a>
+                                    <div>
+                                        <a href={paper.file} target="_blank" rel="noopener noreferrer">
+                                            <img
+                                                src={pdfIconImg}
+                                                alt="PDF Icon"
+                                                className=" mx-auto w-1/2 h-1/2 mb-4"
+                                                style={{ pointerEvents: 'none' }}
+                                            />
+                                        </a>
+                                    </div>
                                 ) : (
-                                    <p>Cannot Be Displayed</p>
+                                    <div>
+
+                                    <img
+                                        src={pendingFile}
+                                        alt="Request Button"
+                                        className="mx-auto w-1/2 h-1/2"
+                                        onClick={handleRequestButtonClick}
+                                    />
+                                    </div>
                                 )}
 
-                                <p className="text-sm mt-2 mb-4" style={{ fontSize: '10px', lineHeight: '1.4' }}>
-                                    To read the full-text of this research,<br></br>
-                                    you can request a copy directly<br></br> from the authors.
-                                </p>
 
-                                <img
-                                    src={requestButtonImg}
-                                    alt="Request Button"
-                                    className="block mx-auto w-15 h-10"
-                                    onClick={handleRequestButtonClick}
-                                />
                             </div>
                         ) : (
-                            <p>No file</p>
-                        )}
-                        {success && (
-                            <div className="bg-green-400 p-4 rounded-md relative">
-                                {success}
-                            </div>
+                            <img
+                            src={noFile}
+                            alt="PDF Icon"
+                            className="mx-auto w-1/2 h-1/2 mb-4"
+                            style={{ pointerEvents: 'none' }}
+                        />
                         )}
                     </div>
                 </div>

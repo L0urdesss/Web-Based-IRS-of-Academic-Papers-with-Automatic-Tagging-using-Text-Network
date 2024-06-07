@@ -1,15 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link } from '@inertiajs/react';
+import { Link,router,usePage} from '@inertiajs/react';
 
 // Import the logo image
 import logo from '@/Components/logo2.png';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    console.log(user);
+    const userRole = user?.role || 'guest';
+    const userName = user?.student?.name || 'Guest';
+    const userEmail = user?.email || '';
+    const { notifCount } = usePage().props;
+
+    // Initialize userNotif with useState
+    const [userNotif, setUserNotif] = useState(user?.notif?.count || 0);
+
+    // Update userNotif when notifCount changes
+    useEffect(() => {
+        setUserNotif(notifCount);
+    }, [notifCount]);
+
+
+    console.log(user)
+
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white border-b border-gray-100" style={{ backgroundColor: '#af2429' }}>
@@ -18,66 +33,132 @@ export default function Authenticated({ user, header, children }) {
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
                                 {/* Make the logo clickable */}
-                                <Link href="/admindashboard">
+                                <Link href="/dashboard">
                                     <img src={logo} alt="Logo" className="block h-20 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                {user.role === 'admin' ? (
-                                    <NavLink href={route('admindashboard')} active={route().current('admindashboard')} style={{ color: '#ffffff' }}>
-                                        Home
-                                    </NavLink>
+                                {userRole === 'admin' ? (
+                                    <>
+                                        <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
+                                            Home
+                                        </NavLink>
+
+                                        <NavLink href={route('admindashboard')} active={route().current('admindashboard')} style={{ color: '#ffffff' }}>
+                                            Admin Panel
+                                        </NavLink>
+                                    </>
                                 ) : (
                                     <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
                                         Home
                                     </NavLink>
                                 )}
+                            {userRole !== 'guest' &&(
 
                                 <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
                                     Research Papers
                                 </NavLink>
+                            )}
                             </div>
                         </div>
 
-                        <div className="hidden sm:flex sm:items-center sm:ms-6">
-                            <div className="ms-3 relative">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
-                                                style={{ color: '#ffffff', backgroundColor: '#af2429' }}
-                                            >
-                                                {user.student.name} {/* Displaying user's name */}
-                                                <svg
-                                                    className="ms-2 -me-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
+                        <div className="flex items-center space-x-8">
+                            {userRole === 'guest' ? (
+                                <>
+                                    <NavLink href={route('login')} style={{ color: '#ffffff' }}>Log in</NavLink>
+                                    <NavLink href={route('register')} style={{ color: '#ffffff' }}>Register</NavLink>
+                                </>
+                            ) : (
+                                <div className="ms-3 relative" style={{ display: 'flex', alignItems: 'center' }}>
+                                    <Dropdown>
+                                        <Dropdown.Trigger>
+                                            <span className="inline-flex rounded-md">
+                                                <button
+                                                    type="button"
+                                                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                                    style={{ color: '#ffffff', backgroundColor: '#af2429' }}
                                                 >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
-                                    </Dropdown.Trigger>
+                                                    {userName} {/* Displaying user's name */}
+                                                    <svg
+                                                        className="ms-2 -me-0.5 h-4 w-4"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        </Dropdown.Trigger>
 
-                                    <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                        {user.role !== 'admin' && ( // Render "Request List" only if the user is not an admin
-                                            <Dropdown.Link href={route('userrequest.view', { user_id: user.id })}>Request List</Dropdown.Link>
-                                        )}
-                                        <Dropdown.Link href={route('logout')} method="post" as="button">
-                                            Log Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
+                                        <Dropdown.Content>
+                                        <Dropdown.Link href={route('profile.edit')}>
+                                                Profile
+
+                                        </Dropdown.Link>                                            
+                                            {userRole !== 'admin' && (
+                                                <Dropdown.Link href={route('userrequest.view', { user_id: user?.id })}>
+                                                {userNotif !== 0 ? (
+
+                                                                                               <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+ 
+ Request List
+                                                    <div
+                                                    style={{
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        backgroundColor: 'red',
+                                                        borderRadius: '50%',
+                                                        border: '1px solid white',
+                                                        color: 'white',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        marginLeft: '8px', // Adjust this value to control the space between the text and the circle
+                                                        fontSize: '12px',
+                                                        fontWeight: 'bold'
+                                                    }}
+                                                >
+                                                                                                {userNotif}
+
+                                                </div>
+                                            </span>
+                                                ) : (
+                                                    <>
+                                                    Request List
+                                                    </>
+                                                )}
+
+                                                </Dropdown.Link>
+                                                
+                                            
+                                            )}
+                                            <Dropdown.Link href={route('logout')} method="post" as="button">
+                                                Log Out
+                                            </Dropdown.Link>
+                                        </Dropdown.Content>
+                                    </Dropdown>
+                                    {userNotif !== 0 && (
+
+                                    <div
+                                        style={{
+                                            width: '10px',
+                                            height: '10px',
+                                            backgroundColor: 'white',
+                                            borderRadius: '50%',
+                                            border: '1px solid black',
+                                        }}
+
+                                    ></div>
+                                    )}
+                                </div>
+                                
+                            )}
                         </div>
 
                         <div className="-me-2 flex items-center sm:hidden">
@@ -115,15 +196,24 @@ export default function Authenticated({ user, header, children }) {
 
                     <div className="pt-4 pb-1 border-t border-gray-200" style={{ color: '#ffffff', backgroundColor: '#af2429' }}>
                         <div className="px-4">
-                            <div className="font-medium text-base">{user.student.name}</div>
-                            <div className="font-medium text-sm">{user.email}</div>
+                            <div className="font-medium text-base">{userName}</div>
+                            <div className="font-medium text-sm">{userEmail}</div>
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')} style={{ color: '#af2429' }}>Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink method="post" href={route('logout')} as="button" style={{ color: '#af2429' }}>
-                                Log Out
-                            </ResponsiveNavLink>
+                            {userRole === 'guest' ? (
+                                <>
+                                    <ResponsiveNavLink href={route('login')} style={{ color: '#af2429' }}>Log in</ResponsiveNavLink>
+                                    <ResponsiveNavLink href={route('register')} style={{ color: '#af2429' }}>Register</ResponsiveNavLink>
+                                </>
+                            ) : (
+                                <>
+                                    <ResponsiveNavLink href={route('profile.edit')} style={{ color: '#af2429' }}>Profile</ResponsiveNavLink>
+                                    <ResponsiveNavLink method="post" href={route('logout')} as="button" style={{ color: '#af2429' }}>
+                                        Log Out
+                                    </ResponsiveNavLink>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

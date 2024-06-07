@@ -5,7 +5,7 @@ import { Link } from '@inertiajs/react';
 // Import the logo image
 import logo from '@/Components/logo2.png';
 
-export default function Guest({ user, header, children }) {
+export default function Guest({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     return (
         <div className="min-h-screen bg-gray-100">
@@ -18,16 +18,18 @@ export default function Guest({ user, header, children }) {
                             <Link href="/dashboard">
                                 <img src={logo} alt="Logo" className="block h-20 w-auto fill-current text-gray-800" />
                             </Link>
-                        </div>
-
-                        {/* Right side */}
-                        <div className="flex items-center space-x-8">
                             <NavLink href={route('dashboard')} active={route().current('dashboard')} style={{ color: '#ffffff' }}>
                                 Home
                             </NavLink>
-                            <NavLink href={route('login')} style={{ color: '#ffffff' }}>
-                                Login
-                            </NavLink>
+                        </div>
+
+                        {/* Right side */}
+
+                        <div className="flex items-center space-x-8">
+
+                            <NavLink href={route('login')} style={{ color: '#ffffff' }}>Log in</NavLink>
+                            <NavLink href={route('register')} style={{ color: '#ffffff' }}>Register</NavLink>
+
                         </div>
 
                         {/* Responsive menu button */}

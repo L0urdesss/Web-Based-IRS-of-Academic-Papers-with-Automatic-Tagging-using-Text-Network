@@ -1,22 +1,28 @@
 <?php
 
+use App\Http\Controllers\NotifController;
 use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestPaperController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
+// Route::get('/', function () {
+//     return Inertia::render('Auth/Login', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
+// });
 Route::get('/', function () {
-    return Inertia::render('Auth/Login', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect('/dashboard');
 });
+
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
@@ -36,7 +42,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::get('/dashboard', function () {
      return Inertia::render('Dashboard');
- })->middleware(['auth', 'verified'])->name('dashboard');
+ })->name('dashboard');
 
  Route::get('/admindashboard', function () {
     return Inertia::render('AdminDashboard');
@@ -61,10 +67,21 @@ Route::middleware('auth', 'admin')->group(function () {
     Route::get('/papers-admin/{paper}',[PaperController::class, 'edit'])->name('papers.edit');
     Route::get('/add-admin', [PaperController::class, 'add'])->name('papers.add');
     Route::patch('/papers-admin/{paper}',[PaperController::class, 'update'])->name('papers.update');
+    // Route::post('/papers-admin-file/{paper}',[PaperController::class, 'updateFile'])->name('papers.updateFile');
     Route::post('/add-admin',[PaperController::class, 'store'])->name('papers.store');
+
+    //student crud
+    Route::get('/student',[StudentController::class, 'view'])->name('student.view');
+    Route::post('/student/store',[StudentController::class, 'store'])->name('student.store');
+    Route::patch('/student/{student}',[StudentController::class, 'update'])->name('student.update');
+    Route::get('/student/add', [StudentController::class, 'add'])->name('student.add');
+    Route::get('/student/{student}',[StudentController::class, 'edit'])->name('student.edit');
+    Route::delete('/student/{student}',[StudentController::class, 'destroy'])->name('student.destroy');
 
     Route::put('/request-papers-all', [RequestPaperController::class, 'updateAll'])->name('userrequest.updateAll');
     Route::delete('/papers-admin/{paper}',[PaperController::class, 'destroy'])->name('papers.destroy');
+
+    Route::get('/notifications/count', [NotifController::class, 'count'])->name('notif.count');
 
 });
 

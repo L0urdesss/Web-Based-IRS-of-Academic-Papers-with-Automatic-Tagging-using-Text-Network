@@ -1,6 +1,6 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import Searchbar from '../../../resources/js/Components/Searchbar'; // Import the Searchbar component
 import '../../../resources/css/Scrollbar.css';
 import page1 from '@/Components/page1.png'; // Importing the logo image
@@ -10,12 +10,14 @@ import page4 from '@/Components/page4.png'; // Importing the logo image
 
 const Dashboard = ({ auth }) => {
     const handleSearch = (searchTerm, filters) => {
-        window.location = route('userpapers.view', {
+        const url = route('userpapers.view');
+        const data = {
             searchQuery: searchTerm,
-            filters: filters
-        });
-    };
+        };
 
+        router.get(url, data);
+    };
+        console.log("in dash ",auth)
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />
