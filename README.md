@@ -11,7 +11,7 @@ A research paper (IT, CS, IS, BAS-LT) is uploaded.
 - Text Extraction:
 Extract text from the PDF using a text extraction library (e.g., PymuPDF).
 
-- Classify Degree and Course 
+- Classify Degree and Course:
 checks for the presence of specific words or phrases like "bachelor," "computer science," etc., by iterating through predefined lists of degrees and courses and checking for matches in the text using simple substring matching
 
 - Keyword Matching (CHED CMO):
