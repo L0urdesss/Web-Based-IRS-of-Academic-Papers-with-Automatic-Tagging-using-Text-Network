@@ -11,14 +11,23 @@ def clean_text(text):
         word for word in text.split() if word.lower() not in stop_words and word not in string.punctuation)
     return cleaned_text
 
-# Function to extract text from the first page of the PDF
+# Function to extract text from the entire PDF
+def extract_pdf_text(pdf_path):
+    doc = fitz.open(pdf_path)
+    full_text = ""
+    for page_num in range(doc.page_count):
+        page = doc.load_page(page_num)
+        full_text += page.get_text()
+    return full_text
+
+# Function to extract the text from only the first page of the PDF
 def extract_first_page_text(pdf_path):
     doc = fitz.open(pdf_path)
-    text = ""
+    first_page_text = ""
     if doc.page_count > 0:
         first_page = doc[0]  # Get the first page
-        text = first_page.get_text()  # Extract text from the first page
-    return text
+        first_page_text = first_page.get_text()  # Extract text from the first page
+    return first_page_text
 
 # Function to extract degree and course from the text
 def extract_degree_course(text):
@@ -44,33 +53,24 @@ def extract_degree_course(text):
 
     return degree_found, course_found
 
-# Function to apply S.Y. restriction on text (if S.Y. appears on the first page)
-def apply_sy_restriction(text):
-    # Find the position of "S.Y." in the text (case-insensitive search)
-    sy_pos = text.lower().find("s.y.")
-
-    # If "S.Y." is found, consider only the part before it
-    if sy_pos != -1:
-        text = text[:sy_pos]
-
-    return text
-
 # Main process
-pdf_path = "PDF Files (For testing)//SGM-MRC_CHAP1-3.pdf"
-text = extract_first_page_text(pdf_path)  # Extract only from the first page
+pdf_path = "PDF Files (For testing)//MRC_CHAP1.pdf"
 
-# Apply restriction (only scan text before "S.Y.")
-restricted_text = apply_sy_restriction(text)
+# Extract and clean the entire PDF text
+full_text = extract_pdf_text(pdf_path)
+cleaned_full_text = clean_text(full_text)
 
-# Clean the restricted text
-cleaned_text = clean_text(restricted_text)
-print("Cleaned Text (Before S.Y.):")
-print(cleaned_text)
+# Extract and clean the first page text
+first_page_text = extract_first_page_text(pdf_path)
+cleaned_first_page_text = clean_text(first_page_text)
 
-# Extract degree and course
-degree, course = extract_degree_course(cleaned_text)
+# Extract degree and course only from the cleaned first page text
+degree, course = extract_degree_course(cleaned_first_page_text)
 
-# Output the degree and course
-print("\nExtracted Information:")
+# Output the cleaned full text and degree/course from the first page
+print("Cleaned Full Text (Entire PDF):")
+print(cleaned_full_text)
+
+print("\nExtracted Information from First Page:")
 print(f"Degree: {degree}")
 print(f"Course: {course}")
