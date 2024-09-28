@@ -27,7 +27,8 @@ Relationship Mapping with BERT:
 - Use BERT embeddings to identify and map relationships between the tagged keywords, courses, departments, and CMO terms.
 Organize and Store Data:
 
--
+
+
 - Store all tagged terms, synonyms, and relationships in a structured format (e.g., JSON or a database) for future reference or analysis.
 
 ## Tagging Process in Text Network
