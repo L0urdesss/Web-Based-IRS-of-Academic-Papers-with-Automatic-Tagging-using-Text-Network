@@ -208,7 +208,6 @@ class PaperController extends Controller
             $filepath = $request->file('file')->store('project/' . $validatedData['title'], 'public');
             $validatedData['file'] = $filepath;
             $fullFilePath = storage_path('app/public/' . $filepath); // Get the full path
-            \Log::info($filepath);
 
             $output = shell_exec('python '. base_path('storage/app/python/main.py') . ' ' . escapeshellarg($fullFilePath));
             \Log::info($output);
