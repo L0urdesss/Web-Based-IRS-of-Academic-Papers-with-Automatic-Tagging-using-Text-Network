@@ -30,4 +30,10 @@ class Paper extends Model
     {
         return $this->hasMany(RequestPaper::class);
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+    
 }

@@ -194,6 +194,7 @@ class PaperController extends Controller
     }
     public function store(Request $request)
     {
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
@@ -202,20 +203,29 @@ class PaperController extends Controller
             'file' => 'nullable|mimes:pdf',
             'date_published' => ['required', 'string', new YearBelowCurrent()],
         ]);
-    
+
         if ($request->hasFile('file')) {
             $filepath = $request->file('file')->store('project/' . $validatedData['title'], 'public');
             $validatedData['file'] = $filepath;
+            $fullFilePath = storage_path('app/public/' . $filepath); // Get the full path
+            \Log::info($filepath);
+
+            $output = shell_exec('python '. base_path('storage/app/python/main.py') . ' ' . escapeshellarg($fullFilePath));
+            \Log::info($output);
+            
         }
+        return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
+
+
     
-        try {
-            $status = Paper::create($validatedData);
-            if($status){
-                return redirect('/papers-admin')->with('success', 'Paper added successfully.');
-            }
-        } catch (\Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
-        }
+        // try {
+        //     $status = Paper::create($validatedData);
+        //     if($status){
+        //         return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
+        //     }
+        // } catch (\Exception $e) {
+        //     return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
+        // }
     }
     
     

@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Paper;
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('request_papers', function (Blueprint $table) {
+        Schema::create('tags_papers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('paper_id')->constrained('papers')->onDelete('cascade');
-            $table->string('status')->default('pending');
-            $table->longText('purpose');
+            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('request_papers');
+        Schema::dropIfExists('tags_papers');
     }
 };

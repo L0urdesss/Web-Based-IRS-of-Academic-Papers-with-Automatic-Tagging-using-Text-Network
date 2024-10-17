@@ -16,20 +16,20 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Seed students
-        // Student::factory(50)->create();
+        Student::factory(50)->create();
     
         // Seed users
-        // $this->call(UsersTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
     
         // Seed papers with related request papers
-        // Paper::factory()
-            // ->count(30)
-            // ->hasRequestPapers(3)
-            // ->create();
+        Paper::factory()
+            ->count(30)
+            ->hasRequestPapers(3)
+            ->create();
     
         // Seed admin users
-        // $this->call(AdminUserSeeder::class);
-        // $this->call(SampleUserSeeder::class);
+        $this->call(AdminUserSeeder::class);
+        $this->call(SampleUserSeeder::class);
 
     }
     

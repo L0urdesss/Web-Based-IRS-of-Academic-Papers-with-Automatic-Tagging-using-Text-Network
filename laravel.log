@@ -1,0 +1,48 @@
+2024-10-17 19:57:50,325 File path in Python: storage/app/public/project/t8/g4opZybUzlGtwplWVYL81Dk2m7tMW4SQoiJjmB3F.pdf
+2024-10-17 19:57:50,639 
+Extracted Information from First Page:
+2024-10-17 19:57:50,640 Degree: Master
+2024-10-17 19:57:50,641 Course: Computer Science
+2024-10-17 19:57:50,641 Creating graph with degrees and courses
+2024-10-17 19:57:50,712 Calculating centrality
+2024-10-17 19:57:57,529 Assigning communities
+2024-10-17 19:57:57,561 {
+    "degree": "Master",
+    "course": "Computer Science",
+    "communities": {
+        "system": 0,
+        "chapter": 0,
+        "study": 0,
+        "students": 1,
+        "information": 1,
+        "Master": 1,
+        "research": 1,
+        "relevant": 1,
+        "search": 1,
+        "users": 2
+    }
+}
+2024-10-17 19:58:27,961 File path in Python: storage/app/public/project/t8/g4opZybUzlGtwplWVYL81Dk2m7tMW4SQoiJjmB3F.pdf
+2024-10-17 19:58:28,131 
+Extracted Information from First Page:
+2024-10-17 19:58:28,131 Degree: Master
+2024-10-17 19:58:28,132 Course: Computer Science
+2024-10-17 19:58:28,132 Creating graph with degrees and courses
+2024-10-17 19:58:28,179 Calculating centrality
+2024-10-17 19:58:35,147 Assigning communities
+2024-10-17 19:58:35,152 {
+    "degree": "Master",
+    "course": "Computer Science",
+    "communities": {
+        "information": 0,
+        "students": 0,
+        "relevant": 0,
+        "search": 0,
+        "research": 0,
+        "Master": 0,
+        "study": 1,
+        "chapter": 1,
+        "system": 1,
+        "users": 2
+    }
+}
