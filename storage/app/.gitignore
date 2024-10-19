@@ -1,4 +1,2 @@
-*
-!public/
-!/public/python/**
-!.gitignore
+/public/
+!/public/python/
