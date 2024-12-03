@@ -1,8 +1,11 @@
 import React from "react";
 import "./../../css/Toggle.css";
 
-const Toggle = ({ checked, onChange, disabled }) => {
+const Toggle = ({ checked, onChange }) => {
   console.log("check inside",checked)
+  if (checked === 'false'){
+    checked = !checked
+  }
   return (
     <div className="toggle-container">
       <input
@@ -12,7 +15,6 @@ const Toggle = ({ checked, onChange, disabled }) => {
         checked={checked}
         onChange={onChange}
         value={checked}
-        disabled={disabled} 
       />
       <label htmlFor="toggle" className="toggle-label">
         <div className="toggle-inner" />

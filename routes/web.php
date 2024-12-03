@@ -20,8 +20,11 @@ use Illuminate\Http\Request;
 //     ]);
 // });
 Route::get('/', function () {
-    return redirect('/dashboard');
+    return redirect('/guest');
 });
+Route::get('/guest', function () {
+    return Inertia::render('GuestPage'); // Replace 'GuestPage' with your actual component
+})->name('guest');
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');

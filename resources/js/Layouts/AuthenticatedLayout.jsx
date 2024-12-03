@@ -2,28 +2,16 @@ import { useState, useEffect } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link,router,usePage} from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 
 // Import the logo image
-import logo from '@/Components/logo2.png';
+import logo from '@/Components/logo.png';
 
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const userRole = user?.role || 'guest';
     const userName = user?.student?.name || 'Guest';
     const userEmail = user?.email || '';
-    const { notifCount } = usePage().props;
-
-    // Initialize userNotif with useState
-    const [userNotif, setUserNotif] = useState(user?.notif?.count || 0);
-
-    // Update userNotif when notifCount changes
-    useEffect(() => {
-        setUserNotif(notifCount);
-    }, [notifCount]);
-
-
-    console.log(user)
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -34,7 +22,7 @@ export default function Authenticated({ user, header, children }) {
                             <div className="shrink-0 flex items-center">
                                 {/* Make the logo clickable */}
                                 <Link href="/dashboard">
-                                    <img src={logo} alt="Logo" className="block h-20 w-auto fill-current text-gray-800" />
+                                    <img src={logo} alt="Logo" className="block h-10 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
 
@@ -54,12 +42,11 @@ export default function Authenticated({ user, header, children }) {
                                         Home
                                     </NavLink>
                                 )}
-                            {userRole !== 'guest' &&(
-
-                                <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
-                                    Research Papers
-                                </NavLink>
-                            )}
+                                {userRole !== 'guest' && (
+                                    <NavLink href={route('userpapers.view')} active={route().current('userpapers*')} style={{ color: '#ffffff' }}>
+                                        Search
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
@@ -97,67 +84,15 @@ export default function Authenticated({ user, header, children }) {
                                         </Dropdown.Trigger>
 
                                         <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>
+                                            <Dropdown.Link href={route('profile.edit')}>
                                                 Profile
-
-                                        </Dropdown.Link>                                            
-                                            {userRole !== 'admin' && (
-                                                <Dropdown.Link href={route('userrequest.view', { user_id: user?.id })}>
-                                                {userNotif !== 0 ? (
-
-                                                                                               <span style={{ display: 'inline-flex', alignItems: 'center' }}>
- 
- Request List
-                                                    <div
-                                                    style={{
-                                                        width: '20px',
-                                                        height: '20px',
-                                                        backgroundColor: 'red',
-                                                        borderRadius: '50%',
-                                                        border: '1px solid white',
-                                                        color: 'white',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        marginLeft: '8px', // Adjust this value to control the space between the text and the circle
-                                                        fontSize: '12px',
-                                                        fontWeight: 'bold'
-                                                    }}
-                                                >
-                                                                                                {userNotif}
-
-                                                </div>
-                                            </span>
-                                                ) : (
-                                                    <>
-                                                    Request List
-                                                    </>
-                                                )}
-
-                                                </Dropdown.Link>
-                                                
-                                            
-                                            )}
+                                            </Dropdown.Link>
                                             <Dropdown.Link href={route('logout')} method="post" as="button">
                                                 Log Out
                                             </Dropdown.Link>
                                         </Dropdown.Content>
                                     </Dropdown>
-                                    {userNotif !== 0 && (
-
-                                    <div
-                                        style={{
-                                            width: '10px',
-                                            height: '10px',
-                                            backgroundColor: 'white',
-                                            borderRadius: '50%',
-                                            border: '1px solid black',
-                                        }}
-
-                                    ></div>
-                                    )}
                                 </div>
-                                
                             )}
                         </div>
 

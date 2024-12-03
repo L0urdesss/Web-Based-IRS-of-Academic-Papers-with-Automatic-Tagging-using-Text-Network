@@ -1,51 +1,26 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import logo from '@/Components/logo.png'; // Importing the logo image
-import modifyIcon from '../../../resources/js/Components/modify.png'; // Importing modify icon
-import modifyStudent from '@/Components/modify_student.png'; // Importing the logo image
-import requestIcon from '../../../resources/js/Components/request.png'; // Importing request icon
 import '../../../resources/css/Scrollbar.css';
-import { useEffect } from 'react';
-import { Link } from '@inertiajs/react'
+import { Link } from '@inertiajs/react';
 
 export default function AdminDashboard({ auth }) {
-    const handleSearch = (searchTerm, filters) => {
-        window.location = route('userpapers.view', {
-            searchQuery: searchTerm,
-            filters: filters
-        });
-    };
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Home" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between mb-10 mt-3 ">
-                     <img src={logo} alt="Logo" className="h-auto w-64 mx-auto" /> {/* Adjusted width */}
-                </div>
-                <div className="mt-8">
-                    <div className="relative flex justify-center items-center mx-auto w-full">
-                        {/* Content related to Searchbar or any other components */}
-                    </div>
+            <div className="flex">
+                {/* Left Panel */}
+                <div className="w-1/4 h-screen bg-red-800 text-white p-4">
+                    <ul>
+                        <li className="mb-2"><Link href={route('papers.index')} className="text-white hover:text-white">Papers</Link></li>
+                        <li className="mb-2"><Link href={route('userrequest.index')} className="text-white hover:text-white">Paper Req</Link></li>
+                        <li><Link href={route('student.view')} className="text-white hover:text-white">Students</Link></li>
+                        
+                    </ul>
                 </div>
 
-                <div className="flex justify-center items-center mx-auto w-1/2"> {/* Adjusted width to center the icons */}
-                    <div style={{ marginRight: '20px' }}>
-                        <Link href={route('papers.index')} style={{ color: '#831b1c'}}>
-                            <img src={modifyIcon} alt="Modify Research Paper" style={{ width: '100%', height: '100%' }}/>
-                        </Link>
-                    </div>
-
-                    <div style={{ marginRight: '20px'  }}>
-                        <Link href={route('userrequest.index')} style={{ color: '#831b1c'}}>
-                            <img src={requestIcon} alt="Modify Request Paper" style={{ width: '100%', height: '100%' }} />
-                        </Link>
-                    </div>
-
-                        <Link href={route('student.view')} style={{ color: '#831b1c'}}>
-                            <img src={modifyStudent} alt="Modify Student Database" style={{ width: '100%', height: '100%' }} />
-                        </Link>
-                </div>
+                {/* Main Content (Empty) */}
+                <div className="w-3/4 h-auto"></div>
             </div>
         </AuthenticatedLayout>
     );

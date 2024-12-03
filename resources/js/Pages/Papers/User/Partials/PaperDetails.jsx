@@ -1,147 +1,105 @@
-import { useState, useEffect, useRef } from 'react';
-import InputLabel from '@/Components/InputLabel';
-import TextInput from '@/Components/TextInput';
-import { useForm } from '@inertiajs/react';
+import { useState, useEffect } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
+import 'pdfjs-dist/build/pdf.worker.entry';
 import RequestForm from '@/Components/RequestForm'; // Adjust the path as needed
-// Import the request_button.png, pdf_icon.png, and x_button.png images
-import requestButtonImg from '@/Components/request_button.png';
-import pdfIconImg from '@/Components/view file.png';
-import exitButtonImg from '@/Components/x_button.png';
-import noFile from '@/Components/nofile.png'; // Import the logo image
-import pendingFile from '@/Components/pending file.png'; 
+import noFile from '@/Components/nofile.png';
 import Toast from '@/Components/Toast';
 
-export default function PaperDetails({ user, paper, className = '', success , status}) {
-    const { data, setData, post } = useForm({
-        user:user,
-        purpose: "",
-        user_id: user.id,
-        paper_id: paper.id,
-    });
-    console.log(user);
-    console.log(paper);
-
-    console.log(status);
-
-
-    const { name, email } = user;
-    const { title, date_published, author, abstract, course } = paper;
+export default function PaperDetails({ user, paper, className = '' }) {
     const [showForm, setShowForm] = useState(false);
-
-    const abstractContainerRef = useRef(null);
+    const [pdfPages, setPdfPages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true); // To track if the PDF is still loading
 
     useEffect(() => {
-        if (abstractContainerRef.current) {
-            const abstractHeight = abstractContainerRef.current.scrollHeight;
-            abstractContainerRef.current.style.height = abstractHeight + 'px';
+        if (paper.file) {
+            renderPDF(paper.file);
+        } else {
+            setPdfPages([]); // Clear pdfPages if there's no file
+            setIsLoading(false); // No file, stop loading state
         }
-    }, [abstract]);
 
-    // useEffect(() => {
-    //     router.get('/papers/{paper}', {
-    //         user_id: user.id,
-    //         paper_id: paper.id,
-    //       },{            
-    //         onSuccess: (data) => {
-    //         setStatus(data);
-    //         console.log(status);
-    //     }})}, 
-    // []);
+        // Add the contextmenu event listener
+        const handleContextMenu = (e) => e.preventDefault();
+        document.addEventListener('contextmenu', handleContextMenu);
 
-    const handleSubmit = (action) => {
-        if (action === 'upload') {
-            setShowForm(false);
-            post(route('userrequest.store'), {
-                preserveScroll: true
-            });
+        // Reset body overflow and remove contextmenu listener on unmount
+        return () => {
+            document.body.style.overflow = '';
+            document.removeEventListener('contextmenu', handleContextMenu);
+        };
+    }, [paper.file]);
+
+    const renderPDF = async (url) => {
+        try {
+            setIsLoading(true); // Start loading the PDF
+            const pdf = await pdfjsLib.getDocument(url).promise;
+            const pages = [];
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+                const page = await pdf.getPage(pageNumber);
+                const viewport = page.getViewport({ scale: 4 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: context, viewport }).promise;
+                pages.push(canvas.toDataURL());
+            }
+            setPdfPages(pages);
+            setIsLoading(false); // PDF rendered, stop loading state
+        } catch (error) {
+            console.error('Error rendering PDF:', error);
+            setPdfPages([]);
+            setIsLoading(false); // In case of error, stop loading state
         }
-    };
-
-    const handleCloseForm = () => {
-        setShowForm(false);
-    };
-
-    const handleRequestButtonClick = () => {
-        setShowForm(true);
     };
 
     return (
-        <section className={className}>
-            <Toast/>
-            <div className="bg-white p-4 rounded-md">
-                <div className="mt-1 block w-full border border-white shadow-white" style={{ fontSize: '25px', color: '#AF2429', fontWeight: 'bold' }}>
-                    {title}
-                </div>
-                <div className="mt-1 ml-1 flex items-center border border-white shadow-white" style={{ fontSize: '14px', minWidth: '200px' }}>
-                    {date_published} • College of Science • {course}
-                </div>
-                <div>
-                    <p className="ml-1 mt-3" style={{ fontSize: '12px', color: '#352D2D' }}>Author/s</p>
-                    <div className="mt-1 block w-full border border-white shadow-white" style={{ color: '#352D2D', fontSize: '14px', fontWeight: 'bold' }}>
-                        {author}
-                    </div>
-                </div>
-            </div>
+        <section
+            className={`bg-[#f9f9f9] min-h-screen w-full ${className}`}
+            style={{ overflow: 'hidden' }} // Ensure the full viewport is covered
+        >
+            <Toast />
+            <div className="w-full h-auto relative mt-10">
+                {/* Full screen white background loading overlay without text */}
+                {isLoading && (
+                    <div
+                        style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'white',
+                            zIndex: 10, // Ensure it covers everything
+                        }}
+                    />
+                )}
 
-            <div className="flex mt-4">
-                <div className="w-7/12 pr-2">
-                    <div className="bg-white p-4 rounded-md">
-                        <div style={{ fontSize: '22px', color: '#831B1C' }}><br />&nbsp;&nbsp;Abstract:</div>
-                        <div className="mt-1 block w-full p-2 border border-gray-300 rounded-md border border-white bg-white text-justify" style={{ minHeight: '20px', maxHeight: 'auto', overflowY: 'hidden' }}>
-                            <div style={{ borderTop: '1px solid #B8B8B8', margin: '10px 0' }}></div>
-                            <p style={{ fontSize: '13px', lineHeight: '1.8' }}>{abstract}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="w-5/12 pl-2 mt-4 ml-6">
-                    <div className="bg-white p-4 rounded-md">
-                        {paper.file ? (
-                            <div>
-                                {status === 'approve' ? (
-                                    <div>
-                                        <a href={paper.file} target="_blank" rel="noopener noreferrer">
-                                            <img
-                                                src={pdfIconImg}
-                                                alt="PDF Icon"
-                                                className=" mx-auto w-1/2 h-1/2 mb-4"
-                                                style={{ pointerEvents: 'none' }}
-                                            />
-                                        </a>
-                                    </div>
-                                ) : (
-                                    <div>
-
-                                    <img
-                                        src={pendingFile}
-                                        alt="Request Button"
-                                        className="mx-auto w-1/2 h-1/2"
-                                        onClick={handleRequestButtonClick}
-                                    />
-                                    </div>
-                                )}
-
-
-                            </div>
-                        ) : (
-                            <img
-                            src={noFile}
-                            alt="PDF Icon"
-                            className="mx-auto w-1/2 h-1/2 mb-4"
-                            style={{ pointerEvents: 'none' }}
+                {/* Only show PDF or No File if not loading */}
+                {!isLoading && (pdfPages.length > 0 ? (
+                    pdfPages.map((page, index) => (
+                        <img
+                            key={index}
+                            src={page}
+                            alt={`Page ${index + 1}`}
+                            className="w-3/4 mx-auto mb-4" // Set width to 3/4 and center the image
+                            style={{ border: '1px solid #ccc' }}
                         />
-                        )}
-                    </div>
-                </div>
+                    ))
+                ) : (
+                    <img
+                        src={noFile}
+                        alt="No File Available"
+                        className="mx-auto w-1/2 h-1/2 mb-4"
+                        style={{ pointerEvents: 'none' }}
+                    />
+                ))}
             </div>
             {showForm && (
                 <RequestForm
                     user={user}
-                    data={data}
-                    setData={setData}
-                    submit={handleSubmit}
-                    handleCloseForm={handleCloseForm}
-                    title={title}
+                    submit={() => setShowForm(false)}
+                    handleCloseForm={() => setShowForm(false)}
                 />
             )}
         </section>

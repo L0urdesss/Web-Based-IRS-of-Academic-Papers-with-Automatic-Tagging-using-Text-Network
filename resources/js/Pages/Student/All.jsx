@@ -67,7 +67,7 @@ export default function All({ auth, students, searchQuery }) {
                     </div> */}
                     </div>
                     <div className="flex justify-between">
-                        <Link href={route('student.add')} className="text-green-500 hover:underline"> + Add Paper</Link>
+                        <Link href={route('student.add')} className="text-green-500 hover:underline"> + Add Student</Link>
                         <div className="flex">
                             <input
                                 type="text"

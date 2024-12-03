@@ -34,10 +34,10 @@ export default function Preview({ auth, paper ,success , status}) {
 
 
 
-            <div className="py-10">
+            <div className="">
                 {/* <button onclick={triggerBack()}>go back</button> */}
 
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="">
                     <PaperDetails paper={paper} user={auth.user} success={success} status = {status}></PaperDetails>
                 </div>
             </div>

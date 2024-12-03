@@ -113,8 +113,6 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
         console.log("Toggle changed:", checked);
         setWithFile(checked);
         console.log("Toggle changed after:", checked);
-
-
         setTriggerSearch(true);
       };
 
@@ -245,7 +243,7 @@ export default function ViewAll({ auth, papers, searchQuery, filters, sortCourse
                                 </div>
                             </div>
                             <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
-                            <Toggle checked={withFile} onChange={handleToggleChange} disabled={isLoading} />
+                            <Toggle checked={withFile} onChange={handleToggleChange} />
                             <hr style={{ border: 'none', borderBottom: '1px solid #F0F0F0', margin: '1rem 0' }} />
                             <div className="mt-4">
                                 <p className="font-semibold" style={{ fontSize: '12px', color: '#352D2D' }}>Publication Date</p>
