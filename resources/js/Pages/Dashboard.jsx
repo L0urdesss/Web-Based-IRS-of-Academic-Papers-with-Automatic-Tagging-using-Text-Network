@@ -1,7 +1,7 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import Searchbar from '../../../resources/js/Components/Searchbar'; // Import the Searchbar component
+import Searchbar from '../Components/Searchbar'; // Import the Searchbar component
 import '../../../resources/css/Scrollbar.css';
 import page1 from '@/Components/page1.png'; // Importing the logo image
 import page2 from '@/Components/page2.png'; // Importing the logo image
