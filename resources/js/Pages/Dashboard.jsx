@@ -1,12 +1,10 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
-import Searchbar from '../Components/Searchbar'; // Import the Searchbar component
+import Searchbar from '../../../resources/js/Components/Searchbar'; // Import the Searchbar component
 import '../../../resources/css/Scrollbar.css';
 import page1 from '@/Components/page1.png'; // Importing the logo image
 import page2 from '@/Components/page2.png'; // Importing the logo image
-import page3 from '@/Components/page3.png'; // Importing the logo image
-import page4 from '@/Components/page4.png'; // Importing the logo image
 
 const Dashboard = ({ auth }) => {
     const handleSearch = (searchTerm, filters) => {
@@ -15,7 +13,7 @@ const Dashboard = ({ auth }) => {
             searchQuery: searchTerm,
         };
 
-        router.get(url, data);
+        router.get(url, data);notenote
     };
         console.log("in dash ",auth)
     return (
@@ -33,11 +31,7 @@ const Dashboard = ({ auth }) => {
                         </div>
                     </div>
                     <img src={page2} alt="Page 2" className="w-full" />
-                    <img src={page3} alt="Page 3" className="w-full mt-20" />
-                </div>
-  
-                <img src={page4} alt="Page 4" className="w-full" />
-                    {/* Removed the blockquote content */}
+                </div>  
         
             </div>
         </AuthenticatedLayout>

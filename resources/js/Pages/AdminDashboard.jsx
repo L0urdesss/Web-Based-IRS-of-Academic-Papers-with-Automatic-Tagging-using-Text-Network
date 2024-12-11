@@ -96,7 +96,7 @@ export default function AdminDashboard({ auth }) {
 
             <div className="flex">
 {/* Left Panel */}
-<div className="group w-16 hover:w-64 h-auto bg-red-800 text-white p-4 transition-all duration-300 ease-in-out overflow-hidden">
+<div className="group w-16 hover:w-64 h-auto bg-[#b2022f] text-white p-4 transition-all duration-300 ease-in-out overflow-hidden">
     <ul>
         <li className="mb-4 flex items-center">
             <img src={summary} alt="Summary Icon" className="w-6 h-6 mr-2" />
