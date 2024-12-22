@@ -22,7 +22,7 @@ export default function Authenticated({ user, header, children }) {
                             <div className="shrink-0 flex items-center">
                                 {/* Logo with link to dashboard */}
                                 <Link href="/dashboard">
-                                    <img src={logo} alt="Logo" className="block h-10 w-auto fill-current text-gray-800" />
+                                    <img src={logo} alt="Logo" className="block h-7 w-auto fill-current text-gray-800" />
                                 </Link>
                             </div>
 

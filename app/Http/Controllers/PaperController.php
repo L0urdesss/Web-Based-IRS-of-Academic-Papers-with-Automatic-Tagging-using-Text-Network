@@ -23,7 +23,7 @@ class PaperController extends Controller
             // Add more search conditions if needed
         }
     
-        $papers = $query->paginate(7);
+        $papers = $query->paginate(6);
 
     
         return Inertia::render('Papers/Admin/All', [

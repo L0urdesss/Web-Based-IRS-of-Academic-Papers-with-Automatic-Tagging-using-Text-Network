@@ -1,10 +1,16 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { Pie, Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
-import { Link } from '@inertiajs/react';
-import summary from '@/Components/summaryIcon.png'; // Importing the logo image
-
+import {
+    Chart as ChartJS,
+    ArcElement,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import Sidebar from '@/Components/Sidebar'; // Importing the Sidebar component
 
 ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -61,7 +67,16 @@ export default function AdminDashboard({ auth }) {
         indexAxis: 'y', // Horizontal bar graph
         responsive: true,
         plugins: {
-            legend: { display: false },
+            legend: { display: false }, // Hide legend
+        },
+        scales: {
+            x: {
+                grid: { display: false }, // Remove gridlines
+                ticks: { display: false }, // Optionally hide ticks
+            },
+            y: {
+                grid: { display: false }, // Remove gridlines
+            },
         },
     };
 
@@ -82,11 +97,17 @@ export default function AdminDashboard({ auth }) {
     const verticalBarOptions = {
         responsive: true,
         plugins: {
-            legend: { display: true },
+            legend: { display: false }, // Hide legend
         },
         scales: {
-            x: { beginAtZero: true },
-            y: { beginAtZero: true },
+            x: {
+                grid: { display: false }, // Remove gridlines
+                ticks: { display: false }, // Optionally hide ticks
+            },
+            y: {
+                grid: { display: false }, // Remove gridlines
+                ticks: { beginAtZero: true }, // Keep ticks on Y-axis
+            },
         },
     };
 
@@ -95,36 +116,8 @@ export default function AdminDashboard({ auth }) {
             <Head title="Home" />
 
             <div className="flex">
-{/* Left Panel */}
-<div className="group w-16 hover:w-64 h-auto bg-[#b2022f] text-white p-4 transition-all duration-300 ease-in-out overflow-hidden">
-    <ul>
-        <li className="mb-4 flex items-center">
-            <img src={summary} alt="Summary Icon" className="w-6 h-6 mr-2" />
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                Dashboard
-            </span>
-        </li>
-        <li className="mb-4 flex items-center">
-            <img src={summary} alt="Summary Icon" className="w-6 h-6 mr-2" />
-            <Link
-                href={route('papers.index')}
-                className="text-white hover:text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            >
-                Papers
-            </Link>
-        </li>
-        <li className="mb-4 flex items-center">
-            <img src={summary} alt="Summary Icon" className="w-6 h-6 mr-2" />
-            <Link
-                href={route('student.view')}
-                className="text-white hover:text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            >
-                Students
-            </Link>
-        </li>
-    </ul>
-</div>
-
+                {/* Sidebar */}
+                <Sidebar />
 
                 {/* Main Content */}
                 <div className="w-full h-auto p-4 bg-gray-100">

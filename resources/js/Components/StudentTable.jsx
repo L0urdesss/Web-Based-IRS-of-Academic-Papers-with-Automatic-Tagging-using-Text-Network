@@ -4,7 +4,7 @@ export default function StudentTable({ items, columns, primary, actionUpdate, ha
 
     return (
         <div className="relative overflow-x-auto border shadow-md sm:rounded-lg">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <table className="w-full text-xs text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th scope="col" className="px-6 py-3">{primary}</th>
@@ -21,11 +21,11 @@ export default function StudentTable({ items, columns, primary, actionUpdate, ha
                                 #{item.id}
                             </th>
 
-                            <td className="px-6 py-4">{item.email}</td>
-                            <td className="px-6 py-4">{item.name}</td>
-                            <td className="px-6 py-4">{item.course}</td>
-                            <td className="px-6 py-4">{item.college}</td>
-                            <td className="px-6 py-4">
+                            <td className="px-8 py-4">{item.email}</td>
+                            <td className="px-8 py-4">{item.name}</td>
+                            <td className="px-8 py-4">{item.course}</td>
+                            <td className="px-8 py-4">{item.college}</td>
+                            <td className="px-8 py-4">
                                 <Link href={route(actionUpdate, item.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline">View Details</Link>
                             </td>
                             <td className="px-6 py-4">

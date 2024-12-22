@@ -3,7 +3,6 @@ import React from 'react';
 import GuestLayout from '../Layouts/GuestLayout'; // Adjust the path as necessary
 import { Head, router } from '@inertiajs/react';
 import '../../../resources/css/Scrollbar.css';
-import background from '@/Components/bg.jpg'; // Image placed in Components directory
 import uploadedImage1 from '@/Components/uploadedImage1.jpg'; // Image placed in Components directory
 import uploadedImage from '@/Components/uploadedImage.jpg'; // Image placed in Components directory
 import creatorImage1 from '@/Components/creator1.png';

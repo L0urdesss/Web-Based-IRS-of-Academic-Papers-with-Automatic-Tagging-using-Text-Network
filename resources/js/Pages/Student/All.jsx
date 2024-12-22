@@ -1,134 +1,187 @@
 import React, { useState, useEffect } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import RequestTableAdmin from '@/Components/RequestTableAdmin';
-import RequestForm from '@/Components/RequestForm';
-import { router } from '@inertiajs/react';
-import RequestFilter from '@/Components/RequestFilter'; // Import the RequestFilter component
 import StudentTable from '@/Components/StudentTable';
 import Toast from '@/Components/Toast';
+import Sidebar from '@/Components/Sidebar'; // Import Sidebar component
 
-const columns = [ 'Email', 'Name', 'Course', 'College', 'Action'];
+const columns = ['Student ID', 'Email', 'Name', 'Course', 'College', 'Action']; // Updated columns
 
-export default function All({ auth, students, searchQuery }) {
+export default function All({ auth, students }) {
     const [isLoading, setIsLoading] = useState(false);
     const { delete: deletePaper } = useForm();
-    const [showForm, setShowForm] = useState(false);
-    const [rowData, setRowData] = useState(null);
-    const [inputValue, setInputValue] = useState(searchQuery || ''); // Initialize input value with searchQuery
+    const [showModal, setShowModal] = useState(false); // Track modal visibility
+    const [activeCourse, setActiveCourse] = useState(null); // Track active course panel
+    const [inputValue, setInputValue] = useState(''); // Search query for modal
+    const [currentPage, setCurrentPage] = useState(1); // Track current page
+    const [itemsPerPage] = useState(5); // Items per page (5 students per page)
 
-    const [successMessage, setSuccessMessage] = useState(null);
     useEffect(() => {
         setIsLoading(false);
-        setSuccessMessage(null);
     }, [students]);
 
     const handleDelete = (itemId) => {
         if (confirm(`Are you sure you want to delete "${itemId}"?`)) {
-             deletePaper(route('student.destroy', itemId));
+            deletePaper(route('student.destroy', itemId));
         }
     };
 
-
-     const handleSearch = () => {
-        setIsLoading(true);
-        
-        const url = route('student.view');
-        const data = {
-            searchQuery: inputValue,
-        };
-
-        router.get(url, data, { preserveScroll: true });
+    // Group students by their course
+    const groupByCourse = () => {
+        return students.reduce((acc, student) => {
+            if (!acc[student.course]) {
+                acc[student.course] = [];
+            }
+            acc[student.course].push(student);
+            return acc;
+        }, {});
     };
 
+    // Handle toggling course panels
+    const toggleCoursePanel = (course) => {
+        setActiveCourse(course);
+        setShowModal(true); // Show modal when course is clicked
+        setInputValue(''); // Clear search query when modal opens
+        setCurrentPage(1); // Reset pagination to first page
+    };
+
+    const closeModal = () => {
+        setShowModal(false); // Close the modal
+        setActiveCourse(null); // Clear active course
+    };
+
+    // Paginate students for the current course
+    const paginateStudents = (courseStudents) => {
+        const indexOfLastStudent = currentPage * itemsPerPage;
+        const indexOfFirstStudent = indexOfLastStudent - itemsPerPage;
+        return courseStudents.slice(indexOfFirstStudent, indexOfLastStudent);
+    };
+
+    // Handle page change
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const groupedStudents = groupByCourse();
+
+    // Calculate total pages for the current course
+    const totalPages = activeCourse
+        ? Math.ceil(
+              groupedStudents[activeCourse]?.filter((student) =>
+                  student.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+                  student.email.toLowerCase().includes(inputValue.toLowerCase()) ||
+                  student.id.toString().toLowerCase().includes(inputValue.toLowerCase()) // Include student ID
+              ).length / itemsPerPage
+          )
+        : 1;
+
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Student List</h2>}
-        >
-            <Toast/>
+        <AuthenticatedLayout user={auth.user} header={null}>
+            <Toast />
             <Head title="Student List" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div className="flex">
-                    {/* Message container */}
-                    <div className="w-full">
-                        {successMessage && (
-                        <div className="rounded-md p-4 mb-1 text-white h-15" style={{ backgroundColor: successMessage === 'Approve Successfully' ? '#3C6441' : '#831B1C' }}>
-                            {"Student ID #" + rowData.id + " " + successMessage}
-                        </div>
-                        )}
+            <div className="flex">
+                <Sidebar /> {/* Include the Sidebar */}
+                <div className="py-12 w-full max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white">
+                    <div className="flex justify-between items-center">
+                        <h1 className="text-xl font-bold">Students List</h1>
+                        <Link
+                            href={route('student.add')}
+                            className="bg-[#113012] text-white px-4 py-2 rounded-lg hover:bg-[#163f17]"
+                        >
+                            + Add Student
+                        </Link>
                     </div>
-                    
-                    {/* Filter dropdown container */}
-                    {/* <div className="w-1/5">
-                        <RequestFilter filterOption={filterOption} handleFilterChange={handleFilterChange} />
-                    </div> */}
-                    </div>
-                    <div className="flex justify-between">
-                        <Link href={route('student.add')} className="text-green-500 hover:underline"> + Add Student</Link>
-                        <div className="flex">
-                            <input
-                                type="text"
-                                placeholder="Search.."
-                                className="border px2 rounded-lg"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                            />
-                            <button onClick={handleSearch} style={{ backgroundColor: '#af2429' }} className="text-white px-4 py-2 ml-2 rounded-lg">Search</button>
-                        </div>
-                    </div>
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div className="py-5">
                         {isLoading ? (
-                            "Loading..."
+                            'Loading...'
                         ) : (
-                            <StudentTable
-                                items={students.data}
-                                columns={columns}
-                                primary="Student ID"
-                                actionUpdate="student.edit"
-                                handleDelete={handleDelete}
-                            />
-                        )}
-                    </div>
-                    <div className="mt-4">
-                        {students.links && (
-                            <ul className="flex justify-center">
-                                {students.links.map((link, index) => (
-                                    <li key={index} className="mx-2">
-                                        <Link
-                                            href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') +
-                                            'searchQuery=' + (inputValue ? encodeURIComponent(inputValue) : '') 
-
-                                            }
-                                            className={`px-4 py-2 ${
-                                                link.active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                                            } hover:bg-red-300 rounded-lg`}
-                                            style={{ backgroundColor: link.active ? '#831b1c' : '' }}
-                                        >
-                                            {link.label === '&laquo; Previous'
-                                                ? 'Previous'
-                                                : link.label === 'Next &raquo;'
-                                                ? 'Next'
-                                                : link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
+                            Object.keys(groupedStudents).map((course) => (
+                                <div
+                                    key={course}
+                                    className="w-full h-full border rounded-lg shadow-none mb-5"
+                                >
+                                    <button
+                                        className="w-full text-left py-5 px-4 bg-gray-300 rounded-md"
+                                        onClick={() => toggleCoursePanel(course)}
+                                    >
+                                        {course}
+                                    </button>
+                                </div>
+                            ))
                         )}
                     </div>
                 </div>
             </div>
-            {showForm && (
-                <RequestForm
-                    user={auth.user}
-                    data={rowData}
-                    handleCloseForm={handleCloseForm}
-                    title="Your Form Title"
-                    submit={handleSubmit}
+
+            {showModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
+        <div
+            className="bg-white p-6 rounded-lg"
+            style={{ width: '1100px', minHeight: '500px', maxHeight: '500px' }} // Static width and height
+        >
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">{activeCourse}</h2>
+
+                {/* Search bar */}
+                <input
+                    type="text"
+                    placeholder="Search Student"
+                    className="border px-2 rounded-lg "
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
                 />
-            )}
+            </div>
+
+            {/* Filtered Students Table */}
+            <div
+                className="overflow-auto"
+                style={{ height: '300px', minHeight: '300px', maxHeight: '300px' }}
+            >
+                <StudentTable
+                    items={paginateStudents(
+                        groupedStudents[activeCourse]?.filter((student) =>
+                            student.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+                            student.email.toLowerCase().includes(inputValue.toLowerCase()) ||
+                            student.id.toString().toLowerCase().includes(inputValue.toLowerCase()) // Include student ID
+                        )
+                    )}
+                    columns={columns}
+                    primary="Student ID"
+                    actionUpdate="student.edit"
+                    handleDelete={handleDelete}
+                />
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center mt-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-gray-300 rounded-lg mr-2"
+                >
+                    Previous
+                </button>
+                <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-gray-300 rounded-lg ml-2"
+                >
+                    Next
+                </button>
+            </div>
+
+            <button
+                onClick={closeModal}
+                className="mt-4 text-white bg-red-500 px-4 py-2 rounded-md"
+            >
+                Close
+            </button>
+        </div>
+    </div>
+)}
+
         </AuthenticatedLayout>
     );
 }
