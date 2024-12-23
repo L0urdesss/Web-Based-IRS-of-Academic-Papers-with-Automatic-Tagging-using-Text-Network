@@ -113,7 +113,7 @@ export default function AdminDashboard({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Home" />
+            <Head title="Dashboard" />
 
             <div className="flex">
                 {/* Sidebar */}

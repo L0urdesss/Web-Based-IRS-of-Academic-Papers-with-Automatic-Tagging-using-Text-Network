@@ -3,6 +3,8 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Sidebar from '@/Components/Sidebar';
 import Toast from '@/Components/Toast';
+import deleteButton from '@/Components/deleteIcon.png';
+import editButton from '@/Components/editIcon.png';
 
 export default function All({ auth, papers, searchQuery }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -44,71 +46,73 @@ export default function All({ auth, papers, searchQuery }) {
             <Toast />
             <Head title="All Papers" />
 
-            <div className="flex">
+            <div className="flex flex-col md:flex-row">
                 {/* Sidebar Component */}
                 <Sidebar />
 
                 {/* Main Content */}
-                <div className="py-12 w-full bg-[white]">
-                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div className="flex justify-between items-center mb-2">
-                            <div>
-                                <Link href={route('papers.add')} className="text-green-500 hover:underline">
-                                    + Add Paper
-                                </Link>
-                            </div>
-                            <div className="flex">
+                <div className="py-6 w-full bg-gray-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+                            <Link 
+                                href={route('papers.add')} 
+                                className="ml-5 bg-green-800 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
+                            >
+                                + Add Paper
+                            </Link>
+                            <div className="flex w-full md:w-auto gap-2 mr-5">
                                 <input
                                     type="text"
                                     placeholder="Search.."
-                                    className="border px-2 rounded-lg"
+                                    className="border border-gray-300 px-4 py-2 rounded-lg w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                 />
                                 <button
                                     onClick={handleSearch}
-                                    style={{ backgroundColor: '#af2429' }}
-                                    className="text-white px-4 py-2 ml-2 rounded-lg"
+                                    className="bg-[#800020] text-white px-4 py-2 rounded-lg shadow hover:bg-red-800"
                                 >
                                     Search
                                 </button>
                             </div>
                         </div>
 
-                        <div className="overflow-hidden shadow-sm sm:rounded-lg p-4">
+                        <div className="overflow-hidden shadow-sm sm:rounded-lg p-4 ">
                             {isLoading ? (
-                                "Loading..."
+                                <p>Loading...</p>
                             ) : (
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {papers.data.map((paper, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white border border-gray-300 rounded-lg p-6 shadow-md hover:shadow-lg"
+                                            className="bg-white border border-gray-300 rounded-lg p-6 shadow hover:shadow-lg transition duration-200"
                                         >
-                                            <h3 className="text-base font-medium text-[#454545] mb-2 underline hover:underline-offset-4">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-2 underline">
                                                 {paper.title}
                                             </h3>
-                                            <p className="text-xs text-[#5D5959] mb-1 font-thin">
+                                            <p className="text-sm text-gray-600 mb-1">
                                                 <strong>Author:</strong> {paper.author}
                                             </p>
-                                            <p className="text-xs text-[#5D5959] mb-1 font-thin">
+                                            <p className="text-sm text-gray-600 mb-1">
                                                 <strong>Date:</strong> {paper.date_published}
                                             </p>
-                                            <p className="text-xs text-[#5D5959] mb-1 font-thin">
+                                            <p className="text-sm text-gray-600 mb-1">
                                                 <strong>Abstract:</strong> {truncateText(paper.abstract, 20)}
                                             </p>
-                                            <div className="flex justify-end mt-4">
-                                                <Link
-                                                    href={route('papers.edit', paper.id)}
-                                                    className="text-blue-400 hover:underline mr-4"
-                                                >
-                                                    Edit
+                                            <div className="flex justify-end mt-4 gap-2">
+                                                <Link href={route('papers.edit', paper.id)}>
+                                                    <img
+                                                        src={editButton}
+                                                        alt="Edit"
+                                                        className="w-5 h-5 cursor-pointer"
+                                                    />
                                                 </Link>
-                                                <button
-                                                    onClick={() => handleDelete(paper.id, paper.title)}
-                                                    className="text-red-400 hover:underline"
-                                                >
-                                                    Delete
+                                                <button onClick={() => handleDelete(paper.id, paper.title)}>
+                                                    <img
+                                                        src={deleteButton}
+                                                        alt="Delete"
+                                                        className="w-5 h-5 cursor-pointer"
+                                                    />
                                                 </button>
                                             </div>
                                         </div>
@@ -117,19 +121,18 @@ export default function All({ auth, papers, searchQuery }) {
                             )}
                         </div>
 
-                        <div className="mt-4">
+                        <div className="mt-6">
                             {papers.links && (
-                                <ul className="flex justify-center">
+                                <ul className="flex justify-center flex-wrap gap-2">
                                     {papers.links.map((link, index) => (
-                                        <li key={index} className="mx-2">
+                                        <li key={index}>
                                             <Link
                                                 href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'searchQuery=' + encodeURIComponent(inputValue)}
-                                                className={`px-4 py-2 ${
+                                                className={`px-4 py-2 rounded-lg shadow-sm transition duration-200 ${
                                                     link.active
-                                                        ? 'bg-blue-500 text-white'
-                                                        : 'bg-gray-200 text-gray-700'
-                                                } hover:bg-red-300 rounded-lg`}
-                                                style={{ backgroundColor: link.active ? '#831b1c' : '' }}
+                                                        ? 'bg-[#b2022f] text-white'
+                                                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                                }`}
                                             >
                                                 {link.label === '&laquo; Previous'
                                                     ? 'Previous'

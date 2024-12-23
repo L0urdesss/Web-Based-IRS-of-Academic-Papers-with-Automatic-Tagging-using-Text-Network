@@ -68,12 +68,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/add-admin', [PaperController::class, 'store'])->name('papers.store');
     Route::delete('/papers-admin/{paper}', [PaperController::class, 'destroy'])->name('papers.destroy');
 
-    Route::get('/student', [StudentController::class, 'view'])->name('student.view');
-    Route::post('/student/store', [StudentController::class, 'store'])->name('student.store');
-    Route::patch('/student/{student}', [StudentController::class, 'update'])->name('student.update');
-    Route::get('/student/add', [StudentController::class, 'add'])->name('student.add');
-    Route::get('/student/{student}', [StudentController::class, 'edit'])->name('student.edit');
-    Route::delete('/student/{student}', [StudentController::class, 'destroy'])->name('student.destroy');
+    Route::get('/students-list', [StudentController::class, 'view'])->name('student.view');
+    Route::post('/students-list/store', [StudentController::class, 'store'])->name('student.store');
+    Route::patch('/students-list/{student}', [StudentController::class, 'update'])->name('student.update');
+    Route::get('/students-list/add', [StudentController::class, 'add'])->name('student.add');
+    Route::get('/students-list/{student}', [StudentController::class, 'edit'])->name('student.edit');
+    Route::delete('/students-list/{student}', [StudentController::class, 'destroy'])->name('student.destroy');
 
     Route::put('/request-papers-all', [RequestPaperController::class, 'updateAll'])->name('userrequest.updateAll');
     Route::get('/notifications/count', [NotifController::class, 'count'])->name('notif.count');
