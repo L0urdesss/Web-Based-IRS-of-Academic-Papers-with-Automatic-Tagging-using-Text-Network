@@ -1,186 +1,209 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import { Pie, Bar } from 'react-chartjs-2';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head } from "@inertiajs/react";
+import { Bar } from "react-chartjs-2";
 import {
-    Chart as ChartJS,
-    ArcElement,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Legend,
-} from 'chart.js';
-import Sidebar from '@/Components/Sidebar'; // Importing the Sidebar component
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import Sidebar from "@/Components/Sidebar";
 
-ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-export default function AdminDashboard({ auth }) {
-    // Data for Pie Charts
-    const pieData1 = {
-        labels: ['Category A', 'Category B', 'Category C'],
-        datasets: [
-            {
-                data: [30, 50, 20],
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-            },
+export default function AdminDashboard({
+  totalPapers,
+  totalStudents,
+  papersByCourse,
+  papersByYear,
+  studentsPerCourse,
+  auth,
+}) {
+  // Prepare Data for "Papers per Course" Chart
+  const courseLabels = papersByCourse.map((entry) => entry.course); // Course names
+  const courseData = papersByCourse.map((entry) => entry.count); // Paper count per course
+
+  const courseBarData = {
+    labels: courseLabels,
+    datasets: [
+      {
+        label: "Papers",
+        data: courseData,
+        backgroundColor: [
+          "#36A2EB",
+          "#FF6384",
+          "#FFCE56",
+          "#4BC0C0",
+          "#9966FF",
         ],
-    };
+        borderColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-    const pieData2 = {
-        labels: ['Segment 1', 'Segment 2', 'Segment 3'],
-        datasets: [
-            {
-                data: [40, 30, 30],
-                backgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
-                hoverBackgroundColor: ['#4BC0C0', '#FF9F40', '#9966FF'],
-            },
-        ],
-    };
-
-    const pieData3 = {
-        labels: ['Group X', 'Group Y', 'Group Z'],
-        datasets: [
-            {
-                data: [25, 25, 50],
-                backgroundColor: ['#FF6384', '#4BC0C0', '#FFCE56'],
-                hoverBackgroundColor: ['#FF6384', '#4BC0C0', '#FFCE56'],
-            },
-        ],
-    };
-
-    // Data for Horizontal Bar Graph
-    const horizontalBarData = {
-        labels: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
-        datasets: [
-            {
-                label: 'Votes',
-                data: [12, 19, 7, 5],
-                backgroundColor: '#36A2EB',
-                borderColor: '#1F77B4',
-                borderWidth: 1,
-            },
-        ],
-    };
-
-    const horizontalBarOptions = {
-        indexAxis: 'y', // Horizontal bar graph
-        responsive: true,
-        plugins: {
-            legend: { display: false }, // Hide legend
+  const courseBarOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+    },
+    indexAxis: "y", // This makes the chart horizontal
+    scales: {
+      x: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Number of Papers", // Optional title for the x-axis
         },
-        scales: {
-            x: {
-                grid: { display: false }, // Remove gridlines
-                ticks: { display: false }, // Optionally hide ticks
-            },
-            y: {
-                grid: { display: false }, // Remove gridlines
-            },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Courses", // Optional title for the y-axis
         },
-    };
+      },
+    },
+  };
 
-    // Data for Vertical Bar Graph
-    const verticalBarData = {
-        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-        datasets: [
-            {
-                label: 'Sales',
-                data: [11, 20, 35, 25],
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-                borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-                borderWidth: 1,
-            },
+  // Prepare Data for "Papers Published per Year" Chart
+  const yearLabels = papersByYear.map((entry) => entry.year); // Should be actual years like 2020, 2021
+  const yearData = papersByYear.map((entry) => entry.count); // Count for each year
+
+  const yearBarData = {
+    labels: yearLabels,
+    datasets: [
+      {
+        label: "Papers Published",
+        data: yearData,
+        backgroundColor: "#FF6384",
+        borderColor: "#FF6384",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const yearBarOptions = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            const year = tooltipItem.label;
+            const count = tooltipItem.raw;
+            return `Year: ${year}, Papers: ${count}`;
+          },
+        },
+      },
+    },
+    indexAxis: "y", // Make the chart horizontal
+    scales: {
+      x: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Number of Papers", // Title for the x-axis (which will represent the count of papers)
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Year Published", // Title for the y-axis (which will represent the years)
+        },
+      },
+    },
+  };
+
+  const studentBarData = {
+    labels: Object.keys(studentsPerCourse), // Course names
+    datasets: [
+      {
+        data: Object.values(studentsPerCourse), // Number of students for each course
+        backgroundColor: [
+          "#36A2EB",
+          "#FF6384",
+          "#FFCE56",
+          "#4BC0C0",
+          "#9966FF",
         ],
-    };
+        borderColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-    const verticalBarOptions = {
-        responsive: true,
-        plugins: {
-            legend: { display: false }, // Hide legend
-        },
-        scales: {
-            x: {
-                grid: { display: false }, // Remove gridlines
-                ticks: { display: false }, // Optionally hide ticks
-            },
-            y: {
-                grid: { display: false }, // Remove gridlines
-                ticks: { beginAtZero: true }, // Keep ticks on Y-axis
-            },
-        },
-    };
+  const studentBarOptions = {
+    responsive: true,
+    maintainAspectRatio: false, // Allow the chart to stretch to the container's size
+    plugins: {
+      legend: { display: false },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        title: { display: true, text: "Number of Students" },
+      },
+      y: {
+        title: { display: true, text: "Courses" },
+      },
+    },
+  };
 
-    return (
-        <AuthenticatedLayout user={auth.user}>
-            <Head title="Dashboard" />
+  return (
+    <AuthenticatedLayout user={auth.user}>
+      <Head title="Dashboard" />
 
-            <div className="flex">
-                {/* Sidebar */}
-                <Sidebar />
+      <div className="flex flex-col lg:flex-row">
+        {/* Sidebar */}
+        <Sidebar />
 
-                {/* Main Content */}
-                <div className="w-full h-auto p-4 bg-gray-100">
-                    {/* Top Panels */}
-                    <div className="grid grid-cols-4 gap-4 mb-4">
-                        {/* Panel 1 */}
-                        <div className="bg-blue-500 text-white shadow-md p-4 rounded-lg">
-                            <h3 className="text-lg font-bold">Panel 1</h3>
-                            <p className="text-sm">Details or stats here</p>
-                        </div>
-                        {/* Panel 2 */}
-                        <div className="bg-green-500 text-white shadow-md p-4 rounded-lg">
-                            <h3 className="text-lg font-bold">Panel 2</h3>
-                            <p className="text-sm">Details or stats here</p>
-                        </div>
-                        {/* Panel 3 */}
-                        <div className="bg-yellow-500 text-white shadow-md p-4 rounded-lg">
-                            <h3 className="text-lg font-bold">Panel 3</h3>
-                            <p className="text-sm">Details or stats here</p>
-                        </div>
-                        {/* Panel 4 */}
-                        <div className="bg-red-500 text-white shadow-md p-4 rounded-lg">
-                            <h3 className="text-lg font-bold">Panel 4</h3>
-                            <p className="text-sm">Details or stats here</p>
-                        </div>
-                    </div>
-
-                    {/* Graphs Section */}
-                    <div className="grid grid-cols-2 gap-4">
-                        {/* Vertical Bar Graph */}
-                        <div className="bg-white shadow-md p-4">
-                            <h2 className="text-lg font-bold">Vertical Bar Graph</h2>
-                            <div style={{ width: '100%', height: '200px' }}>
-                                <Bar data={verticalBarData} options={verticalBarOptions} />
-                            </div>
-                        </div>
-
-                        {/* Horizontal Bar Graph */}
-                        <div className="bg-white shadow-md p-4">
-                            <h2 className="text-lg font-bold">Horizontal Bar Graph</h2>
-                            <div style={{ width: '100%', height: '200px' }}>
-                                <Bar data={horizontalBarData} options={horizontalBarOptions} />
-                            </div>
-                        </div>
-
-                        {/* Pie Charts */}
-                        <div className="bg-white shadow-md p-4 col-span-2">
-                            <h2 className="text-lg font-bold">Pie Charts</h2>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <Pie data={pieData1} />
-                                </div>
-                                <div>
-                                    <Pie data={pieData2} />
-                                </div>
-                                <div>
-                                    <Pie data={pieData3} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        {/* Main Content */}
+        <div className="w-full h-auto p-4 bg-gray-100">
+          {/* Top Panel */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="bg-blue-500 text-white shadow-md p-4 rounded-lg">
+              <h3 className="text-lg font-bold">Total Students</h3>
+              <p className="text-3xl font-bold">{totalStudents}</p>
             </div>
-        </AuthenticatedLayout>
-    );
+            <div className="bg-green-500 text-white shadow-md p-4 rounded-lg">
+              <h3 className="text-lg font-bold">Total Papers</h3>
+              <p className="text-3xl font-bold">{totalPapers}</p>
+            </div>
+          </div>
+
+          {/* Charts in Two Vertical Panels */}
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Left Panel: Students per Course */}
+            <div className="flex-1 bg-white shadow-md p-4">
+              <h2 className="text-lg font-bold">Students per Course</h2>
+              <div className="w-full h-96">
+                <Bar data={studentBarData} options={studentBarOptions} />
+              </div>
+            </div>
+
+            {/* Right Panel: Papers per Course and Papers Published per Year */}
+            <div className="flex-1 flex flex-col gap-4">
+              {/* Papers per Course */}
+              <div className="bg-white shadow-md p-4">
+                <h2 className="text-lg font-bold">Papers per Course</h2>
+                <div className="w-full h-48">
+                  <Bar data={courseBarData} options={courseBarOptions} />
+                </div>
+              </div>
+
+              {/* Papers Published per Year */}
+              <div className="bg-white shadow-md p-4">
+                <h2 className="text-lg font-bold">Papers Published per Year</h2>
+                <div className="w-full h-48">
+                  <Bar data={yearBarData} options={yearBarOptions} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AuthenticatedLayout>
+  );
 }

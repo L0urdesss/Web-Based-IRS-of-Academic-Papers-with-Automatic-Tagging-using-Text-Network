@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AdminDashboardController;
 
 Route::get('/', function () {
     return redirect('/guest');
@@ -44,9 +45,9 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::get('/admindashboard', function () {
-    return Inertia::render('AdminDashboard');
-})->middleware(['auth', 'verified', 'admin'])->name('admindashboard');
+Route::get('/admindashboard', [AdminDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('admindashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/papers', [PaperController::class, 'view'])->name('userpapers.view');

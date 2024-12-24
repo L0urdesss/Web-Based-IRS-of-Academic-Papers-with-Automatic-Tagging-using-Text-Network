@@ -25,7 +25,6 @@ class PaperController extends Controller
     
         $papers = $query->paginate(6);
 
-    
         return Inertia::render('Papers/Admin/All', [
             'papers' => $papers,
             'searchQuery' => $request->input('searchQuery'), // Send back the search query to pre-fill the input field
