@@ -53,10 +53,10 @@ export default function All({ auth, papers, searchQuery }) {
                 {/* Main Content */}
                 <div className="py-6 w-full bg-gray-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-                            <Link 
-                                href={route('papers.add')} 
-                                className="ml-5 bg-green-800 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
+                        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 animate-[fade-in_0.8s_ease-in-out]">
+                            <Link
+                                href={route('papers.add')}
+                                className="ml-5 bg-green-800 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105"
                             >
                                 + Add Paper
                             </Link>
@@ -64,28 +64,28 @@ export default function All({ auth, papers, searchQuery }) {
                                 <input
                                     type="text"
                                     placeholder="Search.."
-                                    className="border border-gray-300 px-4 py-2 rounded-lg w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 px-4 py-2 rounded-lg w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                 />
                                 <button
                                     onClick={handleSearch}
-                                    className="bg-[#800020] text-white px-4 py-2 rounded-lg shadow hover:bg-red-800"
+                                    className="bg-[#800020] text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-800 transition-transform transform hover:scale-105"
                                 >
                                     Search
                                 </button>
                             </div>
                         </div>
 
-                        <div className="overflow-hidden shadow-sm sm:rounded-lg p-4 ">
+                        <div className="overflow-hidden shadow-sm sm:rounded-lg p-4 bg-gray-100">
                             {isLoading ? (
-                                <p>Loading...</p>
+                                <p className="text-center text-gray-500 animate-pulse">Loading...</p>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {papers.data.map((paper, index) => (
                                         <div
                                             key={index}
-                                            className="bg-white border border-gray-300 rounded-lg p-6 shadow hover:shadow-lg transition duration-200"
+                                            className="bg-white border border-gray-300 rounded-lg p-6 shadow-md hover:shadow-lg transition-transform transform hover:scale-105 animate-[fade-in_0.8s_ease-in-out]"
                                         >
                                             <h3 className="text-lg font-semibold text-gray-800 mb-2 underline">
                                                 {paper.title}
@@ -104,14 +104,14 @@ export default function All({ auth, papers, searchQuery }) {
                                                     <img
                                                         src={editButton}
                                                         alt="Edit"
-                                                        className="w-5 h-5 cursor-pointer"
+                                                        className="w-5 h-5 cursor-pointer hover:opacity-80 transition-opacity duration-200"
                                                     />
                                                 </Link>
                                                 <button onClick={() => handleDelete(paper.id, paper.title)}>
                                                     <img
                                                         src={deleteButton}
                                                         alt="Delete"
-                                                        className="w-5 h-5 cursor-pointer"
+                                                        className="w-5 h-5 cursor-pointer hover:opacity-80 transition-opacity duration-200"
                                                     />
                                                 </button>
                                             </div>
@@ -127,8 +127,12 @@ export default function All({ auth, papers, searchQuery }) {
                                     {papers.links.map((link, index) => (
                                         <li key={index}>
                                             <Link
-                                                href={(link.url ? link.url + (link.url.includes('?') ? '&' : '?') : '') + 'searchQuery=' + encodeURIComponent(inputValue)}
-                                                className={`px-4 py-2 rounded-lg shadow-sm transition duration-200 ${
+                                                href={
+                                                    (link.url
+                                                        ? link.url + (link.url.includes('?') ? '&' : '?')
+                                                        : '') + 'searchQuery=' + encodeURIComponent(inputValue)
+                                                }
+                                                className={`px-4 py-2 rounded-lg shadow-md transition-transform transform hover:scale-105 duration-200 ${
                                                     link.active
                                                         ? 'bg-[#b2022f] text-white'
                                                         : 'bg-gray-200 text-gray-700 hover:bg-gray-300'

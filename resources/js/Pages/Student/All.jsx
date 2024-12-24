@@ -5,7 +5,7 @@ import StudentTable from '@/Components/StudentTable';
 import Toast from '@/Components/Toast';
 import Sidebar from '@/Components/Sidebar';
 
-const columns = ['Student ID', 'Email', 'Name', 'Course', 'College', 'Action']; // Updated columns
+const columns = ['Student ID', 'Email', 'Name', 'Course', 'College', 'Action'];
 
 export default function All({ auth, students }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -15,6 +15,14 @@ export default function All({ auth, students }) {
     const [inputValue, setInputValue] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5);
+    const [visibleStudents, setVisibleStudents] = useState([]);
+
+    useEffect(() => {
+        if (activeCourse && groupedStudents[activeCourse]) {
+            const studentsToShow = groupedStudents[activeCourse].slice(0, currentPage * itemsPerPage);
+            setVisibleStudents(studentsToShow);
+        }
+    }, [currentPage, activeCourse]);
 
     useEffect(() => {
         setIsLoading(false);
@@ -24,13 +32,12 @@ export default function All({ auth, students }) {
         if (confirm(`Are you sure you want to delete "${itemId}"?`)) {
             deletePaper(route('student.destroy', itemId), {
                 onSuccess: () => {
-                    // Check if there are any students left in the current course
                     const remainingStudents = groupedStudents[activeCourse]?.filter(
                         (student) => student.id !== itemId
                     );
 
                     if (remainingStudents.length === 0) {
-                        closeModal(); // Close modal if no students are left
+                        closeModal();
                     }
                 },
             });
@@ -52,67 +59,54 @@ export default function All({ auth, students }) {
         setShowModal(true);
         setInputValue('');
         setCurrentPage(1);
+        setVisibleStudents(groupedStudents[course]?.slice(0, itemsPerPage) || []);
     };
 
     const closeModal = () => {
         setShowModal(false);
         setActiveCourse(null);
+        setVisibleStudents([]);
     };
 
-    const paginateStudents = (courseStudents) => {
-        const indexOfLastStudent = currentPage * itemsPerPage;
-        const indexOfFirstStudent = indexOfLastStudent - itemsPerPage;
-        return courseStudents.slice(indexOfFirstStudent, indexOfLastStudent);
-    };
-
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
+    const handleScroll = (e) => {
+        const { scrollTop, scrollHeight, clientHeight } = e.target;
+        if (scrollTop + clientHeight >= scrollHeight - 10 && !isLoading) {
+            if (currentPage * itemsPerPage < groupedStudents[activeCourse]?.length) {
+                setCurrentPage((prevPage) => prevPage + 1);
+            }
+        }
     };
 
     const groupedStudents = groupByCourse();
-
-    const totalPages = activeCourse
-        ? Math.ceil(
-              groupedStudents[activeCourse]?.filter((student) =>
-                  student.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-                  student.email.toLowerCase().includes(inputValue.toLowerCase()) ||
-                  student.id.toString().toLowerCase().includes(inputValue.toLowerCase())
-              ).length / itemsPerPage
-          )
-        : 1;
 
     return (
         <AuthenticatedLayout user={auth.user} header={null}>
             <Toast />
             <Head title="Student List" />
 
-            <div className="flex">
+            <div className="flex h-screen">
                 <Sidebar />
                 <div className="py-12 w-full max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white">
-                    <div className="flex justify-between items-center">
-                        <h1 className="text-xl font-bold">Students List</h1>
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-2xl font-bold text-gray-700">Students List</h1>
                         <Link
                             href={route('student.add')}
-                            className="bg-[#113012] text-white px-4 py-2 rounded-lg hover:bg-[#163f17]"
+                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
                         >
                             + Add Student
                         </Link>
                     </div>
-                    <div className="py-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 py-5">
                         {isLoading ? (
-                            'Loading...'
+                            <p>Loading...</p>
                         ) : (
                             Object.keys(groupedStudents).map((course) => (
                                 <div
                                     key={course}
-                                    className="w-full h-full border rounded-lg shadow-none mb-5"
+                                    className="border border-gray-300 rounded-lg shadow-md p-6 bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+                                    onClick={() => toggleCoursePanel(course)}
                                 >
-                                    <button
-                                        className="w-full text-left py-5 px-4 bg-gray-300 rounded-md"
-                                        onClick={() => toggleCoursePanel(course)}
-                                    >
-                                        {course}
-                                    </button>
+                                    <h3 className="text-lg font-semibold text-gray-800">{course}</h3>
                                 </div>
                             ))
                         )}
@@ -120,34 +114,37 @@ export default function All({ auth, students }) {
                 </div>
             </div>
 
-            {showModal && activeCourse && groupedStudents[activeCourse]?.length > 0 && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
+            {showModal && activeCourse && (
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm"
+                    aria-modal="true"
+                    role="dialog"
+                >
                     <div
-                        className="bg-white p-6 rounded-lg"
-                        style={{ width: '1100px', minHeight: '500px', maxHeight: '500px' }}
+                        className="bg-white p-6 rounded-lg shadow-xl w-full max-w-4xl overflow-hidden"
+                        style={{ minHeight: '500px', maxHeight: '500px' }}
                     >
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-bold">{activeCourse}</h2>
+                            <h2 className="text-xl font-bold text-gray-700">{activeCourse}</h2>
                             <input
                                 type="text"
                                 placeholder="Search Student"
-                                className="border px-2 rounded-lg"
+                                className="border px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                             />
                         </div>
 
                         <div
-                            className="overflow-auto"
+                            className="overflow-auto border border-gray-300 rounded-lg"
                             style={{ height: '300px', minHeight: '300px', maxHeight: '300px' }}
+                            onScroll={handleScroll}
                         >
                             <StudentTable
-                                items={paginateStudents(
-                                    groupedStudents[activeCourse]?.filter((student) =>
-                                        student.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-                                        student.email.toLowerCase().includes(inputValue.toLowerCase()) ||
-                                        student.id.toString().toLowerCase().includes(inputValue.toLowerCase())
-                                    )
+                                items={visibleStudents.filter((student) =>
+                                    student.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                    student.email.toLowerCase().includes(inputValue.toLowerCase()) ||
+                                    student.id.toString().toLowerCase().includes(inputValue.toLowerCase())
                                 )}
                                 columns={columns}
                                 primary="Student ID"
@@ -156,27 +153,9 @@ export default function All({ auth, students }) {
                             />
                         </div>
 
-                        <div className="flex justify-center mt-4">
-                            <button
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="px-4 py-2 bg-gray-300 rounded-lg mr-2"
-                            >
-                                Previous
-                            </button>
-                            <span className="px-4 py-2">{`Page ${currentPage} of ${totalPages}`}</span>
-                            <button
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="px-4 py-2 bg-gray-300 rounded-lg ml-2"
-                            >
-                                Next
-                            </button>
-                        </div>
-
                         <button
                             onClick={closeModal}
-                            className="mt-4 text-white bg-red-500 px-4 py-2 rounded-md"
+                            className="mt-4 text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition"
                         >
                             Close
                         </button>
