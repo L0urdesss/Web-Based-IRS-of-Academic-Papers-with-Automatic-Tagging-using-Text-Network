@@ -15,7 +15,8 @@ class EnsureUserIsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->check() && auth()->user()->role === 'admin') {
+        // Check if the authenticated user is either an admin or sub-admin
+        if (auth()->check() && in_array(auth()->user()->role, ['admin', 'assistant-admin'])) {
             return $next($request);
         }
 

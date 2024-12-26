@@ -5,6 +5,7 @@ use App\Http\Controllers\PaperController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestPaperController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\AssistantAdminController; // Import RoleController
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -68,7 +69,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::patch('/papers-admin/{paper}', [PaperController::class, 'update'])->name('papers.update');
     Route::post('/add-admin', [PaperController::class, 'store'])->name('papers.store');
     Route::delete('/papers-admin/{paper}', [PaperController::class, 'destroy'])->name('papers.destroy');
-
+    
     Route::get('/students-list', [StudentController::class, 'view'])->name('student.view');
     Route::post('/students-list/store', [StudentController::class, 'store'])->name('student.store');
     Route::patch('/students-list/{student}', [StudentController::class, 'update'])->name('student.update');
@@ -78,6 +79,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::put('/request-papers-all', [RequestPaperController::class, 'updateAll'])->name('userrequest.updateAll');
     Route::get('/notifications/count', [NotifController::class, 'count'])->name('notif.count');
+
+    // Role management routes for Assistant Admin
+    Route::get('/assistant-admins', [AssistantAdminController::class, 'view'])->name('assistant-admins.view');
+    Route::get('/assistant-admins/add', [AssistantAdminController::class, 'add'])->name('assistant-admins.add');
+    Route::post('/assistant-admins/store', [AssistantAdminController::class, 'store'])->name('assistant-admins.store');
+    Route::get('/assistant-admins/{user}/edit', [AssistantAdminController::class, 'edit'])->name('assistant-admins.edit');
+    Route::patch('/assistant-admins/{user}', [AssistantAdminController::class, 'update'])->name('assistant-admins.update');
+    Route::delete('/assistant-admins/{user}', [AssistantAdminController::class, 'destroy'])->name('assistant-admins.destroy');
+    
+    
+    
 });
 
 require __DIR__ . '/auth.php';
