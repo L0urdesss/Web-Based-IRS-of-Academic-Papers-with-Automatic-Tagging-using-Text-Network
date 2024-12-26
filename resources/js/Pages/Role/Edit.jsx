@@ -21,7 +21,7 @@ export default function Edit({ auth, assistantAdmin }) {
       <Head title="Edit Assistant Admin" />
       <div className="flex h-screen">
         {/* Sidebar component */}
-        <Sidebar />
+        <Sidebar user = {auth.user} />
 
         <div className="w-full max-w-lg p-4">
           <div className="w-96 p-4 border rounded-lg">

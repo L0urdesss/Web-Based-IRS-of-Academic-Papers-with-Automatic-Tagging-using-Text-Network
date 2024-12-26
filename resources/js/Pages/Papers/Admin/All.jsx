@@ -48,7 +48,8 @@ export default function All({ auth, papers, searchQuery }) {
 
             <div className="flex flex-col md:flex-row">
                 {/* Sidebar Component */}
-                <Sidebar />
+                
+                <Sidebar user ={auth.user}/> 
 
                 {/* Main Content */}
                 <div className="py-6 w-full bg-gray-50">

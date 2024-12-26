@@ -31,7 +31,7 @@ export default function All({ auth, assistantAdmins }) {
     <AuthenticatedLayout user={auth.user}>
       <Head title="Assistant Admins" />
       <div className="flex h-screen">
-        <Sidebar />
+        <Sidebar user = {auth.user} />
         <div className="flex-1 p-6 bg-white shadow sm:rounded-lg">
           <h1 className="text-2xl font-bold mb-4">Assistant Admins</h1>
 

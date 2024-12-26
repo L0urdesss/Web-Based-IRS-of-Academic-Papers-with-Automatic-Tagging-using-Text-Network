@@ -157,7 +157,7 @@ export default function AdminDashboard({
 
       <div className="flex flex-col lg:flex-row">
         {/* Sidebar */}
-        <Sidebar />
+        <Sidebar user = {auth.user} />
 
         {/* Main Content */}
         <div className="w-full h-auto p-4 bg-gray-100">
