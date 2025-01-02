@@ -42,9 +42,6 @@ export default function Sidebar({ user }) {
         ] // Only Papers for assistant-admin
       : adminMenuItems; // Show all items for admins
 
-      console.log(user)
-      console.log(menuItems)
-
   return (
     <div className="w-15 h-auto bg-[#b2022f] text-white p-2">
       <ul className="space-y-15">

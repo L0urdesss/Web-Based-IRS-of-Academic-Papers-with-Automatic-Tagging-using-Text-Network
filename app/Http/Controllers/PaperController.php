@@ -17,12 +17,12 @@ class PaperController extends Controller
     public function index(Request $request)
     {
         $query = Paper::query();
-    
+
         if ($request->has('searchQuery')) {
             $query->where('title', 'like', '%' . $request->input('searchQuery') . '%');
             // Add more search conditions if needed
         }
-    
+
         $papers = $query->paginate(6);
 
         return Inertia::render('Papers/Admin/All', [
@@ -38,13 +38,13 @@ class PaperController extends Controller
         if ($request->has('searchQuery')) {
             $searchTerms = explode(' ', $request->input('searchQuery'));
         }
-        
+
         // Apply additional filters if selected
         if ($request->has('filters')) {
             $filters = $request->input('filters');
-            $query->where(function($query) use ($filters, $searchTerms) {
+            $query->where(function ($query) use ($filters, $searchTerms) {
                 foreach ($searchTerms as $term) {
-                    $query->where(function($query) use ($term, $filters) {
+                    $query->where(function ($query) use ($term, $filters) {
                         // Check if the term matches any of the specified filters
                         foreach ($filters as $filter) {
                             $query->orWhere($filter, 'like', '%' . $term . '%');
@@ -53,9 +53,9 @@ class PaperController extends Controller
                 }
             });
         }
-    
+
         // Apply sorting if sortOrder is provided
-        if ($request->has('sortOrders')){
+        if ($request->has('sortOrders')) {
             $sortOrder = $request->input('sortOrders');
             if ($sortOrder === 'asc') {
                 $query->orderBy('title', 'asc');
@@ -63,24 +63,24 @@ class PaperController extends Controller
                 $query->orderBy('title', 'desc');
             }
         }
-    
+
         // Apply sorting if sortCourse is provided
-        if ($request->has('sortCourse') && $request->input('sortCourse') !== null){
+        if ($request->has('sortCourse') && $request->input('sortCourse') !== null) {
             $sortCourse = $request->input('sortCourse');
             $query->where('course', $sortCourse);
         }
 
         if ($request->has('paperFile')) {
-            if ($request->input('paperFile') == 'true'){
+            if ($request->input('paperFile') == 'true') {
                 // Get only non-null 'file' field
                 $query->whereNotNull('file');
             }
         }
 
-        if ($request->has('paperDate')){
+        if ($request->has('paperDate')) {
             $paperDate = $request->input('paperDate');
             $currentYear = date('Y');
-    
+
             if (is_string($paperDate)) {
                 if ($paperDate == '1') {
                     $query->where('date_published', '>=', $currentYear - 1);
@@ -91,32 +91,32 @@ class PaperController extends Controller
                 $startYear = $paperDate[0];
                 $endYear = $paperDate[1];
                 $query->where('date_published', '>=', $startYear)
-                      ->where('date_published', '<=', $endYear);
+                    ->where('date_published', '<=', $endYear);
             }
         }
         \Log::info($request);
-        
+
         $papers = $query->paginate(7);
-        
+
         return Inertia::render('Papers/User/ViewAll', [
             'papers' => $papers,
-            'searchQuery' => $request->input('searchQuery'), 
-            'filters' => $request->input('filters'), 
-            'sortOrders' => $request->input('sortOrders'), 
-            'sortCourse' => $request->input('sortCourse'), 
-            'paperFile' => $request->input('paperFile'), 
-            'paperDate' => $request->input('paperDate'), 
+            'searchQuery' => $request->input('searchQuery'),
+            'filters' => $request->input('filters'),
+            'sortOrders' => $request->input('sortOrders'),
+            'sortCourse' => $request->input('sortCourse'),
+            'paperFile' => $request->input('paperFile'),
+            'paperDate' => $request->input('paperDate'),
 
         ]);
     }
-    
-    
-    
 
-    
+
+
+
+
     public function edit(Paper $paper)
     {
-        return Inertia::render('Papers/Admin/Edit',[
+        return Inertia::render('Papers/Admin/Edit', [
             'paper' => $paper
         ]);
     }
@@ -127,7 +127,7 @@ class PaperController extends Controller
 
         $status = (new RequestPaperController())->getStatus($user->id, $paper->id);
 
-        return Inertia::render('Papers/User/Preview',[
+        return Inertia::render('Papers/User/Preview', [
             'paper' => $paper,
             'status' => $status,
             'success' => session('success')
@@ -135,40 +135,40 @@ class PaperController extends Controller
     }
 
     public function update(Paper $paper, Request $request)
-    {    
+    {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
-            'author' => 'required|string', 
+            'author' => 'required|string',
             'course' => 'required|string',
             'file' => 'nullable|file|mimes:pdf',
             'date_published' => ['required', 'string', new YearBelowCurrent()],
         ]);
-    
+
         // Get the old file path
         $oldFilePath = $paper->file;
-    
+
         // Generate a clean file name without special characters
         $file = $request->file('file');
         $cleanFileName = $file ? Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension() : null;
-    
+
         // Check if a file was uploaded and store it with the cleaned file name
         if ($file) {
             // Delete the old file if it exists
             if ($oldFilePath) {
                 // Ensure the old file path is correct
                 $oldFilePath = str_replace('/storage', '', $oldFilePath);
-    
+
                 // Debugging: Log the old file path
                 \Log::info('Attempting to delete old file:', ['path' => $oldFilePath]);
-                
+
                 // Attempt to delete the old file
                 $deleted = Storage::disk('public')->delete($oldFilePath);
-                
+
                 // Debugging: Log whether the file was deleted or not
                 \Log::info('File deleted status:', ['status' => $deleted]);
             }
-    
+
             // Store the new file with a cleaned file name
             $validatedData['file'] = $file->storeAs('project/' . Str::slug($validatedData['title']), $cleanFileName, 'public');
         }
@@ -183,7 +183,7 @@ class PaperController extends Controller
                 'file' => $validatedData['file'],
             ]);
 
-            if($status){
+            if ($status) {
                 return redirect()->back()->with('success', 'Paper updated succesfully.');
             }
         } catch (\Exception $e) {
@@ -208,40 +208,92 @@ class PaperController extends Controller
             $validatedData['file'] = $filepath;
             $fullFilePath = storage_path('app/public/' . $filepath); // Get the full path
 
-            $output = shell_exec('python '. base_path('storage/app/python/main.py') . ' ' . escapeshellarg($fullFilePath));
+            $output = shell_exec('python ' . base_path('storage/app/python/maincopy.py') . ' ' . escapeshellarg($fullFilePath) . ' 2>&1');
+            \Log::info(['debug start', $output]);
+
+
+
+            $output = shell_exec('python ' . base_path('storage/app/python/meta.py') . ' ' . escapeshellarg($fullFilePath));
             \Log::info($output);
-            
         }
+
+        //comment this
         return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
 
 
-    
+        //uncomment this
+
         // try {
         //     $status = Paper::create($validatedData);
-        //     if($status){
+        //     if ($status) {
         //         return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
         //     }
         // } catch (\Exception $e) {
         //     return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
         // }
     }
-    
-    
+
+
 
     public function add()
     {
         return Inertia::render('Papers/Admin/Add');
     }
-    
+
     public function destroy(Paper $paper)
     {
-    try {
-        $status = $paper->delete();
-        if($status){
-            return redirect('/papers-admin')->with('success', 'Paper deleted successfully');
+        try {
+            $status = $paper->delete();
+            if ($status) {
+                return redirect('/papers-admin')->with('success', 'Paper deleted successfully');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred while deleting the paper');
         }
-    } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'An error occurred while deleting the paper');
     }
+
+    public function upload(Request $request)
+    {
+        \Log::info($request->all());
+
+        // Validate the uploaded file
+        $validatedData = $request->validate([
+            'file' => 'nullable|mimes:pdf',
+        ]);
+
+        // Initialize metadata as empty
+        $metadata = [];
+
+        if ($request->hasFile('file')) {
+            // Store the uploaded file
+            $filepath = $request->file('file')->store('preview/current', 'public');
+            $validatedData['file'] = $filepath;
+
+            // Get the full path to the stored file
+            $fullFilePath = storage_path('app/public/' . $filepath);
+
+            // Execute the Python script to extract metadata
+            $output = shell_exec('python ' . base_path('storage/app/python/meta.py') . ' ' . escapeshellarg($fullFilePath));
+            \Log::info('Raw Output from Python script: ' . $output);
+
+            // Decode the JSON output
+            $metadata = json_decode($output, true);
+
+            // Check if JSON decoding was successful
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                \Log::error('Failed to decode JSON from Python script: ' . json_last_error_msg());
+                $metadata = [];
+            }
+        }
+
+        // Return the extracted metadata or defaults if not available
+        return response()->json([
+            'title' => $metadata['Title'] ?? 'Unknown Title',
+            'abstract' => 'Abstract not extracted', // Adjust if your script extracts this
+            'author' => isset($metadata['Authors']) ? implode(', ', $metadata['Authors']) : 'Unknown Author',
+            'course' => $metadata['Course'] ?? 'Unknown Course',
+            'date_published' => $metadata['Year'] ?? 'Unknown Year',
+            'file_path' => $validatedData['file'] ?? null,
+        ]);
     }
 }

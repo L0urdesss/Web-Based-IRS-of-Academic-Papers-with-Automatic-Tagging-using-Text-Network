@@ -21,13 +21,19 @@ import difflib
 import sys
 from meta import extract_metada
 
+print("0")
 d = enchant.Dict("en_US")
+print("1")
 nltk.download('punkt')
+print("2")
 nltk.download('stopwords')
+print("3")
 nltk.download('wordnet')
+print("4")
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' #pabago nito mhie, kung saang path naka install tesseract mo
+print("5")
 nlp = spacy.load("en_core_web_sm")  # Load spaCy language model
-
+print("6")
 
 # Load category keywords from JSON file
 def load_category_keywords(json_file):
@@ -45,7 +51,7 @@ def load_custom_stopwords(file_path="storage/app/python/stopwords.txt"):
         return set()
 
 
-CATEGORY_KEYWORDS = load_category_keywords("storage/app/python/dummy.json")
+CATEGORY_KEYWORDS = load_category_keywords("storage/app/python/keywords/dummy.json")
 
 # Function to extract text from different file types
 def extract_text(file_path):
@@ -274,9 +280,22 @@ def hybrid_categorization_with_nested_keywords(file_path):
     }
 
 if __name__ == "__main__":
-    file_path = "C:/Users/Villaruz/Downloads/THESIS/Development of web-based enrolment system for centennial academy of the blessed trinity.pdf"
+    print("7")
+    if len(sys.argv) < 2:
+        print("8")
+        print("Usage: python script.py <file_path>")
+        sys.exit(1)
+    print("9")
+    file_path = sys.argv[1]
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+        sys.exit(1)
+
+    print("10")
     result = hybrid_categorization_with_nested_keywords(file_path)
-    
+    print("Categorization complete:", result)
+
+    # Display the results
     print("Categorization Results:")
     print(f"Main Topic: {result['Main Topic']}")
     print(f"Subtopic: {result['Subtopic']}")
