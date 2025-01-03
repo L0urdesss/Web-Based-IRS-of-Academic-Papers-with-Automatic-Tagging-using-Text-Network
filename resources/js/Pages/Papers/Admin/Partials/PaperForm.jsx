@@ -22,6 +22,9 @@ export default function PaperForm({ auth, paper, className = "" }) {
     course: paper ? paper.course : "",
     date_published: paper ? paper.date_published : "",
     file: paper ? paper.file : null,
+    main_topic: paper ? paper.main_topic : "",
+    subtopic: paper ? paper.subtopic : "",
+    key_terms: paper ? paper.key_terms : "",
   });
   const { errors } = usePage().props;
   const initialAuthors =
@@ -29,6 +32,13 @@ export default function PaperForm({ auth, paper, className = "" }) {
       ? paper.author.split(",").map((author) => author.trim())
       : [""];
   const [authors, setAuthors] = useState(initialAuthors);
+
+  const initialTerms =
+    paper && paper.key_terms
+      ? paper.key_terms.split(",").map((term) => term.trim())
+      : [""];
+
+  const [keyTerms, setKeyTerms] = useState(initialTerms);
 
   // Initialize authorInputs array based on the number of authors
   const [authorInputs, setAuthorInputs] = useState(
@@ -109,7 +119,9 @@ export default function PaperForm({ auth, paper, className = "" }) {
       console.error("No file to upload");
       return;
     }
-
+    if (typeof data.file === "string") {
+      return;
+    }
     const formData = new FormData();
     formData.append("file", data.file);
 
@@ -129,12 +141,20 @@ export default function PaperForm({ auth, paper, className = "" }) {
         author: responseData.author,
         course: responseData.course,
         date_published: responseData.date_published,
+        main_topic: responseData.main_topic,
+        subtopic: responseData.subtopic,
+        key_terms: responseData.key_terms,
       });
       const formattedAuthors =
         responseData && responseData.author
           ? responseData.author.split(",").map((author) => author.trim())
           : [""];
 
+      const formattedTerms =
+        responseData && responseData.key_terms
+          ? responseData.key_terms.split(",").map((term) => term.trim())
+          : [""];
+      setKeyTerms(formattedTerms);
       setAuthors(formattedAuthors);
       setAuthorInputs(formattedAuthors.map(() => ""));
     } catch (error) {
@@ -258,6 +278,56 @@ export default function PaperForm({ auth, paper, className = "" }) {
             />
             <InputError className="mt-2" message={errors.abstract} />
           </div>
+          <div>
+            <InputLabel
+              htmlFor="main_topic" //main topic
+              value="Main Topic"
+              style={{ fontSize: "12px" }}
+            />
+            <div
+              id="main_topic"
+              className="mt-1 block w-full h-10 p-2 border border-gray-300 rounded-md overflow-y-auto"
+              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
+            >
+              {data.main_topic || "N/A"}
+            </div>
+          </div>
+          <div>
+            <InputLabel
+              htmlFor="subtopic" //subtopic
+              value="Subtopic"
+              style={{ fontSize: "12px" }}
+            />
+            <div
+              id="subtopic"
+              className="mt-1 block w-full h-10 p-2 border border-gray-300 rounded-md overflow-y-auto"
+              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
+            >
+              {data.subtopic || "N/A"}
+            </div>
+          </div>
+          <div>
+            <div
+              className="mt-1 block w-full h-auto p-2 rounded-md"
+              style={{ fontSize: "10px" }}
+            >
+              <div style={{ fontSize: "12px", marginBottom: "8px" }}>
+                Key Terms
+              </div>
+              {keyTerms && keyTerms.length > 0
+                ? keyTerms.map((term, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-[#af2429] text-white px-2 py-1 text-xs rounded-md mr-1 mb-1"
+                      style={{ fontSize: "10px" }}
+                    >
+                      {term}
+                    </span>
+                  ))
+                : null}
+            </div>
+          </div>
+
           <div className="flex items-center justify-end gap-4">
             <PrimaryButton
               style={{

@@ -136,14 +136,21 @@ class PaperController extends Controller
 
     public function update(Paper $paper, Request $request)
     {
+        \Log::info("inside update");
+        \Log::info($request->all());
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
             'author' => 'required|string',
             'course' => 'required|string',
-            'file' => 'nullable|file|mimes:pdf',
+            'file' => 'nullable',
             'date_published' => ['required', 'string', new YearBelowCurrent()],
+            'main_topic' => 'required|string',
+            'subtopic' => 'required|string',
+            'key_terms' => 'required|string',
         ]);
+        \Log::info("1");
 
         // Get the old file path
         $oldFilePath = $paper->file;
@@ -151,6 +158,7 @@ class PaperController extends Controller
         // Generate a clean file name without special characters
         $file = $request->file('file');
         $cleanFileName = $file ? Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension() : null;
+        \Log::info("2");
 
         // Check if a file was uploaded and store it with the cleaned file name
         if ($file) {
@@ -172,6 +180,7 @@ class PaperController extends Controller
             // Store the new file with a cleaned file name
             $validatedData['file'] = $file->storeAs('project/' . Str::slug($validatedData['title']), $cleanFileName, 'public');
         }
+        \Log::info(["inside update: ", $validatedData['file']]);
 
         try {
             $status = $paper->update([
@@ -181,7 +190,11 @@ class PaperController extends Controller
                 'course' => $validatedData['course'],
                 'date_published' => $validatedData['date_published'],
                 'file' => $validatedData['file'],
+                'main_topic' => $validatedData['main_topic'],
+                'subtopic' => $validatedData['subtopic'],
+                'key_terms' => $validatedData['key_terms'],
             ]);
+            \Log::info(['status', $status]);
 
             if ($status) {
                 return redirect()->back()->with('success', 'Paper updated succesfully.');
@@ -194,6 +207,9 @@ class PaperController extends Controller
     public function store(Request $request)
     {
 
+        \Log::info(['store log', $request->all()]);
+
+
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'abstract' => 'required|string',
@@ -201,36 +217,40 @@ class PaperController extends Controller
             'course' => 'required|string',
             'file' => 'nullable|mimes:pdf',
             'date_published' => ['required', 'string', new YearBelowCurrent()],
+            'main_topic' => 'required|string',
+            'subtopic' => 'required|string',
+            'key_terms' => 'required|string',
+
         ]);
 
         if ($request->hasFile('file')) {
             $filepath = $request->file('file')->store('project/' . $validatedData['title'], 'public');
             $validatedData['file'] = $filepath;
-            $fullFilePath = storage_path('app/public/' . $filepath); // Get the full path
+            // $fullFilePath = storage_path('app/public/' . $filepath); // Get the full path
 
-            $output = shell_exec('python ' . base_path('storage/app/python/maincopy.py') . ' ' . escapeshellarg($fullFilePath) . ' 2>&1');
-            \Log::info(['debug start', $output]);
+            // $output = shell_exec('python ' . base_path('storage/app/python/maincopy.py') . ' ' . escapeshellarg($fullFilePath) . ' 2>&1');
+            // \Log::info(['debug start', $output]);
 
 
 
-            $output = shell_exec('python ' . base_path('storage/app/python/meta.py') . ' ' . escapeshellarg($fullFilePath));
-            \Log::info($output);
+            // $output = shell_exec('python ' . base_path('storage/app/python/meta.py') . ' ' . escapeshellarg($fullFilePath));
+            // \Log::info($output);
         }
 
         //comment this
-        return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
+        // return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
 
 
         //uncomment this
 
-        // try {
-        //     $status = Paper::create($validatedData);
-        //     if ($status) {
-        //         return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
-        //     }
-        // } catch (\Exception $e) {
-        //     return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
-        // }
+        try {
+            $status = Paper::create($validatedData);
+            if ($status) {
+                return redirect('/papers-admin')->with(['success' => 'Paper added successfully.']);
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the paper.');
+        }
     }
 
 
@@ -254,46 +274,84 @@ class PaperController extends Controller
 
     public function upload(Request $request)
     {
-        \Log::info($request->all());
+        \Log::info('Request received', ['request' => $request->all()]);
 
-        // Validate the uploaded file
-        $validatedData = $request->validate([
-            'file' => 'nullable|mimes:pdf',
-        ]);
+        try {
+            // Validate the uploaded file
+            $validatedData = $request->validate([
+                'file' => 'nullable|mimes:pdf',
+            ]);
+            \Log::info('Validation passed');
 
-        // Initialize metadata as empty
-        $metadata = [];
+            $metadata = [];
+            $result = [];
 
-        if ($request->hasFile('file')) {
-            // Store the uploaded file
-            $filepath = $request->file('file')->store('preview/current', 'public');
-            $validatedData['file'] = $filepath;
+            if ($request->hasFile('file')) {
+                \Log::info('File upload detected');
 
-            // Get the full path to the stored file
-            $fullFilePath = storage_path('app/public/' . $filepath);
+                // Store the uploaded file
+                $filepath = $request->file('file')->store('preview/current', 'public');
+                \Log::info('File stored', ['filepath' => $filepath]);
 
-            // Execute the Python script to extract metadata
-            $output = shell_exec('python ' . base_path('storage/app/python/meta.py') . ' ' . escapeshellarg($fullFilePath));
-            \Log::info('Raw Output from Python script: ' . $output);
+                $validatedData['file'] = $filepath;
+                $fullFilePath = storage_path('app/public/' . $filepath);
+                \Log::info('Full file path', ['fullFilePath' => $fullFilePath]);
 
-            // Decode the JSON output
-            $metadata = json_decode($output, true);
+                // Execute the Python script to extract metadata
+                $commandMeta = 'python ' . base_path('storage/app/python/meta.py') . ' ' . escapeshellarg($fullFilePath);
+                \Log::info('Executing Python metadata extraction', ['command' => $commandMeta]);
 
-            // Check if JSON decoding was successful
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                \Log::error('Failed to decode JSON from Python script: ' . json_last_error_msg());
-                $metadata = [];
+                $outputMeta = trim(shell_exec($commandMeta));
+                \Log::info($outputMeta);
+
+                // Decode the JSON output for metadata
+                $metadata = json_decode($outputMeta, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('JSON decoding failed for metadata', [
+                        'error' => json_last_error_msg(),
+                        'raw_output' => $outputMeta,
+                    ]);
+                    $metadata = [];
+                }
+
+                // Execute the second Python script for maincopy
+                $commandDebug = 'python ' . base_path('storage/app/python/maincopy.py') . ' ' . escapeshellarg($fullFilePath);
+                \Log::info($commandDebug);
+                $outputDebug = trim(shell_exec($commandDebug));
+                \Log::info($outputDebug);
+
+
+                // Decode the debug output
+                $result = json_decode($outputDebug, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    \Log::error('JSON decoding failed for debug output', [
+                        'error' => json_last_error_msg(),
+                        'raw_output' => $outputDebug,
+                    ]);
+                    $result = [];
+                }
             }
-        }
 
-        // Return the extracted metadata or defaults if not available
-        return response()->json([
-            'title' => $metadata['Title'] ?? 'Unknown Title',
-            'abstract' => 'Abstract not extracted', // Adjust if your script extracts this
-            'author' => isset($metadata['Authors']) ? implode(', ', $metadata['Authors']) : 'Unknown Author',
-            'course' => $metadata['Course'] ?? 'Unknown Course',
-            'date_published' => $metadata['Year'] ?? 'Unknown Year',
-            'file_path' => $validatedData['file'] ?? null,
-        ]);
+            // Merge metadata and result, ensuring no key conflicts
+            $combinedResult = array_merge($metadata, $result);
+
+            // Return the combined response
+            return response()->json([
+                'title' => $combinedResult['Title'] ?? 'Unknown Title',
+                'abstract' => 'Abstract not extracted',
+                'author' => isset($combinedResult['Authors']) ? implode(', ', $combinedResult['Authors']) : 'Unknown Author',
+                'course' => $combinedResult['Course'] ?? 'Unknown Course',
+                'date_published' => $combinedResult['Year'] ?? 'Unknown Year',
+                'file_path' => $validatedData['file'] ?? null,
+                'main_topic' => $combinedResult['Main Topic'] ?? 'N/A',
+                'subtopic' => $combinedResult['Subtopic'] ?? 'N/A',
+                'key_terms' => isset($combinedResult['Key Terms']) ? implode(', ', $combinedResult['Key Terms']) : ['N/A'],
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('An error occurred in the upload function', ['exception' => $e->getMessage()]);
+            return response()->json(['error' => 'An unexpected error occurred.'], 500);
+        }
     }
+
+
 }

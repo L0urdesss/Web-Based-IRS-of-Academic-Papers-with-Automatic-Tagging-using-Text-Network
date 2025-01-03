@@ -13,10 +13,11 @@ class Paper extends Model
 {
     use HasFactory;
 
-    protected $guarded =[];
+    protected $guarded = [];
 
     protected $casts = [
         'author' => 'array',
+        'key_terms' => 'array',
         'file' => 'string', // Assuming 'file' attribute is a string
     ];
 
@@ -25,7 +26,7 @@ class Paper extends Model
     {
         return $value ? Storage::url($value) : '';
     }
-    
+
     public function requestpapers(): HasMany
     {
         return $this->hasMany(RequestPaper::class);
@@ -35,5 +36,5 @@ class Paper extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
-    
+
 }

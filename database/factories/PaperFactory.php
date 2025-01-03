@@ -42,8 +42,11 @@ class PaperFactory extends Factory
             'title' => $this->faker->sentence,
             'author' => $authorsString,
             'abstract' => $abstract,
-            'course'=> fake()->randomElement(['BASLT','BSCS','BSES','BSIS','BSIT']),
+            'course' => fake()->randomElement(['BASLT', 'BSCS', 'BSES', 'BSIS', 'BSIT']),
             'file' => null,
+            'key_terms' => null,
+            'main_topic' => null,
+            'subtopic' => null,
             'date_published' => $this->faker->dateTimeBetween('-9 years', 'now')->format('Y'),
         ];
     }

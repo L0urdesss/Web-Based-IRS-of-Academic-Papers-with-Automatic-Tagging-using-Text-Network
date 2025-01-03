@@ -5,6 +5,7 @@ import pdfplumber
 import pytesseract
 import os
 import json
+import sys
 
 # Load spaCy model
 nlp = spacy.load("en_core_web_sm")
@@ -134,7 +135,6 @@ def extract_year(text):
 
 # Main function
 if __name__ == "__main__":
-    import sys
     if len(sys.argv) < 2:
         print("Usage: python script.py <file_path>")
         sys.exit(1)

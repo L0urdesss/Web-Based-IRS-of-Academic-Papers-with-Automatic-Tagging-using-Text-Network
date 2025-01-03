@@ -21,37 +21,46 @@ import difflib
 import sys
 from meta import extract_metada
 
-print("0")
+#print("0")
 d = enchant.Dict("en_US")
-print("1")
-nltk.download('punkt')
-print("2")
-nltk.download('stopwords')
-print("3")
-nltk.download('wordnet')
-print("4")
+#print("1")
+#nltk.download('punkt')
+#print("2")
+#nltk.download('stopwords')
+#print("3")
+#nltk.download('wordnet')
+#print("4")
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' #pabago nito mhie, kung saang path naka install tesseract mo
-print("5")
+#print("5")
 nlp = spacy.load("en_core_web_sm")  # Load spaCy language model
-print("6")
+#print("6")
 
-# Load category keywords from JSON file
+# Function to load category keywords from a JSON file
 def load_category_keywords(json_file):
     with open(json_file, 'r', encoding='utf-8') as file:
         return json.load(file)
 
-# Load stopwords dataset
-def load_custom_stopwords(file_path="storage/app/python/stopwords.txt"):
+# Function to load custom stopwords from a text file
+def load_custom_stopwords(file_name):
     try:
-        with open(file_path, "r", encoding="utf-8") as file:
+        with open(file_name, "r", encoding="utf-8") as file:
             stopwords_list = file.read().splitlines()
         return set(stopwords_list)
     except FileNotFoundError:
-        print(f"Stopwords file not found: {file_path}")
+        print(f"Stopwords file not found: {file_name}")
         return set()
 
+# Base directory relative to the script
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
-CATEGORY_KEYWORDS = load_category_keywords("storage/app/python/keywords/dummy.json")
+# Load category keywords
+category_keywords_path = os.path.join(base_dir, "dummy.json")
+CATEGORY_KEYWORDS = load_category_keywords(category_keywords_path)
+
+# Load custom stopwords
+custom_keywords_path = os.path.join(base_dir, "stopwords.txt")
+STOPWORDS = load_custom_stopwords(file_name=custom_keywords_path)
+
 
 # Function to extract text from different file types
 def extract_text(file_path):
@@ -76,7 +85,8 @@ def extract_text(file_path):
         raise ValueError("Unsupported file format. Use PDF, DOCX, or TXT.")
 
 def preprocess_text(text):
-    custom_stopwords = load_custom_stopwords("storage/app/python/stopwords.txt")
+    custom_stopwords_path = os.path.join(base_dir, "stopwords.txt")  # Direct path to stopwords.txt
+    custom_stopwords = load_custom_stopwords(file_name=custom_stopwords_path)
     stop_words = set(stopwords.words("english")) | custom_stopwords
 
     # Remove URLs, emails, and standalone numbers
@@ -145,7 +155,7 @@ def build_text_network(tokens, window_size=5):
         G.add_edge(word1, word2, weight=weight) 
     return G
 
-def extract_key_terms(G, tokens, top_n=30):
+def extract_key_terms(G, tokens, top_n=5):
     # Calculate centrality for nodes
     centrality = nx.degree_centrality(G)
     term_freq = Counter(tokens)  # Calculate term frequency for single tokens
@@ -247,19 +257,19 @@ def hybrid_categorization_with_nested_keywords(file_path):
 
     #extract metadata
     result = extract_metada(file_path)
-    print("Title:", result["Title"])
-    print("College:", result["College"])
-    print("Course:", result["Course"])
-    print("Authors:", result["Authors"])
-    print("Year:", result["Year"])
-    print("Number of Pages:", result.get("Number of Pages", "N/A"))
-    print("File Size:", result.get("File Size", "N/A"))
+    # print("Title:", result["Title"])
+    # print("College:", result["College"])
+    # print("Course:", result["Course"])
+    # print("Authors:", result["Authors"])
+    # print("Year:", result["Year"])
+    # print("Number of Pages:", result.get("Number of Pages", "N/A"))
+    # print("File Size:", result.get("File Size", "N/A"))
 
     # Step 2: Build the text network
     G = build_text_network(tokens)
     
     # Step 3: Extract key terms (top 20 terms)
-    key_terms = extract_key_terms(G, tokens, top_n=30)
+    key_terms = extract_key_terms(G, tokens, top_n=5)
     
     # Step 4: Generate n-grams from key terms
     bigrams = generate_ngrams(key_terms, 2)
@@ -279,24 +289,24 @@ def hybrid_categorization_with_nested_keywords(file_path):
         "Key Terms": key_terms
     }
 
+# Main function
 if __name__ == "__main__":
-    print("7")
+    # Check for correct usage
     if len(sys.argv) < 2:
-        print("8")
         print("Usage: python script.py <file_path>")
         sys.exit(1)
-    print("9")
+
+    # Get file path from arguments
     file_path = sys.argv[1]
+
+    # Check if file exists
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
         sys.exit(1)
 
-    print("10")
+    # Perform hybrid categorization
     result = hybrid_categorization_with_nested_keywords(file_path)
-    print("Categorization complete:", result)
 
-    # Display the results
-    print("Categorization Results:")
-    print(f"Main Topic: {result['Main Topic']}")
-    print(f"Subtopic: {result['Subtopic']}")
-    print(f"Key Terms: {', '.join(result['Key Terms'])}")
+    # Print the result in JSON format
+    if result:
+        print(json.dumps(result, indent=4))
