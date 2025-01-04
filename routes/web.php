@@ -21,8 +21,8 @@ Route::get('/', function () {
 Route::get('/guest', function () {
     if (Auth::check()) {
         // Redirect logged-in users to the appropriate dashboard
-        return Auth::user()->is_admin 
-            ? redirect()->route('admindashboard') 
+        return Auth::user()->is_admin
+            ? redirect()->route('admindashboard')
             : redirect()->route('dashboard');
     }
     return Inertia::render('GuestPage'); // Replace 'GuestPage' with your actual component
@@ -66,10 +66,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/papers-admin', [PaperController::class, 'index'])->name('papers.index');
     Route::get('/papers-admin/{paper}', [PaperController::class, 'edit'])->name('papers.edit');
     Route::get('/add-admin', [PaperController::class, 'add'])->name('papers.add');
-    Route::patch('/papers-admin/{paper}', [PaperController::class, 'update'])->name('papers.update');
     Route::post('/add-admin', [PaperController::class, 'store'])->name('papers.store');
+    Route::post('/papers-upload', [PaperController::class, 'upload'])->name('papers.upload');
+    Route::patch('/papers-admin/{paper}', [PaperController::class, 'update'])->name('papers.update');
+
     Route::delete('/papers-admin/{paper}', [PaperController::class, 'destroy'])->name('papers.destroy');
-    
+
     Route::get('/students-list', [StudentController::class, 'view'])->name('student.view');
     Route::post('/students-list/store', [StudentController::class, 'store'])->name('student.store');
     Route::patch('/students-list/{student}', [StudentController::class, 'update'])->name('student.update');
@@ -87,9 +89,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/assistant-admins/{user}/edit', [AssistantAdminController::class, 'edit'])->name('assistant-admins.edit');
     Route::patch('/assistant-admins/{user}', [AssistantAdminController::class, 'update'])->name('assistant-admins.update');
     Route::delete('/assistant-admins/{user}', [AssistantAdminController::class, 'destroy'])->name('assistant-admins.destroy');
-    
-    
-    
+
+
+
 });
 
 require __DIR__ . '/auth.php';
