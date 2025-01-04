@@ -13,33 +13,76 @@ nlp = spacy.load("en_core_web_sm")
 # Tesseract configuration
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
-# Extract metadata from the PDF
-def extract_metada(file_path):
+
+def extract_metadata(file_path):
     result = {}
+    text = ""
+
     try:
         with pdfplumber.open(file_path) as pdf:
-            first_page = pdf.pages[0]
-            first_page_image = first_page.to_image().original
-
-            # Extract number of pages
+            # Number of Pages
             result["Number of Pages"] = len(pdf.pages)
 
-            # Extract text from the first page using OCR
-            text = pytesseract.image_to_string(first_page_image)
+            # Extract text from the first page
+            first_page = pdf.pages[0]
+            text = first_page.extract_text()
+            if not text or text.isspace():
+                first_page_image = first_page.to_image().original
+                text = pytesseract.image_to_string(first_page_image)
 
-            # Extract file size
-            file_size = os.path.getsize(file_path) / 1024  # File size in KB
-            result["File Size"] = f"{file_size:.2f} KB"
+            # Extract abstract from pages 2 to 5 if available
+            abstract_text = extract_abstract(pdf, start_page=2, end_page=5)
+            result["Abstract"] = abstract_text if abstract_text else "Abstract not found."
 
-            # Extract additional information from text
-            extracted_info = extract_information(text)
-            result.update(extracted_info)
+        # Extract additional information from the text
+        extracted_info = extract_information(text)
+        result.update(extracted_info)
+
+        # Get the file size in KB
+        file_size = os.path.getsize(file_path) / 1024
+        result["File Size"] = f"{file_size:.2f} KB"
 
     except Exception as e:
         print(f"Error processing file: {e}")
         return None
 
     return result
+
+# Extract abstract with start_page and end_page
+def extract_abstract(pdf, start_page=1, end_page=5):
+    for page_num in range(start_page - 1, min(end_page, len(pdf.pages))):  # Adjust for 0-based indexing
+        page = pdf.pages[page_num]
+        text = page.extract_text()
+        if not text or text.isspace():
+            page_image = page.to_image().original
+            text = pytesseract.image_to_string(page_image)
+
+        lines = text.split('\n')
+        abstract_lines = []
+        keywords = []
+        abstract_started = False
+
+        for i, line in enumerate(lines):
+            lower_line = line.strip().lower()
+            
+            if "abstract" in lower_line and not abstract_started:
+                abstract_started = True
+                continue
+
+            if "keywords:" in lower_line:
+                keywords_text = " ".join(lines[i:]).lower().split("keywords:", 1)[1]
+                keywords = [kw.strip() for kw in re.split(r',|\n', keywords_text) if kw.strip()]
+                break
+
+            if abstract_started:
+                abstract_lines.append(line)
+
+        if abstract_lines:
+            abstract_text = " ".join(abstract_lines).strip()
+            return abstract_text, keywords
+
+    return None, []  # Return None if no abstract found
+
 
 # Extract specific information from text
 def extract_information(text):
@@ -143,6 +186,6 @@ if __name__ == "__main__":
     if not os.path.exists(file_path):
         print(f"File not found: {file_path}")
         sys.exit(1)
-    metadata = extract_metada(file_path)
+    metadata = extract_metadata(file_path)
     if metadata:
         print(json.dumps(metadata, indent=4))

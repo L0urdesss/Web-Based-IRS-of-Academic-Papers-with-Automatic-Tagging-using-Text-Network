@@ -19,7 +19,8 @@ import spacy
 import enchant  
 import difflib  
 import sys
-from meta import extract_metada
+from meta import extract_metadata
+from meta import extract_abstract
 
 #print("0")
 d = enchant.Dict("en_US")
@@ -155,7 +156,7 @@ def build_text_network(tokens, window_size=5):
         G.add_edge(word1, word2, weight=weight) 
     return G
 
-def extract_key_terms(G, tokens, top_n=5):
+def extract_key_terms(G, tokens, top_n=10):
     # Calculate centrality for nodes
     centrality = nx.degree_centrality(G)
     term_freq = Counter(tokens)  # Calculate term frequency for single tokens
@@ -168,9 +169,11 @@ def extract_key_terms(G, tokens, top_n=5):
     return [term for term, _ in sorted_terms[:top_n]]
 
 # Function to match key terms with predefined categories
-def match_key_terms_to_topics(combined_terms, category_keywords, threshold=0.8):
+def match_key_terms_to_topics(combined_terms, category_keywords, abstract_keywords=None, threshold=0.8):
     if not combined_terms or not category_keywords:
         return None, None
+
+    abstract_keywords = set(abstract_keywords or [])  
 
     best_subtopic = None
     best_main_topic = None
@@ -184,24 +187,24 @@ def match_key_terms_to_topics(combined_terms, category_keywords, threshold=0.8):
         for subtopic, keywords in details["subtopics"].items():
             score = 0
 
-            # Scoring based on matches
+
             for term in combined_terms:
-                if term in keywords:  # Exact match
-                    # Assign a higher weight for n-grams
-                    if len(term.split()) == 2:  # Bigram
-                        score += 5
-                    elif len(term.split()) > 2:  # Trigram or longer
-                        score += 7
-                    else:  # Single word
-                        score += 3
+                # Determine if term comes from abstract_keywords
+                is_abstract_keyword = term in abstract_keywords
+                weight = 2 if is_abstract_keyword else 1 
+
+                if term in keywords:
+                    if len(term.split()) == 2:
+                        score += weight * 5
+                    elif len(term.split()) > 2:
+                        score += weight * 7
+                    else:
+                        score += weight * 3
                 else:
-                    # Fuzzy match for single words (less weight)
-                    if len(term.split()) == 1:  # Only apply fuzzy matching to single words
+                    if len(term.split()) == 1:
                         close_matches = difflib.get_close_matches(term, keywords, n=1, cutoff=threshold)
                         if close_matches:
-                            score += 1
-
-            # Update the best match if the score is higher
+                            score += weight * 1
             if score > max_score:
                 best_subtopic = subtopic
                 best_main_topic = main_topic
@@ -256,7 +259,10 @@ def hybrid_categorization_with_nested_keywords(file_path):
     tokens = preprocess_text(raw_text)
 
     #extract metadata
-    result = extract_metada(file_path)
+    result = extract_metadata(file_path)
+    with pdfplumber.open(file_path) as pdf:
+        abstract, abstract_keywords = extract_abstract(pdf)
+    result["Keywords"] = abstract_keywords
     # print("Title:", result["Title"])
     # print("College:", result["College"])
     # print("Course:", result["Course"])
@@ -269,7 +275,7 @@ def hybrid_categorization_with_nested_keywords(file_path):
     G = build_text_network(tokens)
     
     # Step 3: Extract key terms (top 20 terms)
-    key_terms = extract_key_terms(G, tokens, top_n=5)
+    key_terms = extract_key_terms(G, tokens, top_n=10)
     
     # Step 4: Generate n-grams from key terms
     bigrams = generate_ngrams(key_terms, 2)
@@ -277,16 +283,18 @@ def hybrid_categorization_with_nested_keywords(file_path):
     combined_terms = key_terms + bigrams + trigrams  # Combine original terms and n-grams
     
     # Step 5: Determine main topic and subtopic using boosted terms
-    main_topic, subtopic = match_key_terms_to_topics(combined_terms, CATEGORY_KEYWORDS)
+    combined_terms += abstract_keywords  # Include abstract keywords for scoring
+    main_topic, subtopic = match_key_terms_to_topics(combined_terms, CATEGORY_KEYWORDS, abstract_keywords=abstract_keywords)
     
     # Step 6: Visualize the network
     #visualize_text_network_with_scaled_edges(G, tokens, num_words=num_words, max_thickness=5)
     #visualize_text_network_with_scaled_edges(G, key_terms, max_thickness=5)
     
+    top_key_terms = list(set(key_terms + abstract_keywords))[:10]  
     return {
         "Main Topic": main_topic,
         "Subtopic": subtopic if subtopic else "None",
-        "Key Terms": key_terms
+        "Key Terms": top_key_terms
     }
 
 # Main function

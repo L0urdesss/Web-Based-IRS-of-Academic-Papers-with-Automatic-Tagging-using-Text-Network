@@ -338,7 +338,7 @@ class PaperController extends Controller
             // Return the combined response
             return response()->json([
                 'title' => $combinedResult['Title'] ?? 'Unknown Title',
-                'abstract' => 'Abstract not extracted',
+                'abstract' => $combinedResult['Abstract'] ?? 'N/A',
                 'author' => isset($combinedResult['Authors']) ? implode(', ', $combinedResult['Authors']) : 'Unknown Author',
                 'course' => $combinedResult['Course'] ?? 'Unknown Course',
                 'date_published' => $combinedResult['Year'] ?? 'Unknown Year',
