@@ -34,20 +34,31 @@ class PaperController extends Controller
     public function view(Request $request)
     {
         $query = Paper::query();
+
         // Apply search query if provided
         if ($request->has('searchQuery')) {
             $searchTerms = explode(' ', $request->input('searchQuery'));
+
+            $query->where(function ($query) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $lowerTerm = strtolower($term);
+                    $query->orWhereRaw('LOWER(title) LIKE ?', ['%' . $lowerTerm . '%'])
+                        ->orWhereRaw('LOWER(author) LIKE ?', ['%' . $lowerTerm . '%'])
+                        ->orWhereRaw('LOWER(key_terms) LIKE ?', ['%' . $lowerTerm . '%']); // Search in key_terms
+                }
+            });
         }
 
         // Apply additional filters if selected
         if ($request->has('filters')) {
             $filters = $request->input('filters');
+
             $query->where(function ($query) use ($filters, $searchTerms) {
                 foreach ($searchTerms as $term) {
-                    $query->where(function ($query) use ($term, $filters) {
-                        // Check if the term matches any of the specified filters
+                    $lowerTerm = strtolower($term);
+                    $query->where(function ($query) use ($lowerTerm, $filters) {
                         foreach ($filters as $filter) {
-                            $query->orWhere($filter, 'like', '%' . $term . '%');
+                            $query->orWhereRaw("LOWER($filter) LIKE ?", ['%' . $lowerTerm . '%']);
                         }
                     });
                 }
@@ -64,19 +75,20 @@ class PaperController extends Controller
             }
         }
 
-        // Apply sorting if sortCourse is provided
+        // Apply course sorting if sortCourse is provided
         if ($request->has('sortCourse') && $request->input('sortCourse') !== null) {
             $sortCourse = $request->input('sortCourse');
             $query->where('course', $sortCourse);
         }
 
+        // Filter by presence of file
         if ($request->has('paperFile')) {
             if ($request->input('paperFile') == 'true') {
-                // Get only non-null 'file' field
                 $query->whereNotNull('file');
             }
         }
 
+        // Filter by publication date
         if ($request->has('paperDate')) {
             $paperDate = $request->input('paperDate');
             $currentYear = date('Y');
@@ -90,10 +102,10 @@ class PaperController extends Controller
             } elseif (is_array($paperDate) && count($paperDate) == 2) {
                 $startYear = $paperDate[0];
                 $endYear = $paperDate[1];
-                $query->where('date_published', '>=', $startYear)
-                    ->where('date_published', '<=', $endYear);
+                $query->whereBetween('date_published', [$startYear, $endYear]);
             }
         }
+
         \Log::info($request);
 
         $papers = $query->paginate(7);
@@ -106,12 +118,8 @@ class PaperController extends Controller
             'sortCourse' => $request->input('sortCourse'),
             'paperFile' => $request->input('paperFile'),
             'paperDate' => $request->input('paperDate'),
-
         ]);
     }
-
-
-
 
 
     public function edit(Paper $paper)
@@ -180,7 +188,7 @@ class PaperController extends Controller
             // Store the new file with a cleaned file name
             $validatedData['file'] = $file->storeAs('project/' . Str::slug($validatedData['title']), $cleanFileName, 'public');
         }
-        \Log::info(["inside update: ", $validatedData['file']]);
+        \Log::info($validatedData['file']);
 
         try {
             $status = $paper->update([
@@ -194,7 +202,7 @@ class PaperController extends Controller
                 'subtopic' => $validatedData['subtopic'],
                 'key_terms' => $validatedData['key_terms'],
             ]);
-            \Log::info(['status', $status]);
+            \Log::info($status);
 
             if ($status) {
                 return redirect()->back()->with('success', 'Paper updated succesfully.');
@@ -207,7 +215,7 @@ class PaperController extends Controller
     public function store(Request $request)
     {
 
-        \Log::info(['store log', $request->all()]);
+        \Log::info($request->all());
 
 
         $validatedData = $request->validate([
