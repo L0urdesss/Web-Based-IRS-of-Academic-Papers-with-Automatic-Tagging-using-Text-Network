@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import SearchBar from "@/Components/Searchbar";
 import Toggle from "@/Components/Toggle";
+import NotFound from "@/Components/notfound.png";
 
 // Import the icon image
 import filtersIcon from "@/Components/filters-icon.png";
@@ -480,60 +481,77 @@ export default function ViewAll({
               "Loading..."
             ) : (
               <div>
-                {papers.data.map((paper, index) => (
-                  <div
-                    key={index}
-                    className="bg-white p-10 border-b border-gray-200 mb-5 mt-10"
-                    style={{ border: "2px solid #F0F0F0" }}
-                  >
-                    <div className="mb-2">
-                      <Link
-                        href={route("userpapers.preview", { paper: paper.id })}
-                        className="font-bold text-blue-500 hover:underline"
-                        style={{
-                          textDecoration: "underline",
-                          color: "#595858",
-                          fontWeight: "bold",
-                          fontSize: "20px",
-                        }}
-                      >
-                        {paper.title}
-                      </Link>
-                    </div>
-                    <div
-                      className="mb-2"
-                      style={{ fontSize: "10px", color: "#352D2D" }}
-                    >
-                      {paper.date_published} &bull;{" "}
-                      <span style={{ fontSize: "10px", color: "#352D2D" }}>
-                        {paper.author}
-                      </span>
-                    </div>
-                    <div
-                      className="mb-2"
-                      style={{
-                        fontSize: "13px",
-                        color: "#352D2D",
-                        textAlign: "justify",
-                      }}
-                    >
-                      {truncateText(paper.abstract, 60)}
-                    </div>
-                    <p className="text-sm text-gray-600 mt-3">
-                      {paper.key_terms &&
-                        paper.key_terms.split(",").map((term, index) => (
-                          <span
-                            key={index}
-                            className="inline-block bg-[#AF2429] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
-                          >
-                            {term.trim()}
-                          </span>
-                        ))}
+                {papers.data.length === 0 ? (
+                  <div className="flex flex-col items-center mt-4">
+                    <img
+                      src={NotFound}
+                      alt="No results found"
+                      className="w-3/4 h-auto mb-4"
+                    />
+                    <p className="text-gray-500 text-center mb-4">
+                      No papers found. Please try a different search or adjust
+                      your filters.
                     </p>
                   </div>
-                ))}
+                ) : (
+                  papers.data.map((paper, index) => (
+                    <div
+                      key={index}
+                      className="bg-white p-10 border-b border-gray-200 mb-5 mt-10"
+                      style={{ border: "2px solid #F0F0F0" }}
+                    >
+                      <div className="mb-2">
+                        <Link
+                          href={route("userpapers.preview", {
+                            paper: paper.id,
+                          })}
+                          className="font-bold text-blue-500 hover:underline"
+                          style={{
+                            textDecoration: "underline",
+                            color: "#595858",
+                            fontWeight: "bold",
+                            fontSize: "20px",
+                          }}
+                        >
+                          {paper.title}
+                        </Link>
+                      </div>
+                      <div
+                        className="mb-2"
+                        style={{ fontSize: "10px", color: "#352D2D" }}
+                      >
+                        {paper.course} &bull; {paper.date_published} &bull;{" "}
+                        <span style={{ fontSize: "10px", color: "#352D2D" }}>
+                          {paper.author}
+                        </span>
+                      </div>
+                      <div
+                        className="mb-2"
+                        style={{
+                          fontSize: "13px",
+                          color: "#352D2D",
+                          textAlign: "justify",
+                        }}
+                      >
+                        {truncateText(paper.abstract, 60)}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-3">
+                        {paper.key_terms &&
+                          paper.key_terms.split(",").map((term, index) => (
+                            <span
+                              key={index}
+                              className="inline-block bg-[#AF2429] text-white text-sm font-normal me-2 px-1 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
+                            >
+                              {term.trim()}
+                            </span>
+                          ))}
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             )}
+
             <div className="mt-4">
               {papers.links && (
                 <ul className="flex justify-center">

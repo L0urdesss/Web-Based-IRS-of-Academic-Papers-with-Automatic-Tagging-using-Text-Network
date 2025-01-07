@@ -18,16 +18,16 @@ class AssistantAdminController extends Controller
     public function view(Request $request)
     {
         Log::debug('Fetching assistant-admin users.');
-    
+
         $assistantAdmins = User::where('role', 'assistant-admin')->get();
-    
+
         Log::debug('Assistant Admins retrieved: ', $assistantAdmins->toArray());
-    
+
         return Inertia::render('Role/All', [
             'assistantAdmins' => $assistantAdmins,
         ]);
     }
-    
+
 
     /**
      * Show the form to assign assistant-admin roles to users.
@@ -60,28 +60,28 @@ class AssistantAdminController extends Controller
             'id' => 'required|exists:users,id', // Validate the user ID
             'role' => 'required|in:user,assistant-admin', // Ensure a valid role is provided
         ]);
-    
+
         try {
             $user = User::findOrFail($request->id); // Fetch the user
             Log::debug('User found for role update:', ['user' => $user]);
-    
+
             if ($user->role === $request->role) {
                 Log::debug('User already has the selected role.', ['role' => $user->role]);
                 return redirect()->back()->with('error', 'User already has the selected role.');
             }
-    
+
             $user->role = $request->role; // Update the role
             $user->save(); // Save the change to the database
             Log::debug('User role updated successfully.', ['user' => $user]);
-    
+
             return redirect()->route('assistant-admins.add')->with('success', 'User role updated successfully.');
         } catch (\Exception $e) {
             Log::error('Error updating role:', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Failed to update user role.');
         }
     }
-    
-    
+
+
 
     /**
      * Show the form for editing the specified assistant-admin.
@@ -116,20 +116,20 @@ class AssistantAdminController extends Controller
         $request->validate([
             'role' => 'required|in:user,assistant-admin', // Ensure a valid role is provided
         ]);
-    
+
         try {
             $user = User::findOrFail($userId); // Find the user by ID
             Log::debug('User found for role update:', ['user' => $user]);
-    
+
             if ($user->role === $request->role) {
                 Log::debug('User already has the selected role.', ['role' => $user->role]);
                 return redirect()->back()->with('error', 'User already has the selected role.');
             }
-    
+
             $user->role = $request->role; // Update the role
             $user->save(); // Save the change to the database
             Log::debug('User role updated successfully.', ['user' => $user]);
-    
+
             return redirect()->route('assistant-admins.add')->with('success', 'User role updated successfully.');
         } catch (\Exception $e) {
             Log::error('Error updating role:', ['error' => $e->getMessage()]);

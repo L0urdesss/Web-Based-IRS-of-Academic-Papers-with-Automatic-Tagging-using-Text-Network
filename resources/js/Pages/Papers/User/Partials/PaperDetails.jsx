@@ -12,7 +12,15 @@ export default function PaperDetails({ user, paper, className = "", success }) {
     paper_id: paper.id,
   });
 
-  const { title, date_published, author, abstract } = paper;
+  const {
+    title,
+    date_published,
+    author,
+    abstract,
+    course,
+    main_topic,
+    subtopic,
+  } = paper;
   const [pdf, setPdf] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState(0);
@@ -41,9 +49,20 @@ export default function PaperDetails({ user, paper, className = "", success }) {
       }
     };
 
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") {
+        handlePrevPage();
+      } else if (e.key === "ArrowRight") {
+        handleNextPage();
+      }
+    };
+
     window.addEventListener("resize", handleResize);
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [pdf, currentPage]);
 
@@ -64,11 +83,9 @@ export default function PaperDetails({ user, paper, className = "", success }) {
     try {
       const page = await pdfDoc.getPage(pageNumber);
 
-      // Get the container width
       const container = document.getElementById("pdf-container");
       const containerWidth = container.offsetWidth;
 
-      // Scale viewport based on container width
       const viewport = page.getViewport({
         scale: containerWidth / page.getViewport({ scale: 1 }).width,
       });
@@ -110,38 +127,57 @@ export default function PaperDetails({ user, paper, className = "", success }) {
   return (
     <section className={`bg-gray-100 min-h-screen ${className}`}>
       <div className="bg-white p-4 rounded-md ml-2 mr-2 mt-2 max-auto">
-        <div className="mt-1 block w-11/12 border-none text-xl font-bold text-red-700">
+        <div className="mt-1 block w-11/12 border-none text-3xl font-bold text-red-700">
           {title}
         </div>
-        <div className="mt-1 flex items-center text-sm min-w-[200px]">
-          {date_published} • College of Science
+        <div className="mt-2 flex items-center text-sm min-w-[200px]">
+          {course} • {date_published}
         </div>
         <div>
-          <p className="ml-3 mt-3 text-xs text-gray-800">Author/s</p>
+          <p className=" mt-3 text-xs text-gray-800">Author/s</p>
           <div
             className="mt-1 block w-full border-none text-sm font-bold text-gray-800"
-            onContextMenu={preventDefaultActions} // Disable right-click
-            onCopy={preventDefaultActions} // Disable copy
-            onPaste={preventDefaultActions} // Disable paste
+            onContextMenu={preventDefaultActions}
+            onCopy={preventDefaultActions}
+            onPaste={preventDefaultActions}
           >
             {author}
           </div>
         </div>
+        <div className="mt-2 text-sm min-w-[200px]">
+          <div>
+            <strong>Main Topic:</strong> {main_topic || "No main topic"}
+          </div>
+          <div>
+            <strong>Subtopic:</strong> {subtopic || "No subtopic"}
+          </div>
+        </div>
+        <p className="text-sm text-gray-600 mt-2 italic">
+          {paper.key_terms && (
+            <span>
+              <strong>Key Terms:</strong>{" "}
+              {paper.key_terms
+                .split(",")
+                .map((term) => term.trim())
+                .join(", ")}
+            </span>
+          )}
+        </p>
       </div>
 
       <div className="flex mt-4">
         <div className="w-full pr-2 ml-2">
           <div className="bg-white p-4 rounded-md mx-auto">
-            <div className="text-lg text-red-800">
+            <div className="text-3xl text-red-800">
               <br />
               &nbsp;&nbsp;Abstract:
             </div>
             <div
               className="mt-1 block w-full p-2 border-none rounded-md bg-white text-justify"
               style={{ minHeight: "20px" }}
-              onContextMenu={preventDefaultActions} // Disable right-click
-              onCopy={preventDefaultActions} // Disable copy
-              onPaste={preventDefaultActions} // Disable paste
+              onContextMenu={preventDefaultActions}
+              onCopy={preventDefaultActions}
+              onPaste={preventDefaultActions}
             >
               <div className="border-none my-2"></div>
               <p className="text-sm leading-7">{abstract}</p>
@@ -161,7 +197,7 @@ export default function PaperDetails({ user, paper, className = "", success }) {
                 src={renderedPage}
                 alt={`Page ${currentPage}`}
                 className="w-full mx-auto mb-4 border border-gray-300"
-                onContextMenu={preventDefaultActions} // Disable right-click
+                onContextMenu={preventDefaultActions}
               />
               <div className="flex justify-center space-x-4">
                 <button
