@@ -44,7 +44,8 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})->name('dashboard');
+})->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::get('/admindashboard', [AdminDashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'admin'])
