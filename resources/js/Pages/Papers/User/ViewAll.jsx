@@ -4,6 +4,7 @@ import { Head, Link, router } from "@inertiajs/react";
 import SearchBar from "@/Components/Searchbar";
 import Toggle from "@/Components/Toggle";
 import NotFound from "@/Components/notfound.png";
+import CiteIcon from "@/Components/citeIcon.png";
 
 // Import the icon image
 import filtersIcon from "@/Components/filters-icon.png";
@@ -36,11 +37,22 @@ export default function ViewAll({
   const [selectedRange, setSelectedRange] = useState(paperDate || null);
   const [customDate, setCustomDate] = useState({ start: "", end: "" });
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPaper, setSelectedPaper] = useState(null);
 
   const buildArrayParams = (key, array) => {
     return array
       .map((item, index) => `${key}[${index}]=${encodeURIComponent(item)}`)
       .join("&");
+  };
+  const openModal = (paper) => {
+    setSelectedPaper(paper); // Selects the paper to show in the modal
+    setIsModalOpen(true); // Opens the modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Closes the modal
+    setSelectedPaper(null); // Clears the selected paper
   };
 
   const currentYear = new Date().getFullYear();
@@ -49,6 +61,19 @@ export default function ViewAll({
     console.log("test");
     setIsLoading(false);
   }, [papers]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden"; // Disable scrolling
+    } else {
+      document.body.style.overflow = ""; // Enable scrolling
+    }
+
+    // Cleanup to reset scroll behavior if the component is unmounted
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
 
   useEffect(() => {
     console.log("test2");
@@ -187,15 +212,9 @@ export default function ViewAll({
       <div className="py-12 bg-white">
         <div className="max-w-7xl mx-auto sm:flex sm:justify-between sm:px-6 lg:px-8">
           <div className="sm:w-1/5 bg-none border-white mr-5 mt-20">
-            <div
-              className="bg-white p-5"
-              style={{ border: "2px solid #F0F0F0" }}
-            >
+            <div className="bg-white p-5 border-2 border-[#F0F0F0]">
               <div className="mb-4 flex justify-between items-center">
-                <p
-                  className="font-semibold"
-                  style={{ fontSize: "16px", color: "#352D2D" }}
-                >
+                <p className="font-semibold text-[16px] text-[#352D2D]">
                   <img
                     src={filtersIcon}
                     alt="Filters Icon"
@@ -204,26 +223,17 @@ export default function ViewAll({
                   Filters
                 </p>
               </div>
-              <hr
-                style={{
-                  border: "none",
-                  borderBottom: "2px solid #F0F0F0",
-                  margin: "1rem 0",
-                }}
-              />
+              <hr className="border-t-0 border-r-0 border-l-0 border-b-2 border-[#F0F0F0] my-4" />
               <div className="mb-4">
                 <div className="flex justify-between items-center mb-2">
-                  <p
-                    className="font-semibold"
-                    style={{ fontSize: "12px", color: "#352D2D" }}
-                  >
+                  <p className="font-semibold text-[#352D2D] text-xs">
                     Applied Filters
                   </p>
+
                   {appliedFilters.length > 0 && (
                     <button
                       onClick={handleClearFilters}
-                      className="text-blue-500 underline"
-                      style={{ fontSize: "11px", color: "#352D2D" }}
+                      className="text-[#352D2D] text-xs underline"
                     >
                       Clear All
                     </button>
@@ -234,8 +244,7 @@ export default function ViewAll({
                     <button
                       key={index}
                       onClick={() => handleRemoveFilter(filter)}
-                      className="text-white rounded-md px-4 py-2 mr-2 mb-2"
-                      style={{ fontSize: "11px", backgroundColor: "#CC0000" }}
+                      className="text-white rounded-md px-4 py-2 mr-2 mb-2 text-[11px] bg-[#CC0000]"
                     >
                       {filter} <span className="ml-1">X</span>
                     </button>
@@ -245,14 +254,9 @@ export default function ViewAll({
               <div className="mb-4">
                 <select
                   id="course"
-                  className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="mt-1 block w-full border border-[#7B7B7B] py-1 px-3  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs text-[10px]"
                   value={selectedCourse}
                   onChange={handleCourseChange}
-                  style={{
-                    fontSize: "10px",
-                    borderColor: "#7B7B7B",
-                    width: "150px",
-                  }}
                 >
                   <option value="" disabled>
                     Select Course
@@ -268,85 +272,54 @@ export default function ViewAll({
               <div className="mb-4">
                 <select
                   id="sort"
-                  className="form-select mt-1 block w-full border border-gray-300  py-1 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  className="mt-1 block w-full w-1/2 border border-[#7B7B7B] py-1 px-3 text-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs"
                   value={sortOrder}
                   onChange={handleSortCourseChange}
-                  style={{
-                    fontSize: "10px",
-                    borderColor: "#7B7B7B",
-                    width: "150px",
-                  }}
                 >
                   <option value="asc">Sort Ascending</option>
                   <option value="desc">Sort Descending</option>
                 </select>
               </div>
-              <hr
-                style={{
-                  border: "none",
-                  borderBottom: "1px solid #F0F0F0",
-                  margin: "1rem 0",
-                }}
-              />
+              <hr className="border-b-1 border-[#F0F0F0] my-4" />
               <div className="mt-4 flex flex-col">
-                <p
-                  className="font-semibold mb-2"
-                  style={{ fontSize: "12px", color: "#352D2D" }}
-                >
+                <p className="font-semibold mb-2 text-[#352D2D] text-[12px]">
                   Filter Types
                 </p>
-                <div className="flex flex-wrap">
+
+                <div className="flex">
                   <button
                     onClick={() => handleFilterClick("Title")}
-                    className="text-blue-500 border border-gray-500 rounded-md px-4 py-2 mr-2 mb-2 "
-                    style={{ fontSize: "11px", color: "#352D2D" }}
+                    className="text-[#352D2D] text-[10px] border border-gray-500 rounded-md px-4 py-2 mr-1 w-1/2"
                   >
                     Title
                   </button>
                   <button
                     onClick={() => handleFilterClick("Author")}
-                    className="text-blue-500 border border-gray-500 rounded-md px-4 py-2 mb-2 "
-                    style={{ fontSize: "11px", color: "#352D2D" }}
+                    className="text-[#352D2D] text-[10px] border border-gray-500 rounded-md px-4 py-2 w-1/2"
                   >
                     Author
                   </button>
-                  <button
-                    onClick={() => handleFilterClick("Abstract")}
-                    className="text-blue-500 border border-gray-500 rounded-md px-4 py-2 w-1/2 mb-5"
-                    style={{ fontSize: "11px", color: "#352D2D" }}
-                  >
-                    Abstract
-                  </button>
                 </div>
-              </div>
-              <hr
-                style={{
-                  border: "none",
-                  borderBottom: "1px solid #F0F0F0",
-                  margin: "1rem 0",
-                }}
-              />
-              <Toggle checked={withFile} onChange={handleToggleChange} />
-              <hr
-                style={{
-                  border: "none",
-                  borderBottom: "1px solid #F0F0F0",
-                  margin: "1rem 0",
-                }}
-              />
-              <div className="mt-4">
-                <p
-                  className="font-semibold"
-                  style={{ fontSize: "12px", color: "#352D2D" }}
+
+                <button
+                  onClick={() => handleFilterClick("Abstract")}
+                  className="text-[#352D2D] text-[10px] border border-gray-500 rounded-md px-4 py-2 mt-3"
                 >
+                  Abstract
+                </button>
+              </div>
+              <hr className="border-b-1 border-[#F0F0F0] my-4" />
+              <Toggle checked={withFile} onChange={handleToggleChange} />
+              <hr className="border-b-1 border-[#F0F0F0] my-4" />
+              <div className="mt-4">
+                <p className="font-semibold text-[#352D2D] text-[12px]">
                   Publication Date
                 </p>
                 <div>
                   <ul className="list-none">
                     <li>
                       <button
-                        className="text-blue-500 hover:underline"
-                        style={{ fontSize: "11px", color: "#AF2429" }}
+                        className="text-[#AF2429] text-[11px] hover:underline"
                         onClick={() => handleButtonClick(0)}
                       >
                         Clear
@@ -354,8 +327,7 @@ export default function ViewAll({
                     </li>
                     <li>
                       <button
-                        className="text-blue-500 hover:underline"
-                        style={{ fontSize: "11px", color: "#AF2429" }}
+                        className="text-[#AF2429] text-[11px] hover:underline"
                         onClick={() => handleButtonClick(1)}
                       >
                         Last 1 Year
@@ -363,8 +335,7 @@ export default function ViewAll({
                     </li>
                     <li>
                       <button
-                        className="text-blue-500 hover:underline"
-                        style={{ fontSize: "11px", color: "#AF2429" }}
+                        className="text-[#AF2429] text-[11px] hover:underline"
                         onClick={() => handleButtonClick(3)}
                       >
                         Last 3 Years
@@ -372,8 +343,7 @@ export default function ViewAll({
                     </li>
                     <li>
                       <button
-                        className="text-blue-500 hover:underline"
-                        style={{ fontSize: "11px", color: "#AF2429" }}
+                        className="text-[#AF2429] text-[11px] hover:underline"
                         onClick={() => handleButtonClick("custom")}
                       >
                         Custom Date
@@ -382,7 +352,7 @@ export default function ViewAll({
                   </ul>
                   {showCustomInput && (
                     <div>
-                      <div style={{ display: "flex", alignItems: "center" }}>
+                      <div className="flex items-center">
                         <input
                           type="text"
                           placeholder="Start Year"
@@ -393,19 +363,9 @@ export default function ViewAll({
                               start: e.target.value,
                             })
                           }
-                          style={{
-                            width: "90px",
-                            marginRight: "5px",
-                            fontSize: "10px",
-                            height: "20px",
-                            background: "#F0F0F0",
-                            border: "none",
-                            borderBottom: "1px solid #626262",
-                          }}
+                          className="w-1/2 mr-1 text-[10px] h-[20px] bg-[#F0F0F0] border-0 border-b border-[#626262]"
                         />
-                        <span style={{ marginRight: "5px", color: "#626262" }}>
-                          -
-                        </span>
+                        <span className="mr-1 text-[#626262]">-</span>
                         <input
                           type="text"
                           placeholder="End Year"
@@ -416,36 +376,13 @@ export default function ViewAll({
                               end: e.target.value,
                             })
                           }
-                          style={{
-                            width: "90px",
-                            marginRight: "10px",
-                            fontSize: "10px",
-                            height: "20px",
-                            background: "#F0F0F0",
-                            border: "none",
-                            borderBottom: "1px solid #626262",
-                          }}
+                          className="w-1/2 mr-1 text-[10px] h-[20px] bg-[#F0F0F0] border-0 border-b border-[#626262]"
                         />
                       </div>
-                      <div
-                        style={{
-                          marginTop: "10px",
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
+                      <div className="mt-2 flex justify-center">
                         <button
                           onClick={handleCustomDateSubmit}
-                          style={{
-                            fontSize: "8px",
-                            backgroundColor: "#B8B8B8",
-                            color: "white",
-                            borderRadius: "10px",
-                            padding: "5px 20px",
-                            border: "none",
-                            cursor: "pointer",
-                            width: "100%",
-                          }}
+                          className="text-[8px] bg-[#B8B8B8] text-white rounded-[10px] py-[5px] px-[20px] border-0 cursor-pointer w-full"
                           onMouseOver={(e) =>
                             (e.currentTarget.style.backgroundColor = "#626262")
                           }
@@ -460,7 +397,7 @@ export default function ViewAll({
                   )}
                   {selectedRange && (
                     <div>
-                      <p style={{ fontSize: "14px", color: "#626262" }}>
+                      <p className="text-[14px] text-[#626262]">
                         Selected Date Range: {`${selectedRange}`}
                       </p>
                     </div>
@@ -497,42 +434,25 @@ export default function ViewAll({
                   papers.data.map((paper, index) => (
                     <div
                       key={index}
-                      className="bg-white p-10 border-b border-gray-200 mb-5 mt-10"
-                      style={{ border: "2px solid #F0F0F0" }}
+                      className="bg-white p-10 border-2 border-[#F0F0F0] mb-5 mt-10"
                     >
                       <div className="mb-2">
                         <Link
                           href={route("userpapers.preview", {
                             paper: paper.id,
                           })}
-                          className="font-bold text-blue-500 hover:underline"
-                          style={{
-                            textDecoration: "underline",
-                            color: "#595858",
-                            fontWeight: "bold",
-                            fontSize: "20px",
-                          }}
+                          className="font-bold text-[#595858] underline text-[20px]"
                         >
                           {paper.title}
                         </Link>
                       </div>
-                      <div
-                        className="mb-2"
-                        style={{ fontSize: "10px", color: "#352D2D" }}
-                      >
+                      <div className="mb-2 text-[10px] text-[#352D2D]">
                         {paper.course} &bull; {paper.date_published} &bull;{" "}
-                        <span style={{ fontSize: "10px", color: "#352D2D" }}>
+                        <span className="text-[10px] text-[#352D2D]">
                           {paper.author}
                         </span>
                       </div>
-                      <div
-                        className="mb-2"
-                        style={{
-                          fontSize: "13px",
-                          color: "#352D2D",
-                          textAlign: "justify",
-                        }}
-                      >
+                      <div className="mb-2 text-[13px] text-[#352D2D] text-justify">
                         {truncateText(paper.abstract, 60)}
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
@@ -540,14 +460,57 @@ export default function ViewAll({
                           paper.key_terms.split(",").map((term, index) => (
                             <span
                               key={index}
-                              className="inline-block bg-[#AF2429] text-white text-sm font-normal me-2 px-1 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
+                              className="inline-block bg-[#AF2429] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
                             >
                               {term.trim()}
                             </span>
                           ))}
                       </p>
+                      <div className="flex justify-end">
+                        <button
+                          className="text-sm text-red-800 underline flex items-center mt-2"
+                          onClick={() => openModal(paper)}
+                        >
+                          <img
+                            src={CiteIcon}
+                            alt="Cite Icon"
+                            className="mr-1 w-2"
+                          />{" "}
+                          {/* Display the PNG image */}
+                          Cite
+                        </button>
+                      </div>
                     </div>
                   ))
+                )}
+                {isModalOpen && selectedPaper && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+                    <div className="bg-white rounded-lg max-w-md mx-auto">
+                      <h2 className="text-lg font-semibold bg-red-800 text-white p-2 rounded-t-lg text-center">
+                        Cite
+                      </h2>
+                      <div className="p-2 flex flex-col items-center">
+                        <div className="flex items-start p-4">
+                          <div className="w-1/4 font-semibold text-gray-500">
+                            APA
+                          </div>
+                          <div className="w-full text-xs text-gray-500">
+                            {`${selectedPaper.author} (${selectedPaper.date_published}). `}
+                            <span className="italic">
+                              {selectedPaper.title}
+                            </span>
+                            {`. ${selectedPaper.course}. Retrieved from http://localhost:8000/papers/${selectedPaper.id}`}
+                          </div>
+                        </div>
+                        <button
+                          className="text-sm bg-gray-700 text-white px-4 py-2 rounded-full w-3/4 mt-2 mb-2 mx-auto"
+                          onClick={closeModal}
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
