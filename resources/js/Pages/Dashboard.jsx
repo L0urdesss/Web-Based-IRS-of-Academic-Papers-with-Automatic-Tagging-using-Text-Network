@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import GuestLayout from '../Layouts/GuestLayout';
+import AuthenticatedLayout from '../Layouts/AuthenticatedLayout'; // Updated layout
 import { Head, router } from '@inertiajs/react'; // Import router
 import '../../../resources/css/Scrollbar.css';
 import Searchbar from '../../../resources/js/Components/Searchbar'; // Import the Searchbar component
@@ -8,7 +8,7 @@ import searchImage from '@/Components/uploadedImage.jpg';
 import libraryImage from '@/Components/uploadedImage1.jpg';
 import '@fortawesome/fontawesome-free/css/all.min.css'; // Import Font Awesome CSS
 
-export default function GuestPage() {
+export default function GuestPage({ auth }) { // Accept auth as a prop
     // Define the handleSearch function
     const handleSearch = (searchTerm, filters) => {
         const url = route('userpapers.view'); // Replace with your route name
@@ -55,7 +55,7 @@ export default function GuestPage() {
     };
 
     return (
-        <GuestLayout>
+        <AuthenticatedLayout user={auth.user}> {/* Updated layout */}
             <Head title="Home" />
             <main className="bg-white">
                 {/* Hero Section */}
@@ -74,7 +74,7 @@ export default function GuestPage() {
                                 Academic Excellence
                             </h1>
                             <p className="text-gray-600 mb-8">
-                                Welcome to TUP Manila's Institutional Repository System - your gateway to a vast collection of thesis papers. 
+                                Welcome to TUP Scholarly - your gateway to a vast collection of thesis papers. 
                                 Explore groundbreaking research, innovative solutions, and scholarly works from our talented students and faculty.
                             </p>
                             {/* Use the Searchbar component */}
@@ -93,7 +93,7 @@ export default function GuestPage() {
                             <img 
                                 src={searchImage} 
                                 alt="Library" 
-                                className="w-full rounded-lg shadow-lg"
+                                className="w-full rounded-lg"
                             />
                         </motion.div>
                     </div>
@@ -128,8 +128,8 @@ export default function GuestPage() {
                                     className="flex flex-col items-center text-center"
                                     variants={featureVariants}
                                     whileInView="visible"
-                                    viewport={{ once: false }}  // Ensures animation happens when scrolls down
-                                >
+                                    viewport={{ once: false }}  
+                                    >
                                     <motion.div 
                                         className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-100 mb-4"
                                         whileHover="hover"
@@ -153,7 +153,7 @@ export default function GuestPage() {
                     className="bg-white py-16"
                     initial="hidden"
                     whileInView="visible"
-                    viewport={{ once: false }} // Ensures animation happens when scrolls down
+                    viewport={{ once: false }} 
                     variants={fadeIn}
                 >
                     <div className="container mx-auto px-6">
@@ -163,7 +163,7 @@ export default function GuestPage() {
                                 initial="hidden"
                                 whileInView="visible"
                                 variants={imageVariants}
-                                viewport={{ once: false }}  // Ensures animation happens when scrolls down
+                                viewport={{ once: false }}
                             >
                                 <div className="flex gap-4">
                                     <motion.img 
@@ -235,6 +235,6 @@ export default function GuestPage() {
                     </motion.div>
                 </footer>
             </main>
-        </GuestLayout>
+        </AuthenticatedLayout>
     );
 }

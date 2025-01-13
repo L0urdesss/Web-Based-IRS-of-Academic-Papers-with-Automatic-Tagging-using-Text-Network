@@ -16,25 +16,25 @@ import nltk
 import os
 import re
 import spacy
-import enchant  
-import difflib  
+import enchant
+import difflib
 import sys
 from meta import extract_metadata
 from meta import extract_abstract
 
-#print("0")
+# print("0")
 d = enchant.Dict("en_US")
-#print("1")
-#nltk.download('punkt')
-#print("2")
-#nltk.download('stopwords')
-#print("3")
-#nltk.download('wordnet')
-#print("4")
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' #pabago nito mhie, kung saang path naka install tesseract mo
-#print("5")
+# print("1")
+# nltk.download('punkt')
+# print("2")
+# nltk.download('stopwords')
+# print("3")
+# nltk.download('wordnet')
+# print("4")
+pytesseract.pytesseract.tesseract_cmd = r'D:\TESSERACT\tesseract.exe' #pabago nito mhie, kung saang path naka install tesseract mo
+# print("5")
 nlp = spacy.load("en_core_web_sm")  # Load spaCy language model
-#print("6")
+# print("6")
 
 # Function to load category keywords from a JSON file
 def load_category_keywords(json_file):

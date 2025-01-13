@@ -11,7 +11,7 @@ import sys
 nlp = spacy.load("en_core_web_sm")
 
 # Tesseract configuration
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'D:\TESSERACT\tesseract.exe'
 
 
 def extract_metadata(file_path):
