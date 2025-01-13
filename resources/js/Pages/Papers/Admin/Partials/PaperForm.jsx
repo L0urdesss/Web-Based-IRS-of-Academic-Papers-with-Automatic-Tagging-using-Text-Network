@@ -168,64 +168,56 @@ export default function PaperForm({ auth, paper, className = "" }) {
   };
 
   return (
-    <div className="relative flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4 md:space-y-0 md:space-x-10">
+    <div className="relative flex flex-col md:flex-row justify-between mx-4 md:mx-20 space-y-4  md:space-x-10">
       <Toast />
-      <section
-        className={`bg-white p-4 md:p-10 ${className}`}
-        style={{ width: "100%" }}
-      >
+      <section className={`bg-white ${className} w-full`}>
         <header>
-          <h2
-            className="text-lg font-medium text-gray-900"
-            style={{ fontSize: "20px", fontWeight: "bolder" }}
-          >
+          <h2 className="text-2xl font-bold text-gray-700 mt-5">
             Research Paper Information
           </h2>
-          <p
-            className="mt-1 text-sm text-gray-600"
-            style={{ fontSize: "10px" }}
-          ></p>
         </header>
         <form onSubmit={submit} className="mt-6 space-y-6">
           <div>
             <InputLabel
               htmlFor="title"
               value="Title"
-              style={{ fontSize: "12px" }}
+              className="text-md mt-10"
             />
             <TextInput
               id="title"
-              className="mt-1 block w-full"
+              className="mt-2 block w-full text-xs border border-gray-300 rounded-lg"
               value={data.title}
               onChange={(e) => setData("title", e.target.value)}
-              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }} // Added border rule
             />
             <InputError className="mt-2" message={errors.title} />
           </div>
           <div>
-            <h1>Course Selection</h1>
+            <InputLabel
+              htmlFor="course"
+              value="Course Selection"
+              className="text-md"
+            />
             <CourseDropdown onChange={handleCourseChange} value={data.course} />
           </div>
+
           <div>
-            <label
+            <InputLabel
               htmlFor="author"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Author(s)
-            </label>
+              value="Author(s)"
+              className="text-md "
+            />
             {authorInputs.map((input, index) => (
               <div key={index} className="flex items-center space-x-2">
                 <TextInput
-                  className="mt-1 block w-full"
+                  className="mt-1 block w-full text-[10px] border border-gray-300"
                   value={authors[index]}
                   onChange={(e) => handleAuthorChange(index, e.target.value)}
-                  style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
                 />
                 {index === authorInputs.length - 1 && (
                   <button
                     type="button"
                     onClick={addAuthorInput}
-                    className="p-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="mt-5 p-1 rounded-md bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     +
                   </button>
@@ -247,14 +239,13 @@ export default function PaperForm({ auth, paper, className = "" }) {
             <InputLabel
               htmlFor="date_published"
               value="Date Published"
-              style={{ fontSize: "12px" }}
+              className="text-md"
             />
             <TextInput
               id="date_published"
-              className="mt-1 block w-full"
+              className="mt-1 block w-full text-[10px] border border-gray-300"
               value={data.date_published}
               onChange={(e) => setData("date_published", e.target.value)}
-              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }} // Added border rule
             />
             <InputError className="mt-2" message={errors.date_published} />
           </div>
@@ -267,74 +258,22 @@ export default function PaperForm({ auth, paper, className = "" }) {
             <TextInput
               id="abstract"
               type="textarea"
-              className="mt-1 block w-full h-32 p-2 border border-gray-300 rounded-md overflow-y-auto"
+              className="mt-1 block w-full h-56 p-2 border border-gray-300 rounded-md overflow-y-auto"
               value={data.abstract}
               onChange={(e) => setData({ ...data, abstract: e.target.value })}
               style={{
                 fontSize: "10px",
-                border: "1px solid #7B7B7B",
-                resize: "none",
-              }} // Removed resizing
+                border: "1px solidrgb(236, 235, 235)",
+                resize: "none", // Prevent resizing
+              }}
             />
+
             <InputError className="mt-2" message={errors.abstract} />
-          </div>
-          <div>
-            <InputLabel
-              htmlFor="main_topic" //main topic
-              value="Main Topic"
-              style={{ fontSize: "12px" }}
-            />
-            <div
-              id="main_topic"
-              className="mt-1 block w-full h-10 p-2 border border-gray-300 rounded-md overflow-y-auto"
-              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
-            >
-              {data.main_topic || "N/A"}
-            </div>
-          </div>
-          <div>
-            <InputLabel
-              htmlFor="subtopic" //subtopic
-              value="Subtopic"
-              style={{ fontSize: "12px" }}
-            />
-            <div
-              id="subtopic"
-              className="mt-1 block w-full h-10 p-2 border border-gray-300 rounded-md overflow-y-auto"
-              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
-            >
-              {data.subtopic || "N/A"}
-            </div>
-          </div>
-          <div>
-            <div
-              className="mt-1 block w-full h-auto p-2 rounded-md"
-              style={{ fontSize: "10px" }}
-            >
-              <div style={{ fontSize: "12px", marginBottom: "8px" }}>
-                Key Terms
-              </div>
-              {keyTerms && keyTerms.length > 0
-                ? keyTerms.map((term, index) => (
-                    <span
-                      key={index}
-                      className="inline-block bg-[#af2429] text-white px-2 py-1 text-xs rounded-md mr-1 mb-1"
-                      style={{ fontSize: "10px" }}
-                    >
-                      {term}
-                    </span>
-                  ))
-                : null}
-            </div>
           </div>
 
           <div className="flex items-center justify-end gap-4">
             <PrimaryButton
-              style={{
-                backgroundColor: "#831B1C",
-                fontSize: "10px",
-                textTransform: "capitalize",
-              }}
+              className="bg-[#831B1C] text-xs text-white capitalize disabled:bg-gray-400 w-full mt-4 mb-20" // Tailwind classes for button styling
               disabled={processing}
             >
               Save Changes
@@ -343,13 +282,13 @@ export default function PaperForm({ auth, paper, className = "" }) {
         </form>
       </section>
       <div
-        className="relative bg-white p-4 md:p-6 mt-5"
+        className="relative bg-white p-4 md:p-6 mt-5 mr-10"
         style={{
           width: "100%",
           maxWidth: "500px",
           height: "400px",
           backgroundColor: "#831B1C",
-          marginTop: "20px",
+          marginTop: "13%",
         }}
         onDrop={(e) => {
           e.preventDefault();
@@ -450,21 +389,76 @@ export default function PaperForm({ auth, paper, className = "" }) {
             />
           </div>
         )}
-        <button
-          className="mt-7 p-4 md:p-2 absolute right-0 "
-          onClick={handleClick}
-          style={{
-            backgroundColor: "#831b1c",
-            color: "white",
-            textAlign: "center",
-            fontSize: "12px",
-            width: "100%",
-          }}
-        >
-          Clear File
-        </button>
+        <div className="form-container">
+          {/* Clear File Button */}
+          <button
+            className="mt-7 p-4 md:p-2 w-full"
+            onClick={handleClick}
+            style={{
+              backgroundColor: "#831b1c",
+              color: "white",
+              textAlign: "center",
+              fontSize: "12px",
+            }}
+          >
+            Clear File
+          </button>
 
-        <InputError className="mt-2" message={errors.file} />
+          {/* Error Message */}
+          {errors.file && <InputError className="mt-2" message={errors.file} />}
+
+          {/* Main Topic */}
+          <div className="mt-8">
+            <InputLabel
+              htmlFor="main_topic"
+              value="Main Topic"
+              style={{ fontSize: "12px" }}
+            />
+            <div
+              id="main_topic"
+              className="mt-1 block w-full h-10 p-2 border rounded-md overflow-y-auto"
+              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
+            >
+              {data.main_topic || "N/A"}
+            </div>
+          </div>
+
+          {/* Subtopic */}
+          <div className="mt-4">
+            <InputLabel
+              htmlFor="subtopic"
+              value="Subtopic"
+              style={{ fontSize: "12px" }}
+            />
+            <div
+              id="subtopic"
+              className="mt-1 block w-full h-10 p-2 border rounded-md overflow-y-auto"
+              style={{ fontSize: "10px", border: "1px solid #7B7B7B" }}
+            >
+              {data.subtopic || "N/A"}
+            </div>
+          </div>
+
+          {/* Key Terms */}
+          <div className="mt-4">
+            <div className="block w-full h-auto p-2 rounded-md">
+              <div style={{ fontSize: "12px", marginBottom: "8px" }}>
+                Key Terms
+              </div>
+              {keyTerms && keyTerms.length > 0
+                ? keyTerms.map((term, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-[#af2429] text-white px-2 py-1 text-xs rounded-md mr-1 mb-1"
+                      style={{ fontSize: "10px" }}
+                    >
+                      {term}
+                    </span>
+                  ))
+                : "No key terms available"}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
