@@ -51,17 +51,30 @@ def load_custom_stopwords(file_name):
         print(f"Stopwords file not found: {file_name}")
         return set()
 
+# Function to load custom stopwords from a text file
+def load_domain_keywords(file_name):
+    try:
+        with open(file_name, "r", encoding="utf-8") as file:
+            domain_keywords = file.read().splitlines()
+        return set(domain_keywords)
+    except FileNotFoundError:
+        print(f"Domain Keywords file not found: {file_name}")
+        return set()
+
 # Base directory relative to the script
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Load category keywords
-category_keywords_path = os.path.join(base_dir, "dummy.json")
+category_keywords_path = os.path.join(base_dir, "category_keywords.json")
 CATEGORY_KEYWORDS = load_category_keywords(category_keywords_path)
 
 # Load custom stopwords
 custom_keywords_path = os.path.join(base_dir, "stopwords.txt")
 STOPWORDS = load_custom_stopwords(file_name=custom_keywords_path)
 
+# Load domain keywords
+domain_keywords_path = os.path.join(base_dir, "domain_keywords.txt")
+DOMAIN_KEYWORDS = load_domain_keywords(file_name=domain_keywords_path)
 
 # Function to extract text from different file types
 def extract_text(file_path):
@@ -88,6 +101,8 @@ def extract_text(file_path):
 def preprocess_text(text):
     custom_stopwords_path = os.path.join(base_dir, "stopwords.txt")  # Direct path to stopwords.txt
     custom_stopwords = load_custom_stopwords(file_name=custom_stopwords_path)
+    domain_keywords_path = os.path.join(base_dir, "domain_keywords.txt")
+    domain_keywords = load_domain_keywords(file_name=domain_keywords_path)
     stop_words = set(stopwords.words("english")) | custom_stopwords
 
     # Remove URLs, emails, and standalone numbers
@@ -113,7 +128,11 @@ def preprocess_text(text):
     # Lemmatize tokens
     lemmatizer = WordNetLemmatizer()
     tokens = [lemmatizer.lemmatize(word) for word in tokens]
-    return tokens
+
+    # Identify domain keywords in the text
+    domain_keywords_in_text = set(tokens) & domain_keywords
+
+    return tokens, domain_keywords_in_text
 
 #Function to match multi-word keywords effectively
 def generate_ngrams(key_terms, n=2):
@@ -173,38 +192,62 @@ def match_key_terms_to_topics(combined_terms, category_keywords, abstract_keywor
     if not combined_terms or not category_keywords:
         return None, None
 
-    abstract_keywords = set(abstract_keywords or [])  
+    # Normalize all terms to lowercase for case-insensitive matching
+    combined_terms = [term.lower() for term in combined_terms]
+    abstract_keywords = set(term.lower() for term in (abstract_keywords or []))
+    
+    normalized_category_keywords = {
+        main_topic: {
+            "subtopics": {
+                subtopic: [keyword.lower() for keyword in keywords]
+                for subtopic, keywords in details.get("subtopics", {}).items()
+            }
+        }
+        for main_topic, details in category_keywords.items()
+    }
 
     best_subtopic = None
     best_main_topic = None
     max_score = 0
 
-    # Loop through main topics and their subtopics
-    for main_topic, details in category_keywords.items():
+    for main_topic, details in normalized_category_keywords.items():
         if "subtopics" not in details:
             continue
 
         for subtopic, keywords in details["subtopics"].items():
             score = 0
 
-
             for term in combined_terms:
-                # Determine if term comes from abstract_keywords
                 is_abstract_keyword = term in abstract_keywords
-                weight = 2 if is_abstract_keyword else 1 
+                weight = 2 if is_abstract_keyword else 1
+                term_word_count = len(term.split())
+                term_matched = False
 
-                if term in keywords:
-                    if len(term.split()) == 2:
-                        score += weight * 5
-                    elif len(term.split()) > 2:
-                        score += weight * 7
-                    else:
-                        score += weight * 3
-                else:
-                    if len(term.split()) == 1:
-                        close_matches = difflib.get_close_matches(term, keywords, n=1, cutoff=threshold)
-                        if close_matches:
-                            score += weight * 1
+                for keyword in keywords:
+                    keyword_parts = keyword.split()
+                    keyword_word_count = len(keyword_parts)
+
+                    # Exact match for all key terms
+                    if term == keyword:
+                        term_matched = True
+                        term_score = weight * (5 if keyword_word_count == 2 else 7 if keyword_word_count > 2 else 3)
+                        score += term_score
+                    elif term_word_count == 1:
+                        partial_matches = [
+                            part for part in keyword_parts
+                            if difflib.get_close_matches(term, [part], n=1, cutoff=threshold)
+                        ]
+                        if partial_matches:
+                            term_matched = True
+                            partial_score = weight * 2 
+                            score += partial_score
+
+            # Directly match abstract keywords to category keywords
+            for abstract_term in abstract_keywords:
+                for keyword in keywords:
+                    if abstract_term == keyword:
+                        score += 10  
+
             if score > max_score:
                 best_subtopic = subtopic
                 best_main_topic = main_topic
@@ -221,44 +264,54 @@ def match_with_nested_keywords(key_terms, category_keywords):
 
 # Visualization with adjustable edge thickness
 def visualize_text_network_with_scaled_edges(G, key_terms, max_thickness=5):
-    """
-    Visualize the text network using only the extracted key terms.
-    """
+    # Filter for key terms to create a subgraph
     limited_nodes = [node for node in G.nodes if node in key_terms]
     subgraph = G.subgraph(limited_nodes)
 
+    # Get edge weights and normalize for scaling
     edge_weights = nx.get_edge_attributes(subgraph, 'weight')
-    max_weight = max(edge_weights.values(), default=1)  
+    max_weight = max(edge_weights.values(), default=1)
 
     scaled_weights = {
         edge: 1 + (max_thickness - 1) * (weight / max_weight)
         for edge, weight in edge_weights.items()
     }
-    
-    plt.figure(figsize=(12, 8))
-    pos = nx.spring_layout(subgraph)
 
-    # Draw nodes and edges
+    # Calculate node sizes based on degree centrality for importance
+    centrality = nx.degree_centrality(subgraph)
+    node_sizes = [1000 + 3000 * centrality[node] for node in subgraph.nodes]
+
+    # Assign colors to nodes for differentiation
+    node_colors = plt.cm.viridis([centrality[node] for node in subgraph.nodes])
+
+    # Create plot
+    plt.figure(figsize=(12, 8))
+    pos = nx.spring_layout(subgraph, seed=42) 
+
+    # Draw nodes, edges, and labels
     nx.draw(
         subgraph, pos, with_labels=True,
-        node_size=500, font_size=10, edge_color='gray', alpha=0.7
+        node_size=node_sizes, font_size=12, font_color='black',
+        edge_color='gray', node_color=node_colors, alpha=0.9,
+        cmap=plt.cm.viridis
     )
     nx.draw_networkx_edges(
         subgraph, pos,
-        width=[scaled_weights[edge] for edge in subgraph.edges]
+        width=[scaled_weights[edge] for edge in subgraph.edges],
+        edge_color='black', alpha=0.7
     )
-    nx.draw_networkx_edge_labels(subgraph, pos, edge_labels=edge_weights)
+    nx.draw_networkx_edge_labels(subgraph, pos, edge_labels=edge_weights, font_size=8)
 
     plt.title("Key Terms in Text Network", fontsize=16)
+    plt.axis('off')  
     plt.show()
-
 
 def hybrid_categorization_with_nested_keywords(file_path):
     # Step 1: Extract and preprocess text
     raw_text = extract_text(file_path)
-    tokens = preprocess_text(raw_text)
+    tokens, domain_keywords_found = preprocess_text(raw_text)
 
-    #extract metadata
+    #Extract metadata
     result = extract_metadata(file_path)
     with pdfplumber.open(file_path) as pdf:
         abstract, abstract_keywords = extract_abstract(pdf)
@@ -289,11 +342,12 @@ def hybrid_categorization_with_nested_keywords(file_path):
     # Step 6: Visualize the network
     #visualize_text_network_with_scaled_edges(G, key_terms, max_thickness=5)
     
-    top_key_terms = list(set(key_terms + abstract_keywords))[:10]  
+    key_terms = list(set(key_terms) | domain_keywords_found)  
+    key_terms += abstract_keywords
     return {
         "Main Topic": main_topic,
         "Subtopic": subtopic if subtopic else "None",
-        "Key Terms": top_key_terms
+        "Key Terms": key_terms
     }
 
 # Main function
