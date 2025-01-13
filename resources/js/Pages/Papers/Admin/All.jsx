@@ -112,11 +112,20 @@ export default function All({ auth, papers, searchQuery }) {
                         {truncateText(paper.abstract, 30)}
                       </p>
                       <p className="text-sm text-gray-600 mt-3">
-                        {paper.key_terms &&
-                          paper.key_terms.split(",").map((term, index) => (
+                        {paper.main_topic &&
+                          paper.main_topic.split(",").map((term, index) => (
                             <span
-                              key={index}
-                              className="inline-block bg-[#666666] text-gray-50 text-xs font-medium me-2 px-2 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
+                              key={`main-${index}`}
+                              className="inline-block bg-[#666666] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
+                            >
+                              {term.trim()}
+                            </span>
+                          ))}
+                        {paper.subtopic &&
+                          paper.subtopic.split(",").map((term, index) => (
+                            <span
+                              key={`sub-${index}`}
+                              className="inline-block bg-[#666666] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
                             >
                               {term.trim()}
                             </span>

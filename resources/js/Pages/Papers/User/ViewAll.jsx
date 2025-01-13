@@ -456,16 +456,26 @@ export default function ViewAll({
                         {truncateText(paper.abstract, 60)}
                       </div>
                       <p className="text-sm text-gray-600 mt-3">
-                        {paper.key_terms &&
-                          paper.key_terms.split(",").map((term, index) => (
+                        {paper.main_topic &&
+                          paper.main_topic.split(",").map((term, index) => (
                             <span
-                              key={index}
+                              key={`main-${index}`}
+                              className="inline-block bg-[#AF2429] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
+                            >
+                              {term.trim()}
+                            </span>
+                          ))}
+                        {paper.subtopic &&
+                          paper.subtopic.split(",").map((term, index) => (
+                            <span
+                              key={`sub-${index}`}
                               className="inline-block bg-[#AF2429] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
                             >
                               {term.trim()}
                             </span>
                           ))}
                       </p>
+
                       <div className="flex justify-end">
                         <button
                           className="text-sm text-red-800 underline flex items-center mt-2"

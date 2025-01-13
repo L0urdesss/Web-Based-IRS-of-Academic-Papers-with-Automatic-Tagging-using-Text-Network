@@ -5,14 +5,7 @@ import PaperForm from "./Partials/PaperForm";
 export default function Add({ auth, paper = null }) {
   console.log("paper log: ", paper);
   return (
-    <AuthenticatedLayout
-      user={auth.user}
-      header={
-        <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-          Add Paper
-        </h2>
-      }
-    >
+    <AuthenticatedLayout user={auth.user}>
       <head title={"Add Paper"} />
 
       <div className="py-12">

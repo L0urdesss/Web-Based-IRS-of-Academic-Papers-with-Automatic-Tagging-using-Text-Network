@@ -44,7 +44,8 @@ class PaperController extends Controller
                     $lowerTerm = strtolower($term);
                     $query->orWhereRaw('LOWER(title) LIKE ?', ['%' . $lowerTerm . '%'])
                         ->orWhereRaw('LOWER(author) LIKE ?', ['%' . $lowerTerm . '%'])
-                        ->orWhereRaw('LOWER(key_terms) LIKE ?', ['%' . $lowerTerm . '%']); // Search in key_terms
+                        ->orWhereRaw('LOWER(main_topic) LIKE ?', ['%' . $lowerTerm . '%'])
+                        ->orWhereRaw('LOWER(subtopic) LIKE ?', ['%' . $lowerTerm . '%']);
                 }
             });
         }

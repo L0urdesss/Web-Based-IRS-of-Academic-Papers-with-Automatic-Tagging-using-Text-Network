@@ -50,6 +50,14 @@ export default function PaperDetails({ user, paper, className = "", success }) {
     };
 
     const handleKeyDown = (e) => {
+      // Block copy-paste keyboard shortcuts
+      if (
+        (e.ctrlKey && (e.key === "c" || e.key === "v")) ||
+        e.key === "Control"
+      ) {
+        e.preventDefault();
+      }
+
       if (e.key === "ArrowLeft") {
         handlePrevPage();
       } else if (e.key === "ArrowRight") {
@@ -126,25 +134,27 @@ export default function PaperDetails({ user, paper, className = "", success }) {
 
   return (
     <section className={`bg-gray-100 min-h-screen ${className}`}>
-      <div className="bg-white p-4 rounded-md ml-2 mr-2 mt-2 max-auto">
-        <div className="mt-1 block w-11/12 border-none text-3xl font-bold text-red-700">
+      {/* Panel 1 */}
+      <div className="bg-white p-10 rounded-md mx-auto mt-6 max-w-4xl">
+        <div className="mt-1 block w-full border-none text-3xl font-bold text-red-700">
           {title}
         </div>
-        <div className="mt-2 flex items-center text-sm min-w-[200px]">
+        <div className="mt-2 flex items-center text-sm">
           {course} • {date_published}
         </div>
-        <div>
-          <p className=" mt-3 text-xs text-gray-800">Author/s</p>
+        <div className="mt-3">
+          <p className="text-xs text-gray-800">Author/s</p>
           <div
             className="mt-1 block w-full border-none text-sm font-bold text-gray-800"
             onContextMenu={preventDefaultActions}
             onCopy={preventDefaultActions}
             onPaste={preventDefaultActions}
+            style={{ userSelect: "none" }} // Prevent text selection
           >
             {author}
           </div>
         </div>
-        <div className="mt-2 text-sm min-w-[200px]">
+        <div className="mt-4 text-sm">
           <div>
             <strong>Main Topic:</strong> {main_topic || "No main topic"}
           </div>
@@ -152,7 +162,7 @@ export default function PaperDetails({ user, paper, className = "", success }) {
             <strong>Subtopic:</strong> {subtopic || "No subtopic"}
           </div>
         </div>
-        <p className="text-sm text-gray-600 mt-2 italic">
+        <p className="text-sm text-gray-600 mt-4 italic">
           {paper.key_terms && (
             <span>
               <strong>Key Terms:</strong>{" "}
@@ -165,30 +175,23 @@ export default function PaperDetails({ user, paper, className = "", success }) {
         </p>
       </div>
 
-      <div className="flex mt-4">
-        <div className="w-full pr-2 ml-2">
-          <div className="bg-white p-4 rounded-md mx-auto">
-            <div className="text-3xl text-red-800">
-              <br />
-              &nbsp;&nbsp;Abstract:
-            </div>
-            <div
-              className="mt-1 block w-full p-2 border-none rounded-md bg-white text-justify"
-              style={{ minHeight: "20px" }}
-              onContextMenu={preventDefaultActions}
-              onCopy={preventDefaultActions}
-              onPaste={preventDefaultActions}
-            >
-              <div className="border-none my-2"></div>
-              <p className="text-sm leading-7">{abstract}</p>
-            </div>
-          </div>
+      {/* Abstract Panel */}
+      <div className="bg-white p-10 rounded-md mx-auto mt-6 max-w-4xl">
+        <div className="text-3xl font-bold text-red-700 mb-4">Abstract:</div>
+        <div
+          className="block w-full p-4 border-none rounded-md bg-white text-justify"
+          style={{ minHeight: "200px", userSelect: "none" }} // Disable text selection in abstract
+          onContextMenu={preventDefaultActions}
+          onCopy={preventDefaultActions}
+          onPaste={preventDefaultActions}
+        >
+          <p className="text-sm leading-7">{abstract}</p>
         </div>
       </div>
 
       <div className="mt-6">
         <Toast />
-        <div id="pdf-container" className="w-full max-w-2xl mx-auto">
+        <div id="pdf-container" className="w-full max-w-4xl mx-auto">
           {isLoading ? (
             <div className="absolute top-0 left-0 w-full h-full bg-white z-10"></div>
           ) : renderedPage ? (

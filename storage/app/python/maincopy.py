@@ -287,7 +287,6 @@ def hybrid_categorization_with_nested_keywords(file_path):
     main_topic, subtopic = match_key_terms_to_topics(combined_terms, CATEGORY_KEYWORDS, abstract_keywords=abstract_keywords)
     
     # Step 6: Visualize the network
-    #visualize_text_network_with_scaled_edges(G, tokens, num_words=num_words, max_thickness=5)
     #visualize_text_network_with_scaled_edges(G, key_terms, max_thickness=5)
     
     top_key_terms = list(set(key_terms + abstract_keywords))[:10]  
