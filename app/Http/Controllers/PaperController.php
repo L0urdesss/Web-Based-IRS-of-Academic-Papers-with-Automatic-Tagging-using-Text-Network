@@ -187,7 +187,9 @@ class PaperController extends Controller
             }
 
             // Store the new file with a cleaned file name
-            $validatedData['file'] = $file->storeAs('project/' . Str::slug($validatedData['title']), $cleanFileName, 'public');
+            $sanitizedTitle = preg_replace('/[\/:*?"<>|]/', '-', $validatedData['title']);
+            $validatedData['file'] = $file->storeAs('project/' . $sanitizedTitle, $cleanFileName, 'public');
+
         }
         \Log::info($validatedData['file']);
 
@@ -233,7 +235,8 @@ class PaperController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            $filepath = $request->file('file')->store('project/' . $validatedData['title'], 'public');
+            $sanitizedTitle = preg_replace('/[\/:*?"<>|]/', '-', $validatedData['title']);
+            $filepath = $request->file('file')->store('project/' . $sanitizedTitle, 'public');
             $validatedData['file'] = $filepath;
             // $fullFilePath = storage_path('app/public/' . $filepath); // Get the full path
 
