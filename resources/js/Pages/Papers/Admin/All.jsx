@@ -125,7 +125,7 @@ export default function All({ auth, papers, searchQuery }) {
                           paper.subtopic.split(",").map((term, index) => (
                             <span
                               key={`sub-${index}`}
-                              className="inline-block bg-[#666666] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1"
+                              className="inline-block bg-[#666666] text-white text-sm font-normal me-2 px-2 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300 mt-1 mb-3"
                             >
                               {term.trim()}
                             </span>
